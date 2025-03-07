@@ -1,0 +1,113 @@
+CRITICAL - 2025-03-06 10:25:36 --> Class "Config\AuthFilter" not found
+in VENDORPATH\codeigniter4\framework\system\Filters\Filters.php on line 177.
+ 1 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(474): CodeIgniter\Filters\Filters->run('json_pelanggan.php', 'before')
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 3 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 16:56:26 --> unlink(C:\xampp\htdocs\p48-arsakha\public\file/app/): Is a directory
+in APPPATH\Controllers\Pengaturan.php on line 160.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'unlink(C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/): Is a directory', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Pengaturan.php', 160)
+ 2 APPPATH\Controllers\Pengaturan.php(160): unlink('C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/')
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->pengaturan_set_update()
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ERROR - 2025-03-06 17:55:54 --> mysqli_sql_exception: Unknown column 'item2' in 'where clause' in C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:306
+Stack trace:
+#0 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(306): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(693): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(607): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1699): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Model.php(599): CodeIgniter\Database\BaseBuilder->countAllResults(false)
+#5 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\BaseModel.php(1203): CodeIgniter\Model->countAllResults(false)
+#6 C:\xampp\htdocs\p48-arsakha\app\Controllers\Master.php(660): CodeIgniter\BaseModel->paginate(10)
+#7 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Master->data_item_list()
+#8 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Master))
+#9 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\p48-arsakha\public\index.php(78): CodeIgniter\CodeIgniter->run()
+#11 {main}
+CRITICAL - 2025-03-06 17:55:54 --> Unknown column 'item2' in 'where clause'
+in VENDORPATH\codeigniter4\framework\system\Database\BaseConnection.php on line 647.
+ 1 VENDORPATH\codeigniter4\framework\system\Database\BaseBuilder.php(1699): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `v_item`
+WHERE `item2` LIKE :item2: ESCAPE \'!\'
+OR  `kode` LIKE :kode: ESCAPE \'!\'', [...], false)
+ 2 VENDORPATH\codeigniter4\framework\system\Model.php(599): CodeIgniter\Database\BaseBuilder->countAllResults(false)
+ 3 VENDORPATH\codeigniter4\framework\system\BaseModel.php(1203): CodeIgniter\Model->countAllResults(false)
+ 4 APPPATH\Controllers\Master.php(660): CodeIgniter\BaseModel->paginate(10)
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Master->data_item_list()
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Master))
+ 7 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 18:34:59 --> Undefined variable $uri
+in APPPATH\Controllers\Pengaturan.php on line 866.
+ 1 APPPATH\Controllers\Pengaturan.php(866): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $uri', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Pengaturan.php', 866)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->hapus_img()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 18:37:09 --> Updates are not allowed unless they contain a "where" or "like" clause.
+in VENDORPATH\codeigniter4\framework\system\Model.php on line 380.
+ 1 VENDORPATH\codeigniter4\framework\system\BaseModel.php(949): CodeIgniter\Model->doUpdate(null, [...])
+ 2 VENDORPATH\codeigniter4\framework\system\Model.php(776): CodeIgniter\BaseModel->update(null, [...])
+ 3 APPPATH\Controllers\Pengaturan.php(818): CodeIgniter\Model->update(null, [...])
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->hapus_img()
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 18:37:31 --> Undefined variable $uri
+in APPPATH\Controllers\Pengaturan.php on line 866.
+ 1 APPPATH\Controllers\Pengaturan.php(866): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $uri', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Pengaturan.php', 866)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->hapus_img()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 18:41:43 --> Undefined array key "logo_ko"
+in APPPATH\Controllers\Pengaturan.php on line 815.
+ 1 APPPATH\Controllers\Pengaturan.php(815): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "logo_ko"', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Pengaturan.php', 815)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->hapus_img()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 18:42:01 --> Updates are not allowed unless they contain a "where" or "like" clause.
+in VENDORPATH\codeigniter4\framework\system\Model.php on line 380.
+ 1 VENDORPATH\codeigniter4\framework\system\BaseModel.php(949): CodeIgniter\Model->doUpdate(null, [...])
+ 2 VENDORPATH\codeigniter4\framework\system\Model.php(776): CodeIgniter\BaseModel->update(null, [...])
+ 3 APPPATH\Controllers\Pengaturan.php(819): CodeIgniter\Model->update(null, [...])
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pengaturan->hapus_img()
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pengaturan))
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 20:12:05 --> Attempt to read property "id" on null
+in APPPATH\Controllers\Gudang.php on line 341.
+ 1 APPPATH\Controllers\Gudang.php(341): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Attempt to read property "id" on null', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Gudang.php', 341)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Gudang->data_beli_terima_item()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Gudang))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 20:15:39 --> Attempt to read property "id" on null
+in APPPATH\Controllers\Gudang.php on line 341.
+ 1 APPPATH\Controllers\Gudang.php(341): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Attempt to read property "id" on null', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Gudang.php', 341)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Gudang->data_beli_terima_item()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Gudang))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 20:20:44 --> FPDF error: Some data has already been output, can't send PDF file
+in VENDORPATH\setasign\fpdf\fpdf.php on line 267.
+ 1 VENDORPATH\setasign\fpdf\fpdf.php(1058): FPDF->Error('Some data has already been output, can\'t send PDF file')
+ 2 VENDORPATH\setasign\fpdf\fpdf.php(1004): FPDF->_checkoutput()
+ 3 APPPATH\Controllers\Gudang.php(1432): FPDF->Output('I', 'sj-2025-03-06.pdf')
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Gudang->pdf_mutasi_do()
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Gudang))
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+CRITICAL - 2025-03-06 20:27:54 --> file_get_contents(https://www.google.com/recaptcha/api/siteverify): Failed to open stream: HTTP request failed!
+in VENDORPATH\google\recaptcha\src\ReCaptcha\RequestMethod\Post.php on line 80.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'file_get_contents(https://www.google.com/recaptcha/api/siteverify): Failed to open stream: HTTP request failed!', 'C:\\xampp\\htdocs\\p48-arsakha\\vendor\\google\\recaptcha\\src\\ReCaptcha\\RequestMethod\\Post.php', 80)
+ 2 VENDORPATH\google\recaptcha\src\ReCaptcha\RequestMethod\Post.php(80): file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, resource (stream-context))
+ 3 VENDORPATH\google\recaptcha\src\ReCaptcha\ReCaptcha.php(170): ReCaptcha\RequestMethod\Post->submit(Object(ReCaptcha\RequestParameters))
+ 4 VENDORPATH\denis303\codeigniter4-recaptcha\Libraries\ReCaptcha.php(20): ReCaptcha\ReCaptcha->verify('03AFcWeA70X9qr7MysoTJh5GY_fmowYTPaxklegScun1nId6GTJHs02cgMH_8JkHLQHRKCfWl7O3yFndlCFcHtp8ipaWLlqvrSQRTNLcEDjc_9OnT83k7cKAOtOLBToLMVTvQqLTF587R7oh9ptCi_2dLOHj-BRz6bzp8Ebl0VZFhPlBEs4uLfoXLwTslW53vCcut4GQ7nvLk3RclMZQYeZoC3YjaVnBSzv7AXQ6awODRTp5IcCfvLt-qFdtVJniTukfLuW5NYjHL6sB0uRlFGPwgTF4G09CrrUF04WI_Lt__6_txZCiL1FVgomNIL1F_Athf6m7TZTSuLU2jR7nG4_j_hyVWQRQwQaFGQkTV-g3tGOu-IBejhcTtIExCzwbngWu-okUJ7R-rllWvCFjB5F6G5AQUfMkzvZvJuI0YIrapianh4cBX1q_EHZpFmLUbptFzCJR_mUg6uPoCDIQauERhxZzdSJSPOppC16PunyHcJTZzXXMJT_PEwWeJiJs0eslh7-m3F7JSgoalEX3qWSlYUqma-QaQrMCuLV-e4ZW_pTUIY4ygsn4PDPFZaU7yjAWRECAp3gD0n4uOvP4u9B-oHEVFFRfA8KWen4Mv0LJoq2DHGo7SJ9Sft-E_jL60AR6bNYdiANfHUrg-msWS7Ogxd6X675k_hXJXJL_cLf_IjfpD2L0SBsaJUTxNiELTkabwcw4sN6x1otMpJIexWF1Nx_3r8PnS8DTE5agR1VITMEdlpbOltR6ATWVaKUXv-VdxAcFZih9s-TZDBlX9OXVPfJkmYMP8U3eDaWw4OEgufITYJsQmsJiAYYhK0GmSEdhO30z3_K6J6IdLOxmXmYfXH8BBeMPb1qm0Ql8UuYDcKYaDG9lgtLVNQiJtJpUabWa85LhnyJZhKouYfm-SuPso32kchP1HuOmy8xGTuoLL5Xlq8SyB2ToY', '::1')
+ 5 APPPATH\Controllers\Login.php(75): Denis303\ReCaptcha\Libraries\ReCaptcha->verify('03AFcWeA70X9qr7MysoTJh5GY_fmowYTPaxklegScun1nId6GTJHs02cgMH_8JkHLQHRKCfWl7O3yFndlCFcHtp8ipaWLlqvrSQRTNLcEDjc_9OnT83k7cKAOtOLBToLMVTvQqLTF587R7oh9ptCi_2dLOHj-BRz6bzp8Ebl0VZFhPlBEs4uLfoXLwTslW53vCcut4GQ7nvLk3RclMZQYeZoC3YjaVnBSzv7AXQ6awODRTp5IcCfvLt-qFdtVJniTukfLuW5NYjHL6sB0uRlFGPwgTF4G09CrrUF04WI_Lt__6_txZCiL1FVgomNIL1F_Athf6m7TZTSuLU2jR7nG4_j_hyVWQRQwQaFGQkTV-g3tGOu-IBejhcTtIExCzwbngWu-okUJ7R-rllWvCFjB5F6G5AQUfMkzvZvJuI0YIrapianh4cBX1q_EHZpFmLUbptFzCJR_mUg6uPoCDIQauERhxZzdSJSPOppC16PunyHcJTZzXXMJT_PEwWeJiJs0eslh7-m3F7JSgoalEX3qWSlYUqma-QaQrMCuLV-e4ZW_pTUIY4ygsn4PDPFZaU7yjAWRECAp3gD0n4uOvP4u9B-oHEVFFRfA8KWen4Mv0LJoq2DHGo7SJ9Sft-E_jL60AR6bNYdiANfHUrg-msWS7Ogxd6X675k_hXJXJL_cLf_IjfpD2L0SBsaJUTxNiELTkabwcw4sN6x1otMpJIexWF1Nx_3r8PnS8DTE5agR1VITMEdlpbOltR6ATWVaKUXv-VdxAcFZih9s-TZDBlX9OXVPfJkmYMP8U3eDaWw4OEgufITYJsQmsJiAYYhK0GmSEdhO30z3_K6J6IdLOxmXmYfXH8BBeMPb1qm0Ql8UuYDcKYaDG9lgtLVNQiJtJpUabWa85LhnyJZhKouYfm-SuPso32kchP1HuOmy8xGTuoLL5Xlq8SyB2ToY')
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Login->cek_login()
+ 7 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Login))
+ 8 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()

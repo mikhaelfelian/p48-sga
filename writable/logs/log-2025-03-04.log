@@ -1,0 +1,116 @@
+ERROR - 2025-03-04 08:37:46 --> mysqli_sql_exception: View 'db_p48_ars.v_trans_rab' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them in C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:306
+Stack trace:
+#0 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(306): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(693): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(607): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1699): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Model.php(599): CodeIgniter\Database\BaseBuilder->countAllResults(true)
+#5 C:\xampp\htdocs\p48-arsakha\app\Controllers\Transaksi.php(24): CodeIgniter\Model->countAllResults()
+#6 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Transaksi->index()
+#7 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Transaksi))
+#8 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\p48-arsakha\public\index.php(78): CodeIgniter\CodeIgniter->run()
+#10 C:\xampp\htdocs\p48-arsakha\index.php(27): require_once('C:\\xampp\\htdocs...')
+#11 {main}
+CRITICAL - 2025-03-04 08:37:47 --> View 'db_p48_ars.v_trans_rab' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+in VENDORPATH\codeigniter4\framework\system\Database\BaseConnection.php on line 647.
+ 1 VENDORPATH\codeigniter4\framework\system\Database\BaseBuilder.php(1699): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*) AS `numrows`
+FROM `v_trans_rab`
+WHERE `status` = :status:', [...], false)
+ 2 VENDORPATH\codeigniter4\framework\system\Model.php(599): CodeIgniter\Database\BaseBuilder->countAllResults(true)
+ 3 APPPATH\Controllers\Transaksi.php(24): CodeIgniter\Model->countAllResults()
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Transaksi->index()
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Transaksi))
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 8 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 17:54:10 --> Undefined variable $sub
+in APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php on line 77.
+ 1 APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php(77): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $sub', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php', 77)
+ 2 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php')
+ 3 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/manajemen/pembelian/data_pembelian_bayar', [], true)
+ 5 APPPATH\Views\admin-lte-3\index.php(139): view('admin-lte-3/manajemen/pembelian/data_pembelian_bayar')
+ 6 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\index.php')
+ 7 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/index', [], true)
+ 9 APPPATH\Controllers\Pembelian.php(1402): view('admin-lte-3/index', [...])
+10 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pembelian->data_pembayaran_tambah()
+11 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pembelian))
+12 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+14 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 17:54:45 --> Undefined variable $sub
+in APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php on line 78.
+ 1 APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php(78): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $sub', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php', 78)
+ 2 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php')
+ 3 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/manajemen/pembelian/data_pembelian_bayar', [], true)
+ 5 APPPATH\Views\admin-lte-3\index.php(139): view('admin-lte-3/manajemen/pembelian/data_pembelian_bayar')
+ 6 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\index.php')
+ 7 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/index', [], true)
+ 9 APPPATH\Controllers\Pembelian.php(1402): view('admin-lte-3/index', [...])
+10 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pembelian->data_pembayaran_tambah()
+11 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pembelian))
+12 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+14 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 18:00:15 --> Undefined variable $gtotal
+in APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php on line 82.
+ 1 APPPATH\Views\admin-lte-3\manajemen\pembelian\data_pembelian_bayar.php(82): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $gtotal', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php', 82)
+ 2 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\manajemen\\pembelian\\data_pembelian_bayar.php')
+ 3 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/manajemen/pembelian/data_pembelian_bayar', [], true)
+ 5 APPPATH\Views\admin-lte-3\index.php(139): view('admin-lte-3/manajemen/pembelian/data_pembelian_bayar')
+ 6 VENDORPATH\codeigniter4\framework\system\View\View.php(228): include('C:\\xampp\\htdocs\\p48-arsakha\\app\\Views\\admin-lte-3\\index.php')
+ 7 VENDORPATH\codeigniter4\framework\system\View\View.php(231): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 8 SYSTEMPATH\Common.php(1188): CodeIgniter\View\View->render('admin-lte-3/index', [], true)
+ 9 APPPATH\Controllers\Pembelian.php(1402): view('admin-lte-3/index', [...])
+10 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pembelian->data_pembayaran_tambah()
+11 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pembelian))
+12 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+14 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 18:34:18 --> FPDF error: Image file has no extension and no type was specified: C:\xampp\htdocs\p48-arsakha\public\file/app/
+in VENDORPATH\setasign\fpdf\fpdf.php on line 267.
+ 1 VENDORPATH\setasign\fpdf\fpdf.php(881): FPDF->Error('Image file has no extension and no type was specified: C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/')
+ 2 APPPATH\Controllers\Transaksi.php(4275): FPDF->Image('C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/', 1, 1, 5, 2)
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Transaksi->pdf_penjualan_kwi()
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Transaksi))
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 7 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 18:48:21 --> FPDF error: Image file has no extension and no type was specified: C:\xampp\htdocs\p48-arsakha\public\file/app/
+in VENDORPATH\setasign\fpdf\fpdf.php on line 267.
+ 1 VENDORPATH\setasign\fpdf\fpdf.php(881): FPDF->Error('Image file has no extension and no type was specified: C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/')
+ 2 APPPATH\Controllers\Transaksi.php(4278): FPDF->Image('C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/', 1, 1, 5, 2)
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Transaksi->pdf_penjualan_kwi()
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Transaksi))
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 7 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 18:53:15 --> FPDF error: Image file has no extension and no type was specified: C:\xampp\htdocs\p48-arsakha\public\file/app/
+in VENDORPATH\setasign\fpdf\fpdf.php on line 267.
+ 1 VENDORPATH\setasign\fpdf\fpdf.php(881): FPDF->Error('Image file has no extension and no type was specified: C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/')
+ 2 APPPATH\Controllers\Transaksi.php(4281): FPDF->Image('C:\\xampp\\htdocs\\p48-arsakha\\public\\file/app/', 1, 1, 5, 2)
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Transaksi->pdf_penjualan_kwi()
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Transaksi))
+ 5 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 7 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 20:07:01 --> Undefined variable $keterangan
+in APPPATH\Controllers\Pembelian.php on line 1168.
+ 1 APPPATH\Controllers\Pembelian.php(1168): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $keterangan', 'C:\\xampp\\htdocs\\p48-arsakha\\app\\Controllers\\Pembelian.php', 1168)
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pembelian->set_pembelian_bayar()
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pembelian))
+ 4 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 6 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')
+CRITICAL - 2025-03-04 20:10:08 --> Class "App\Models\trPembelianPlat" not found
+in APPPATH\Controllers\Pembelian.php on line 1091.
+ 1 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(942): App\Controllers\Pembelian->set_pembelian_bayar()
+ 2 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(502): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pembelian))
+ 3 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+ 5 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')

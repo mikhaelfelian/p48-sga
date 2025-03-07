@@ -1,0 +1,46 @@
+ERROR - 2025-03-02 23:50:00 --> Error connecting to the database: mysqli_sql_exception: Unknown database 'db_p48_ars' in C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:184
+Stack trace:
+#0 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(184): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'db_p48_ars', 3306, '', 0)
+#1 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(392): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1615): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Model.php(264): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\BaseModel.php(662): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\p48-arsakha\app\Controllers\BaseController.php(75): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(915): App\Controllers\BaseController->initController(Object(CodeIgniter\HTTP\IncomingRequest), Object(CodeIgniter\HTTP\Response), Object(CodeIgniter\Log\Logger))
+#8 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(493): CodeIgniter\CodeIgniter->createController()
+#9 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\p48-arsakha\public\index.php(78): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\p48-arsakha\index.php(27): require_once('C:\\xampp\\htdocs...')
+#12 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Unknown database 'db_p48_ars' in C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:229
+Stack trace:
+#0 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(392): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1615): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#3 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\Model.php(264): CodeIgniter\Database\BaseBuilder->get()
+#4 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\BaseModel.php(662): CodeIgniter\Model->doFirst()
+#5 C:\xampp\htdocs\p48-arsakha\app\Controllers\BaseController.php(75): CodeIgniter\BaseModel->first()
+#6 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(915): App\Controllers\BaseController->initController(Object(CodeIgniter\HTTP\IncomingRequest), Object(CodeIgniter\HTTP\Response), Object(CodeIgniter\Log\Logger))
+#7 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(493): CodeIgniter\CodeIgniter->createController()
+#8 C:\xampp\htdocs\p48-arsakha\vendor\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#9 C:\xampp\htdocs\p48-arsakha\public\index.php(78): CodeIgniter\CodeIgniter->run()
+#10 C:\xampp\htdocs\p48-arsakha\index.php(27): require_once('C:\\xampp\\htdocs...')
+#11 {main}
+CRITICAL - 2025-03-02 23:50:00 --> Unable to connect to the database.
+Main connection [MySQLi]: Unknown database 'db_p48_ars'
+in VENDORPATH\codeigniter4\framework\system\Database\BaseConnection.php on line 428.
+ 1 VENDORPATH\codeigniter4\framework\system\Database\BaseConnection.php(575): CodeIgniter\Database\BaseConnection->initialize()
+ 2 VENDORPATH\codeigniter4\framework\system\Database\BaseBuilder.php(1615): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `tbl_pengaturan`
+WHERE `id` = :id:
+ LIMIT 1', [...], false)
+ 3 VENDORPATH\codeigniter4\framework\system\Model.php(264): CodeIgniter\Database\BaseBuilder->get()
+ 4 VENDORPATH\codeigniter4\framework\system\BaseModel.php(662): CodeIgniter\Model->doFirst()
+ 5 APPPATH\Controllers\BaseController.php(75): CodeIgniter\BaseModel->first()
+ 6 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(915): App\Controllers\BaseController->initController(Object(CodeIgniter\HTTP\IncomingRequest), Object(CodeIgniter\HTTP\Response), Object(CodeIgniter\Log\Logger))
+ 7 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(493): CodeIgniter\CodeIgniter->createController()
+ 8 VENDORPATH\codeigniter4\framework\system\CodeIgniter.php(361): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 FCPATH\index.php(78): CodeIgniter\CodeIgniter->run()
+10 ROOTPATH\index.php(27): require_once('C:\\xampp\\htdocs\\p48-arsakha\\public\\index.php')

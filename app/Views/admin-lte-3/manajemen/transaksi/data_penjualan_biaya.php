@@ -1,0 +1,149 @@
+<?php $request = \Config\Services::request(); ?>
+<?php $psnGagal = session()->getFlashdata('psn_gagal'); ?>
+<?php helper('general'); ?>
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Data Penjualan</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Beranda</a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo base_url('transaksi') ?>">Transaksi</a></li>
+                        <li class="breadcrumb-item active">Data Penjualan</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8">
+                    <?php if($SQLPenj->status == 0){ ?>
+                        <!-- Form Item box -->
+                        <?php echo form_open(base_url('transaksi/cart_simpan.php'), 'autocomplete="off"') ?>
+                        <?php echo form_hidden('id_penj', (!empty($SQLPenj) ? $SQLPenj->id : '')) ?>
+                        <?php echo form_hidden('id_penj_det', (!empty($SQLPenjDetRw) ? $SQLPenjDetRw->id : '')) ?>
+                        <?php echo form_hidden('status', $request->getVar('status')) ?>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">INPUT BIAYA</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-lg-12 order-2 order-md-1">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group row<?php echo (!empty($psnGagal['item']) ? ' text-danger' : '') ?>">
+                                                    <label for="inputEmail3" class="col-sm-3 col-form-label">Jenis</label>
+                                                    <div class="col-sm-9">
+                                                        <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['item']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Item ...', 'value' => (!empty($SQLPenjDetRw) ? $SQLPenjDetRw->item : (!empty($SQLItem->item) ? $SQLItem->item : ''))]) ?>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row<?php echo (!empty($psnGagal['jml']) ? ' text-danger' : '') ?>">
+                                                    <label for="inputEmail3" class="col-sm-3 col-form-label">Jml</label>
+                                                    <div class="col-sm-4">
+                                                        <?php echo form_input(['id' => 'jml', 'name' => 'jml', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['jml']) ? ' is-invalid' : ''), 'placeholder' => 'Jml ...', 'value' => (!empty($SQLPenjDetRw) ? $SQLPenjDetRw->jml : '')]) ?>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row<?php echo (!empty($psnGagal['harga']) ? ' text-danger' : '') ?>">
+                                                    <label class="col-sm-3 col-form-label">Harga</label>
+                                                    <div class="col-sm-9">
+                                                        <div class="input-group mb-3">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">Rp.</span>
+                                                            </div>
+                                                            <?php echo form_input(['id' => 'harga', 'name' => 'harga', 'class' => 'form-control rounded-0 pull-right' . (!empty($psnGagal['harga']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Biaya ...', 'value' => (!empty($SQLPenjDetRw) ? $SQLPenjDetRw->harga : '')]) ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row<?php echo (!empty($psnGagal['status_biaya']) ? ' text-danger' : '') ?>">
+                                                    <label class="col-sm-3 col-form-label">Tampil</label>
+                                                    <div class="col-sm-9">
+                                                        <div class="form-group">
+                                                            <div class="input-group mb-3">
+                                                                <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
+                                                                    <?php echo form_checkbox(['id' => 'customSwitch3', 'name' => 'status_biaya', 'value' => '1', 'class' => 'custom-control-input', 'checked' => (!empty($SQLRabDetRw) ? ($SQLRabDetRw->status_biaya == '1' ? true : false) : false)]) ?>
+                                                                    <label class="custom-control-label" for="customSwitch3">Ya</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group row">
+                                                    <label for="inputEmail3" class="col-sm-3 col-form-label">Catatan</label>
+                                                    <div class="col-sm-9">
+                                                        <?php echo form_textarea(['id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control pull-left rounded-0', 'placeholder' => 'Isikan catatan / spek ...', 'rows' => '8', 'value' => (!empty($SQLPenjDetRw) ? $SQLPenjDetRw->keterangan : '')]) ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <button type="button" class="btn btn-primary btn-flat" onclick="window.location.href = '<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id')) ?>'"><i class="fas fa-arrow-left"></i> Kembali</button>
+                                    </div>
+                                    <div class="col-lg-6 text-right">
+                                        <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Simpan</button>
+                                    </div>
+                                </div>                            
+                            </div>
+                        </div>
+                        <?php echo form_close() ?>
+                    <?php } ?>
+
+
+                    <!-- Item box -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">DATA BIAYA</h3>
+                        </div>
+                        <div class="card-body">
+                            <?php echo view($konten_list) ?>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <?php if($SQLPenj->status == 1){ ?>
+                                        <button type="button" class="btn btn-primary btn-flat" onclick="window.location.href = '<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id')) ?>'"><i class="fas fa-arrow-left"></i> Kembali</button>
+                                    <?php } ?>
+                                </div>
+                                <div class="col-lg-6 text-right">
+
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <div class="col-lg-4">
+                    <?php echo view($konten_kanan) ?>                    
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("input[id=harga],input[id=jml]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
+        <?php echo session()->getFlashdata('transaksi_toast'); ?>
+    });
+</script>

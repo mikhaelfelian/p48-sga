@@ -117,7 +117,7 @@
                     <!-- Sidebar user panel (optional) -->
                     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                         <div class="image">
-                            <img src="<?php echo base_url((!empty($Pengguna->file_name) ? 'file/profile/' . $Pengguna->file_name : 'assets/theme/admin-lte-3/dist/img/user2-160x160.jpg')) ?>" class="img-circle elevation-0" alt="User Image" style="width: 34px; height: 34px;">
+                            <img src="<?php echo base_url((!empty($Pengguna->file_name) ? $Pengguna->file_name : 'assets/theme/admin-lte-3/dist/img/user2-160x160.jpg')) ?>" class="img-circle elevation-0" alt="User Image" style="width: 34px; height: 34px;">
                         </div>
                         <div class="info">
                             <a href="<?php echo base_url('profile/' . $Pengguna->id) ?>" class="d-block"><?php echo ucwords($Pengguna->first_name) ?></a>

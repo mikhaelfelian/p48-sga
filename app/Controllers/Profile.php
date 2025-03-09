@@ -164,15 +164,24 @@ class Profile extends BaseController {
                 if($this->ionAuth->usernameCheck($user) AND $ID->username != $user){
                     $this->session->setFlashdata('pengaturan_toast', 'toastr.error("Username sudah digunakan, silahkan ulangi !");');
                     return redirect()->to(base_url('profile/'.$IDKary));
-                }else{                
+                }else{
+                    
+                    
                     # Muat library untuk unggah file
                     # $path untuk mengatur lokasi unggah file
-                    $path       = FCPATH.'file/profile/';
+                    $path       = FCPATH.'/';
+                    $dir        = 'file/profile/userid_'.$IDUser.'/';
                     $filename   = 'profile_'.strtolower(str_replace(' ', '', $IDUser.$user)).'.'.$fupl->getClientExtension();
+                    $fullname   = $dir.$filename;
+
+                    # Check if directory exists, if not create it
+                    if (!is_dir($path.$dir)) {
+                        mkdir($path.$dir, 0777, true);
+                    }
 
                     # Jika valid lanjut upload file logo
                     if ($fupl->isValid() && !$fupl->hasMoved()) {
-                        $fupl->move($path, $filename, true);
+                        $fupl->move($path.$dir, $filename, true);
                     }
                     
                     # Cek file
@@ -185,7 +194,7 @@ class Profile extends BaseController {
                             'last_name'     => $nama2,
                             'birthdate'     => tgl_indo_sys($tgl_lhr),
                             'password'      => $pass2,
-                            'file_name'     => (!empty($fupl->getClientExtension()) ? $filename : $this->ionAuth->user($sql_cek->id_user)->row()->file_name)
+                            'file_name'     => (!empty($fupl->getClientExtension()) ? $fullname : $this->ionAuth->user($sql_cek->id_user)->row()->file_name)
                         ];
 
                         $this->ionAuth->update($IDUser, $data_user);
@@ -197,7 +206,7 @@ class Profile extends BaseController {
                             'first_name'    => $nama,
                             'last_name'     => $nama2,
                             'birthdate'     => tgl_indo_sys($tgl_lhr),
-                            'file_name'     => (!empty($fupl->getClientExtension()) ? $filename : $this->ionAuth->user($sql_cek->id_user)->row()->file_name)
+                            'file_name'     => (!empty($fupl->getClientExtension()) ? $fullname : $this->ionAuth->user($sql_cek->id_user)->row()->file_name)
                         ];
 
                         $this->ionAuth->update($IDUser, $data_user);
@@ -236,40 +245,209 @@ class Profile extends BaseController {
     }  
 
     public function data_keluarga() {
-        if ($this->ionAuth->loggedIn()) {
-            $ID         = $this->ionAuth->user()->row();
-            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
-            $AksesGrup  = $this->ionAuth->groups()->result();
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
 
-            $nama       = $this->input->getVar('filter_nama');
-            $hlmn       = $this->input->getVar('page');
+        $kat        = $this->input->getVar('filter_kat');
+        $ket        = $this->input->getVar('filter_ket');
+        $hlmn       = $this->input->getVar('page');
 
-            $Keluarga   = new \App\Models\mKeluarga();
-            $sql_kel    = $Keluarga->asObject()->where('id_user', $ID->id)->orderBy('id', 'DESC')->like('nama', (!empty($nama) ? $nama : ''));
-            $jml_limit  = $this->Setting->jml_item;
-                                    
-            $data  = [
-                'SQLKeluarga'   => $sql_kel->paginate($jml_limit),
-                'Pagination'    => $Keluarga->pager->links(),
-                'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
-                'MenuAktif'     => 'active',
-                'MenuOpen'      => 'menu-open',
-                'AksesGrup'     => $AksesGrup,
-                'Pengguna'      => $ID,
-                'PenggunaGrup'  => $IDGrup,
-                'Pengaturan'    => $this->Setting,
-                'ThemePath'     => $this->ThemePath,
-                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
-                'menu_kiri'     => $this->ThemePath.'/profile/menu_kiri',
-                'konten'        => $this->ThemePath.'/profile/data_keluarga',
-            ];
-            
-            return view($this->ThemePath.'/index', $data); 
-        } else {
+        $Kategori   = new \App\Models\mKategori();
+        $Karyawan   = new \App\Models\mKaryawan();
+        $Keluarga   = new \App\Models\mKaryawanKel();
+        $sql_kat    = $Kategori->asObject()->orderBy('id', 'DESC'); //->like('kategori', (!empty($kat) ? $kat : ''))->like('keterangan', (!empty($ket) ? $ket : ''));
+        $sql_kary   = $Karyawan->asObject()->where('id_user', $ID->id)->first();
+        $sql_kel    = $Keluarga->asObject()->where('id_karyawan', $sql_kary->id)->orderBy('id', 'DESC');
+        $jml_limit  = $this->Setting->jml_item;
+                                
+        $data  = [
+            'SQLKary'       => $sql_kary,
+            'SQLKel'        => $sql_kel,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_kel',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
+    }
+    
+    /**
+     * Save employee family data
+     * 
+     * @param int $id Employee ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function simpan_data_kel($id)
+    {        
+        // Check if user is logged in
+        if (!$this->ionAuth->loggedIn()) {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());
         }
+        
+        // Get current user data
+        $user = $this->ionAuth->user()->row();
+        
+        // Load models
+        $karyawanModel = new \App\Models\mKaryawan();
+        $keluargaModel = new \App\Models\mKaryawanKel();
+        
+        // Set validation rules
+        $validationRules = [
+            'nm_ayah' => [
+                'rules' => 'required|min_length[3]|max_length[160]',
+                'errors' => [
+                    'required' => 'Nama Ayah harus diisi',
+                    'min_length' => 'Nama Ayah minimal 3 karakter',
+                    'max_length' => 'Nama Ayah maksimal 160 karakter'
+                ]
+            ],
+            'nm_ibu' => [
+                'rules' => 'required|min_length[3]|max_length[160]',
+                'errors' => [
+                    'required' => 'Nama Ibu harus diisi',
+                    'min_length' => 'Nama Ibu minimal 3 karakter',
+                    'max_length' => 'Nama Ibu maksimal 160 karakter'
+                ]
+            ],
+            'tgl_lhr_ayah' => [
+                'rules' => 'permit_empty|valid_date[Y-m-d]',
+                'errors' => [
+                    'valid_date' => 'Format tanggal lahir ayah tidak valid (YYYY-MM-DD)'
+                ]
+            ],
+            'tgl_lhr_ibu' => [
+                'rules' => 'permit_empty|valid_date[Y-m-d]',
+                'errors' => [
+                    'valid_date' => 'Format tanggal lahir ibu tidak valid (YYYY-MM-DD)'
+                ]
+            ],
+            'tgl_lhr_psg' => [
+                'rules' => 'permit_empty|valid_date[Y-m-d]',
+                'errors' => [
+                    'valid_date' => 'Format tanggal lahir pasangan tidak valid (YYYY-MM-DD)'
+                ]
+            ],
+            'nm_pasangan' => [
+                'rules' => 'permit_empty|max_length[160]',
+                'errors' => [
+                    'max_length' => 'Nama Pasangan maksimal 160 karakter'
+                ]
+            ],
+            'file_kk' => [
+                'rules' => 'permit_empty|uploaded[file_kk,0]|max_size[file_kk,2048]|mime_in[file_kk,image/jpg,image/jpeg,image/png,application/pdf]|ext_in[file_kk,jpg,jpeg,png,pdf,tif]',
+                'errors' => [
+                    'max_size' => 'Ukuran file KK maksimal 2MB',
+                    'mime_in' => 'Format file KK tidak valid (jpg/jpeg/png/pdf/tif)',
+                    'ext_in' => 'Ekstensi file KK tidak valid (jpg/jpeg/png/pdf/tif)'
+                ]
+            ],
+            'file_ktp' => [
+                'rules' => 'permit_empty|uploaded[file_ktp,0]|max_size[file_ktp,2048]|mime_in[file_ktp,image/jpg,image/jpeg,image/png,application/pdf]|ext_in[file_ktp,jpg,jpeg,png,pdf,tif]',
+                'errors' => [
+                    'max_size' => 'Ukuran file KTP maksimal 2MB',
+                    'mime_in' => 'Format file KTP tidak valid (jpg/jpeg/png/pdf/tif)',
+                    'ext_in' => 'Ekstensi file KTP tidak valid (jpg/jpeg/png/pdf/tif)'
+                ]
+            ]
+        ];
+        
+        // Run validation
+        if (!$this->validate($validationRules)) {
+            // Validation failed, return to form with errors
+            $this->session->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"))->withInput();
+        }
+        
+        // Get form data
+        $data = [
+            'id_karyawan'   => $id,
+            'id_user'       => $user->id,
+            'tgl_simpan'    => date('Y-m-d H:i:s'),
+            'nm_ayah'       => $this->request->getPost('nm_ayah'),
+            'nm_ibu'        => $this->request->getPost('nm_ibu'), 
+            'nm_pasangan'   => $this->request->getPost('nm_pasangan'),
+            'nm_anak'       => $this->request->getPost('nm_anak'),
+            'tgl_lhr_ayah'  => $this->request->getPost('tgl_lhr_ayah'),
+            'tgl_lhr_ibu'   => $this->request->getPost('tgl_lhr_ibu'),
+            'tgl_lhr_psg'   => $this->request->getPost('tgl_lhr_psg'),
+            'jns_pasangan'  => $this->request->getPost('jns_pasangan'),
+            'status_kawin'  => $this->request->getPost('status_kawin')
+        ];
+        
+        // Check if record ID exists (update case)
+        $record_id = $this->request->getPost('id');
+        
+        // Handle file upload for KK
+        $file_kk = $this->request->getFile('file_kk');
+        if ($file_kk && $file_kk->isValid() && !$file_kk->hasMoved()) {
+            // Generate a random name for the file
+            $newName = $file_kk->getRandomName();
+            
+            // Create directory if it doesn't exist
+            $uploadPath = ROOTPATH . 'public/file/keluarga';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            // Move the file to the upload directory
+            $file_kk->move($uploadPath, $newName);
+            
+            // Update data array with file information
+            $data['file_name'] = $newName;
+            $data['file_ext'] = $file_kk->getExtension();
+            $data['file_type'] = $file_kk->getClientMimeType();
+        }
+        
+        // Handle file upload for KTP
+        $file_ktp = $this->request->getFile('file_ktp');
+        if ($file_ktp && $file_ktp->isValid() && !$file_ktp->hasMoved()) {
+            // Generate a random name for the file
+            $newName = $file_ktp->getRandomName();
+            
+            // Create directory if it doesn't exist
+            $uploadPath = ROOTPATH . 'public/file/keluarga';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            // Move the file to the upload directory
+            $file_ktp->move($uploadPath, $newName);
+            
+            // Update data array with file information
+            $data['file_name_ktp'] = $newName;
+            $data['file_ext_ktp'] = $file_ktp->getExtension();
+            $data['file_type_ktp'] = $file_ktp->getClientMimeType();
+        }
+        
+        try {
+            // Check if this is an update or insert
+            if (!empty($record_id)) {
+                // Update existing record
+                $keluargaModel->update($record_id, $data);
+                $this->session->setFlashdata('pesan', 'Data keluarga berhasil diperbarui');
+            } else {
+                // Insert new record
+                $keluargaModel->insert($data);
+                $this->session->setFlashdata('pesan', 'Data keluarga berhasil disimpan');
+            }
+            
+            return redirect()->to(base_url("profile/{$id}"));
+        } catch (\Exception $e) {
+            $this->session->setFlashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
+        }
     }
+
+    
 
     public function hapus_foto($id = null)
     {
@@ -285,7 +463,7 @@ class Profile extends BaseController {
         
         if (!empty($user->file_name)) {
             // Delete physical file
-            $file_path = FCPATH . 'file/profile/' . $user->file_name;
+            $file_path = FCPATH . $user->file_name;
             if (file_exists($file_path)) {
                 unlink($file_path);
             }

@@ -25,7 +25,7 @@
                     <div class="card card-primary card-outline">
                         <div class="card-body box-profile">
                             <div class="text-center">
-                                <img class="profile-user-img img-fluid img-circle" src="<?php echo base_url((!empty($Pengguna->file_name) ? '/file/profile/' . $Pengguna->file_name : 'assets/theme/admin-lte-3/dist/img/user2-160x160.jpg')) ?>" alt="<?php echo $Pengguna->first_name ?> profile picture" style="width: 100px; height: 100px;">
+                                <img class="profile-user-img img-fluid img-circle" src="<?php echo base_url((!empty($Pengguna->file_name) ? $Pengguna->file_name : 'assets/theme/admin-lte-3/dist/img/user2-160x160.jpg')) ?>" alt="<?php echo $Pengguna->first_name ?> profile picture" style="width: 100px; height: 100px;">
                                 <?php if (!empty($Pengguna->file_name)) : ?>
                                 <div class="mt-2">
                                     <a href="<?php echo base_url('profile/hapus_foto/'.$Pengguna->id) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus foto profil?')">

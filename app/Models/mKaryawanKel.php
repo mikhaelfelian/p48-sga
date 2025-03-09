@@ -47,4 +47,16 @@ class mKaryawanKel extends Model {
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
+
+    /**
+     * Get employee family data with employee details
+     * @return array Employee family data with joined employee information
+     */
+    public function getKeluarga()
+    {
+        $builder = $this->db->table($this->table);
+        $builder->select('tbl_m_karyawan_kel.*, tbl_m_karyawan.id, tbl_m_karyawan.nama');
+        $builder->join('tbl_m_karyawan', 'tbl_m_karyawan.id = tbl_m_karyawan_kel.id_karyawan');
+        return $builder->get()->getResult();
+    }
 } 

@@ -41,6 +41,8 @@ $routes->group('profile', ['filter' => 'auth'], function($routes) {
     $routes->get('sdm/data_keluarga/(:num)', 'Profile::data_keluarga/$1');
     $routes->post('simpan_data_kel.php/(:num)', 'Profile::simpan_data_kel/$1');
     $routes->get('hapus_foto/(:num)', 'Profile::hapus_foto/$1');
+    $routes->get('edit_data_keluarga/(:num)', 'Profile::edit_data_keluarga/$1');
+    $routes->get('hapus_data_keluarga/(:num)', 'Profile::hapus_data_keluarga/$1');
 });
 
 # Pengaturan

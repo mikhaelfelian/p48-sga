@@ -244,22 +244,30 @@ class Profile extends BaseController {
         }
     }  
 
-    public function data_keluarga() {
+    public function data_keluarga($id) {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+        
         $ID         = $this->ionAuth->user()->row();
         $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
         $AksesGrup  = $this->ionAuth->groups()->result();
 
-        $kat        = $this->input->getVar('filter_kat');
-        $ket        = $this->input->getVar('filter_ket');
-        $hlmn       = $this->input->getVar('page');
-
-        $Kategori   = new \App\Models\mKategori();
         $Karyawan   = new \App\Models\mKaryawan();
         $Keluarga   = new \App\Models\mKaryawanKel();
-        $sql_kat    = $Kategori->asObject()->orderBy('id', 'DESC'); //->like('kategori', (!empty($kat) ? $kat : ''))->like('keterangan', (!empty($ket) ? $ket : ''));
-        $sql_kary   = $Karyawan->asObject()->where('id_user', $ID->id)->first();
-        $sql_kel    = $Keluarga->asObject()->where('id_karyawan', $sql_kary->id)->orderBy('id', 'DESC');
-        $jml_limit  = $this->Setting->jml_item;
+        
+        // Get employee data
+        $sql_kary   = $Karyawan->asObject()->where('id', $id)->first();
+        
+        // If employee not found, redirect to profile
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get family data
+        $sql_kel    = $Keluarga->asObject()->where('id_karyawan', $id)->findAll();
                                 
         $data  = [
             'SQLKary'       => $sql_kary,
@@ -285,16 +293,13 @@ class Profile extends BaseController {
      * @param int $id Employee ID
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
-    public function simpan_data_kel($id)
+    public function simpan_data_kel()
     {        
-        // Check if user is logged in
-        if (!$this->ionAuth->loggedIn()) {
-            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
-            return redirect()->to(base_url());
-        }
-        
         // Get current user data
-        $user = $this->ionAuth->user()->row();
+        $id        = $this->request->getPost('id');
+        $id_kary   = $this->request->getPost('id_karyawan');
+        $IDUser    = $this->request->getPost('id_user');
+        $user      = $this->ionAuth->user($IDUser)->row()->username;
         
         // Load models
         $karyawanModel = new \App\Models\mKaryawan();
@@ -319,27 +324,15 @@ class Profile extends BaseController {
                 ]
             ],
             'tgl_lhr_ayah' => [
-                'rules' => 'permit_empty|valid_date[Y-m-d]',
+                'rules' => 'required',
                 'errors' => [
-                    'valid_date' => 'Format tanggal lahir ayah tidak valid (YYYY-MM-DD)'
+                    'required' => 'Tanggal lahir ayah harus diisi'
                 ]
             ],
             'tgl_lhr_ibu' => [
-                'rules' => 'permit_empty|valid_date[Y-m-d]',
+                'rules' => 'required',
                 'errors' => [
-                    'valid_date' => 'Format tanggal lahir ibu tidak valid (YYYY-MM-DD)'
-                ]
-            ],
-            'tgl_lhr_psg' => [
-                'rules' => 'permit_empty|valid_date[Y-m-d]',
-                'errors' => [
-                    'valid_date' => 'Format tanggal lahir pasangan tidak valid (YYYY-MM-DD)'
-                ]
-            ],
-            'nm_pasangan' => [
-                'rules' => 'permit_empty|max_length[160]',
-                'errors' => [
-                    'max_length' => 'Nama Pasangan maksimal 160 karakter'
+                    'required' => 'Tanggal lahir ibu harus diisi'
                 ]
             ],
             'file_kk' => [
@@ -364,13 +357,20 @@ class Profile extends BaseController {
         if (!$this->validate($validationRules)) {
             // Validation failed, return to form with errors
             $this->session->setFlashdata('errors', $this->validator->getErrors());
-            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"))->withInput();
+            // return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
+
+            echo base_url("profile/sdm/data_keluarga/{$id}");
         }
+
+        // Get employee data
+        $SQLKary = $karyawanModel->asObject()->where('id', $id_kary)->first();
+        $SQLKel  = $keluargaModel->asObject()->where('id', $id)->orderBy('id', 'DESC')->first();
         
         // Get form data
         $data = [
-            'id_karyawan'   => $id,
-            'id_user'       => $user->id,
+            'id'            => $id,
+            'id_karyawan'   => $id_kary,
+            'id_user'       => $this->ionAuth->user()->row()->id,
             'tgl_simpan'    => date('Y-m-d H:i:s'),
             'nm_ayah'       => $this->request->getPost('nm_ayah'),
             'nm_ibu'        => $this->request->getPost('nm_ibu'), 
@@ -384,70 +384,168 @@ class Profile extends BaseController {
         ];
         
         // Check if record ID exists (update case)
-        $record_id = $this->request->getPost('id');
+        $record_id  = $this->request->getPost('id');
         
         // Handle file upload for KK
-        $file_kk = $this->request->getFile('file_kk');
+        $file_kk    = $this->request->getFile('file_kk');
+
+        $path       = FCPATH.'/';
+        $dir        = 'file/profile/userid_'.$IDUser.'/';
+
         if ($file_kk && $file_kk->isValid() && !$file_kk->hasMoved()) {
-            // Generate a random name for the file
-            $newName = $file_kk->getRandomName();
+            // Generate filename using user info
+            $filename_kk = 'kk_'.strtolower(str_replace(' ', '', $IDUser.$user)).'.'.$file_kk->getClientExtension();
+            $fullname_kk = $dir.$filename_kk;
             
             // Create directory if it doesn't exist
-            $uploadPath = ROOTPATH . 'public/file/keluarga';
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+            if (!is_dir($path.$dir)) {
+                mkdir($path.$dir, 0777, true);
             }
             
             // Move the file to the upload directory
-            $file_kk->move($uploadPath, $newName);
+            $file_kk->move($path.$dir, $filename_kk, true);
             
             // Update data array with file information
-            $data['file_name'] = $newName;
-            $data['file_ext'] = $file_kk->getExtension();
+            $data['file_name'] = $fullname_kk;
+            $data['file_ext'] = $file_kk->getClientExtension();
             $data['file_type'] = $file_kk->getClientMimeType();
         }
         
         // Handle file upload for KTP
         $file_ktp = $this->request->getFile('file_ktp');
         if ($file_ktp && $file_ktp->isValid() && !$file_ktp->hasMoved()) {
-            // Generate a random name for the file
-            $newName = $file_ktp->getRandomName();
+            // Generate filename using user info
+            $filename_ktp = 'ktp_'.strtolower(str_replace(' ', '', $IDUser.$user)).'.'.$file_ktp->getClientExtension();
+            $fullname_ktp = $dir.$filename_ktp;
             
             // Create directory if it doesn't exist
-            $uploadPath = ROOTPATH . 'public/file/keluarga';
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0777, true);
+            if (!is_dir($path.$dir)) {
+                mkdir($path.$dir, 0777, true);
             }
             
-            // Move the file to the upload directory
-            $file_ktp->move($uploadPath, $newName);
+            // Move the file to the upload directory  
+            $file_ktp->move($path.$dir, $filename_ktp, true);
             
             // Update data array with file information
-            $data['file_name_ktp'] = $newName;
-            $data['file_ext_ktp'] = $file_ktp->getExtension();
+            $data['file_name_ktp'] = $fullname_ktp;
+            $data['file_ext_ktp'] = $file_ktp->getClientExtension();
             $data['file_type_ktp'] = $file_ktp->getClientMimeType();
         }
         
         try {
-            // Check if this is an update or insert
-            if (!empty($record_id)) {
-                // Update existing record
-                $keluargaModel->update($record_id, $data);
-                $this->session->setFlashdata('pesan', 'Data keluarga berhasil diperbarui');
-            } else {
-                // Insert new record
-                $keluargaModel->insert($data);
-                $this->session->setFlashdata('pesan', 'Data keluarga berhasil disimpan');
-            }
+            $keluargaModel->save($data);
+            $this->session->setFlashdata('pesan', 'Data keluarga berhasil disimpan');
             
-            return redirect()->to(base_url("profile/{$id}"));
+            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id_kary}"));
         } catch (\Exception $e) {
             $this->session->setFlashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
             return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
         }
     }
 
+    /**
+     * Edit employee family data
+     * 
+     * @param int $id Family data ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function edit_data_keluarga($id)
+    {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+        
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+
+        $Keluarga   = new \App\Models\mKaryawanKel();
+        $Karyawan   = new \App\Models\mKaryawan();
+        
+        // Get family data
+        $sql_kel    = $Keluarga->asObject()->where('id', $id)->first();
+        
+        // If family data not found, redirect to profile
+        if (!$sql_kel) {
+            $this->session->setFlashdata('error', 'Data keluarga tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get employee data
+        $sql_kary   = $Karyawan->asObject()->where('id', $sql_kel->id_karyawan)->first();
+        
+        $data  = [
+            'SQLKary'       => $sql_kary,
+            'SQLKel'        => $sql_kel,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_kel',
+        ];
+        
+        return view($this->ThemePath.'/index', $data);
+    }
     
+    /**
+     * Delete employee family data
+     * 
+     * @param int $id Family data ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function hapus_data_keluarga($id)
+    {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+        
+        $Keluarga   = new \App\Models\mKaryawanKel();
+        
+        // Get family data
+        $sql_kel    = $Keluarga->asObject()->where('id', $id)->first();
+        
+        // If family data not found, redirect to profile
+        if (!$sql_kel) {
+            $this->session->setFlashdata('error', 'Data keluarga tidak ditemukan');
+            return redirect()->to(base_url("profile/{$this->ionAuth->user()->row()->id}"));
+        }
+        
+        $id_karyawan = $sql_kel->id_karyawan;
+        
+        try {
+            // Delete file if exists
+            if (!empty($sql_kel->file_name)) {
+                $file_path = ROOTPATH . 'public/file/keluarga/' . $sql_kel->file_name;
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                }
+            }
+            
+            // Delete KTP file if exists
+            if (!empty($sql_kel->file_name_ktp)) {
+                $file_path = ROOTPATH . 'public/file/keluarga/' . $sql_kel->file_name_ktp;
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                }
+            }
+            
+            // Delete record
+            $Keluarga->delete($id);
+            
+            $this->session->setFlashdata('pesan', 'Data keluarga berhasil dihapus');
+        } catch (\Exception $e) {
+            $this->session->setFlashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+        
+        return redirect()->to(base_url("profile/sdm/data_keluarga/{$id_karyawan}"));
+    }
 
     public function hapus_foto($id = null)
     {

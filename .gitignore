@@ -4,5 +4,6 @@
 /public/file/profile/
 /public/file/sale/
 /writable/logs/
+/.env
 
 

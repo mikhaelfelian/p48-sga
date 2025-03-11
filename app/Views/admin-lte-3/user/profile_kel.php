@@ -1,6 +1,6 @@
 <div class="content-wrapper">
     <!-- Ekko Lightbox CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" integrity="sha512-Velp0ebMKjcd9RiCoaHhLXkR1sFoCCWXNp6w4zj1hfMifYB5441C+sKeBl/T/Ka6NjBiRfBBQRaQq65ekYz3UQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css" integrity="sha512-Velp0ebMKjcd9RiCoaHhLXkR1sFoCCWXNp6w4zj1hfMifYB5441C+sKeBl/T/Ka6NjBiRfBBQRaQq65ekYz3UQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
     
     <!-- Custom Lightbox Styles -->
     <style>
@@ -14,7 +14,7 @@
             border-bottom: none;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 5px 5px 0 0;
+            border-radius: 0;
         }
         
         .custom-lightbox .modal-title {
@@ -25,7 +25,7 @@
         .custom-lightbox .modal-footer {
             border-top: none;
             background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 0 0 5px 5px;
+            border-radius: 0;
         }
         
         .custom-lightbox .ekko-lightbox-nav-overlay a {
@@ -388,11 +388,11 @@
                                                            <?php if (!$is_image): ?>
                                                            data-type="iframe"
                                                            <?php endif; ?>
-                                                           class="btn btn-sm btn-info">
+                                                           class="btn btn-sm btn-info rounded-0">
                                                             <i class="fas fa-eye"></i> Lihat
                                                         </a>
                                                     <?php else: ?>
-                                                        <span class="badge badge-secondary">Tidak ada</span>
+                                                        <span class="badge badge-secondary rounded-0">Tidak ada</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
@@ -409,18 +409,18 @@
                                                            <?php if (!$is_image): ?>
                                                            data-type="iframe"
                                                            <?php endif; ?>
-                                                           class="btn btn-sm btn-info">
+                                                           class="btn btn-sm btn-info rounded-0">
                                                             <i class="fas fa-eye"></i> Lihat
                                                         </a>
                                                     <?php else: ?>
-                                                        <span class="badge badge-secondary">Tidak ada</span>
+                                                        <span class="badge badge-secondary rounded-0">Tidak ada</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
-                                                    <a href="<?= base_url('profile/sdm/data_keluarga_edit/'.$row->id) ?>" class="btn btn-sm btn-warning">
+                                                    <a href="<?= base_url('profile/sdm/data_keluarga_edit/'.$row->id) ?>" class="btn btn-sm btn-warning rounded-0">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="<?= base_url('profile/sdm/data_keluarga_hapus/'.$row->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <a href="<?= base_url('profile/sdm/data_keluarga_hapus/'.$row->id) ?>" class="btn btn-sm btn-danger rounded-0" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>

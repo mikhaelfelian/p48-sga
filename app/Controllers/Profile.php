@@ -516,6 +516,320 @@ class Profile extends BaseController {
         }
     }
 
+    /**
+     * Display employee education data form and list
+     * 
+     * @param int $id_karyawan Optional employee ID
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function data_pendidikan($id_karyawan = null)
+    {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('error', 'Sesi berakhir, silahkan login kembali!');
+            return redirect()->to(base_url());
+        }
+        
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+
+        $Karyawan   = new \App\Models\mKaryawan();
+        $Pendidikan = new \App\Models\mKaryawanPend();
+        
+        // If id_karyawan is not provided, use the current user's ID
+        if (empty($id_karyawan)) {
+            $id_karyawan = $ID->id;
+        }
+        
+        // Get employee data
+        $sql_kary = $Karyawan->asObject()->where('id', $id_karyawan)->first();
+        
+        // If employee not found, redirect to profile
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get education data list
+        $sql_pend_list = $Pendidikan->asObject()->getPendidikan($id_karyawan);
+                                
+        $data = [
+            'SQLKary'       => $sql_kary,
+            'SQLPend'       => null, // Empty for new data entry
+            'SQLPendList'   => $sql_pend_list,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_pend',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
+    }
+    
+    /**
+     * Edit employee education data
+     * 
+     * @param int $id Education data ID
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function data_pendidikan_edit($id)
+    {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('error', 'Sesi berakhir, silahkan login kembali!');
+            return redirect()->to(base_url());
+        }
+        
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+
+        $Karyawan   = new \App\Models\mKaryawan();
+        $Pendidikan = new \App\Models\mKaryawanPend();
+        
+        // Get education data by ID
+        $sql_pend = $Pendidikan->getPendidikanById($id);
+        
+        // If education data not found, redirect with error
+        if (!$sql_pend) {
+            $this->session->setFlashdata('error', 'Data pendidikan tidak ditemukan');
+            return redirect()->to(base_url("profile/sdm/data_pendidikan"));
+        }
+        
+        // Get employee data
+        $sql_kary = $Karyawan->asObject()->where('id', $sql_pend->id_karyawan)->first();
+        
+        // If employee not found, redirect with error
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/sdm/data_pendidikan"));
+        }
+        
+        // Get education data list
+        $sql_pend_list = $Pendidikan->asObject()->getPendidikan($sql_pend->id_karyawan);
+                                
+        $data = [
+            'SQLKary'       => $sql_kary,
+            'SQLPend'       => $sql_pend,
+            'SQLPendList'   => $sql_pend_list,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_pend',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
+    }
+    
+    /**
+     * Save employee education data
+     * 
+     * @param int $id_karyawan Employee ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function data_pendidikan_simpan($id = null)
+    {
+        // Get current user data
+        $id             = $this->request->getPost('id');
+        $id_kary        = $this->request->getPost('id_karyawan');
+        $IDUser         = $this->ionAuth->user()->row()->id;
+        $user           = $this->ionAuth->user()->row()->username;
+        
+        // Get form data
+        $pendidikan     = $this->request->getPost('pendidikan');
+        $jurusan        = $this->request->getPost('jurusan');
+        $instansi       = $this->request->getPost('instansi');
+        $keterangan     = $this->request->getPost('keterangan');
+        $no_dok         = $this->request->getPost('no_dok');
+        $thn_masuk      = $this->request->getPost('thn_masuk');
+        $thn_keluar     = $this->request->getPost('thn_keluar');
+        $status_lulus   = $this->request->getPost('status_lulus');
+        
+        // Load models
+        $karyawanModel = new \App\Models\mKaryawan();
+        $pendidikanModel = new \App\Models\mKaryawanPend();
+        
+        // Set validation rules
+        $validationRules = [
+            'pendidikan' => [
+                'rules' => 'required|min_length[2]|max_length[100]',
+                'errors' => [
+                    'required' => 'Pendidikan harus diisi',
+                    'min_length' => 'Pendidikan minimal 2 karakter',
+                    'max_length' => 'Pendidikan maksimal 100 karakter'
+                ]
+            ],
+            'jurusan' => [
+                'rules' => 'required|min_length[3]|max_length[160]',
+                'errors' => [
+                    'required' => 'Jurusan harus diisi',
+                    'min_length' => 'Jurusan minimal 3 karakter',
+                    'max_length' => 'Jurusan maksimal 160 karakter'
+                ]
+            ],
+            'instansi' => [
+                'rules' => 'required|min_length[3]|max_length[160]',
+                'errors' => [
+                    'required' => 'Instansi harus diisi',
+                    'min_length' => 'Instansi minimal 3 karakter',
+                    'max_length' => 'Instansi maksimal 160 karakter'
+                ]
+            ],
+            'no_dok' => [
+                'rules' => 'required|min_length[3]|max_length[100]',
+                'errors' => [
+                    'required' => 'Nomor Dokumen harus diisi',
+                    'min_length' => 'Nomor Dokumen minimal 3 karakter',
+                    'max_length' => 'Nomor Dokumen maksimal 100 karakter'
+                ]
+            ],
+            'thn_masuk' => [
+                'rules' => 'required|numeric|min_length[4]|max_length[4]',
+                'errors' => [
+                    'required' => 'Tahun Masuk harus diisi',
+                    'numeric' => 'Tahun Masuk harus berupa angka',
+                    'min_length' => 'Tahun Masuk harus 4 digit',
+                    'max_length' => 'Tahun Masuk harus 4 digit'
+                ]
+            ]
+        ];
+        
+        // Add file validation rule if this is a new record or file is uploaded
+        $file = $this->request->getFile('file_berkas');
+        if (empty($id) || ($file && $file->isValid() && !$file->hasMoved())) {
+            $validationRules['file_berkas'] = [
+                'rules' => 'uploaded[file_berkas]|max_size[file_berkas,2048]|mime_in[file_berkas,image/jpg,image/jpeg,image/png,application/pdf,image/tif]',
+                'errors' => [
+                    'uploaded' => 'File berkas harus diunggah',
+                    'max_size' => 'Ukuran file maksimal 2MB',
+                    'mime_in' => 'Format file harus jpg, jpeg, png, pdf, atau tif'
+                ]
+            ];
+        }
+        
+        // Run validation
+        if (!$this->validate($validationRules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        
+        // Prepare data for saving
+        $data = [
+            'id'           => $id,
+            'id_karyawan'  => $id_kary,
+            'id_user'      => $IDUser,
+            'tgl_simpan'   => date('Y-m-d H:i:s'),
+            'pendidikan'   => $pendidikan,
+            'jurusan'      => $jurusan,
+            'instansi'     => $instansi,
+            'keterangan'   => $keterangan,
+            'no_dok'       => $no_dok,
+            'thn_masuk'    => $thn_masuk,
+            'thn_keluar'   => $thn_keluar,
+            'status_lulus' => $status_lulus
+        ];
+        
+        // Save data
+        try {
+            // Handle file upload
+            $path       = FCPATH.'/';
+            $dir        = 'file/profile/userid_'.$IDUser.'/';
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                // Create directory if it doesn't exist
+                if (!is_dir($path.$dir)) {
+                    mkdir($path.$dir, 0777, true);
+                }
+                
+                // Generate unique filename
+                $filename = 'pendidikan_'.strtolower($pendidikan).'_'.strtolower(str_replace(' ', '', $IDUser.$user)).'.'.$file->getClientExtension();
+                $fullname = $dir.$filename;
+                
+                // Move file to upload directory
+                $file->move($path.$dir, $filename, true);
+                
+                // Add file info to data array
+                $data['file_name'] = $fullname;
+                $data['file_ext'] = $file->getClientExtension();
+                $data['file_type'] = $file->getClientMimeType();
+                
+                // If updating and old file exists, delete it
+                if (!empty($id)) {
+                    $oldData = $pendidikanModel->asObject()->find($id);
+                    if ($oldData && !empty($oldData->file_name)) {
+                        $oldFilePath = FCPATH . $oldData->file_name;
+                        if (file_exists($oldFilePath)) {
+                            unlink($oldFilePath);
+                        }
+                    }
+                }
+            }
+            
+            // Save data
+            $pendidikanModel->save($data);
+
+            if (!empty($id)) {
+                // Update existing record
+                return redirect()->to(base_url('profile/sdm/data_pendidikan'))->with('success', 'Data pendidikan berhasil diperbarui');
+            } else {
+                // Insert new record
+                return redirect()->to(base_url('profile/sdm/data_pendidikan'))->with('success', 'Data pendidikan berhasil disimpan');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Delete employee education data
+     * 
+     * @param int $id Education data ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function data_pendidikan_hapus($id)
+    {        
+        // Load model
+        $pendidikanModel = new \App\Models\mKaryawanPend();
+        
+        // Get education data
+        $pendidikan = $pendidikanModel->asObject()->find($id);
+        
+        // If data not found, redirect with error
+        if (!$pendidikan) {
+            return redirect()->back()->with('error', 'Data pendidikan tidak ditemukan');
+        }
+        
+        // Store employee ID for redirect
+        $id_karyawan = $pendidikan->id_karyawan;
+        
+        try {
+            // Delete file if exists
+            if (!empty($pendidikan->file_name)) {
+                $filePath = FCPATH . $pendidikan->file_name;
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            
+            // Delete record
+            $pendidikanModel->delete($id);
+            
+            // Set success message and redirect
+            return redirect()->back()->with('success', 'Data pendidikan berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
     public function hapus_foto($id = null)
     {
         if (!$this->ionAuth->loggedIn()) {

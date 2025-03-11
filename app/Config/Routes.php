@@ -43,6 +43,10 @@ $routes->group('profile', ['filter' => 'auth'], function($routes) {
     $routes->get('sdm/data_keluarga', 'Profile::data_keluarga');
     $routes->get('sdm/data_keluarga_edit/(:num)', 'Profile::data_keluarga_edit/$1');
     $routes->get('sdm/data_keluarga_hapus/(:num)', 'Profile::data_keluarga_hapus/$1');
+    $routes->get('sdm/data_pendidikan', 'Profile::data_pendidikan');
+    $routes->get('sdm/data_pendidikan_edit/(:num)', 'Profile::data_pendidikan_edit/$1');
+    $routes->post('sdm/data_pendidikan_simpan.php', 'Profile::data_pendidikan_simpan');
+    $routes->get('sdm/data_pendidikan_hapus/(:num)', 'Profile::data_pendidikan_hapus/$1');
 });
 
 # Pengaturan

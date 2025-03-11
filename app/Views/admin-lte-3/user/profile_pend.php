@@ -127,17 +127,19 @@
                                                     </div>
                                                 <?php endif; ?>
                                             </div>
-
                                             <div class="form-group">
                                                 <label for="thn_masuk">Tahun Masuk <span
                                                         class="text-danger">*</span></label>
                                                 <?= form_input([
-                                                    'type' => 'text',
-                                                    'class' => 'form-control rounded-0 year-picker' . (isset(session()->getFlashdata('errors')['thn_masuk']) ? ' is-invalid' : ''),
+                                                    'type' => 'number',
+                                                    'class' => 'form-control rounded-0' . (isset(session()->getFlashdata('errors')['thn_masuk']) ? ' is-invalid' : ''),
                                                     'id' => 'thn_masuk',
                                                     'name' => 'thn_masuk',
                                                     'placeholder' => 'Isikan Tahun',
                                                     'value' => $SQLPend->thn_masuk ?? old('thn_masuk'),
+                                                    'min' => '1900',
+                                                    'max' => date('Y'),
+                                                    'step' => '1',
                                                     'required' => true
                                                 ]) ?>
                                                 <?php if (isset(session()->getFlashdata('errors')['thn_masuk'])): ?>
@@ -150,11 +152,14 @@
                                             <div class="form-group">
                                                 <label for="thn_keluar">Tahun Lulus</label>
                                                 <?= form_input([
-                                                    'type' => 'text',
-                                                    'class' => 'form-control rounded-0 year-picker' . (isset(session()->getFlashdata('errors')['thn_keluar']) ? ' is-invalid' : ''),
+                                                    'type' => 'number',
+                                                    'class' => 'form-control rounded-0' . (isset(session()->getFlashdata('errors')['thn_keluar']) ? ' is-invalid' : ''),
                                                     'id' => 'thn_keluar',
                                                     'name' => 'thn_keluar',
                                                     'placeholder' => 'Isikan Tahun',
+                                                    'min' => '1900',
+                                                    'max' => date('Y') + 10,
+                                                    'step' => '1',
                                                     'value' => $SQLPend->thn_keluar ?? old('thn_keluar')
                                                 ]) ?>
                                                 <?php if (isset(session()->getFlashdata('errors')['thn_keluar'])): ?>

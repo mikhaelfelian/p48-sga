@@ -1,9 +1,11 @@
 /nbproject/
 /database/
 /public/file/app/*
+!/public/file/app/.gitkeep
 /public/file/profile/*
+!/public/file/profile/.gitkeep
 /public/file/sale/*
+!/public/file/sale/.gitkeep
 /writable/logs/
+!.gitignore
 /.env
-
-

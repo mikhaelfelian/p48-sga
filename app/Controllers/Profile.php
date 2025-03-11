@@ -15,7 +15,7 @@ class Profile extends BaseController {
         
     }
 
-    public function index($id){
+    public function index(){
         if ($this->ionAuth->loggedIn()) {
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
@@ -244,7 +244,7 @@ class Profile extends BaseController {
         }
     }  
 
-    public function data_keluarga($id) {
+    public function data_keluarga() {
         if (!$this->ionAuth->loggedIn()) {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());
@@ -258,7 +258,7 @@ class Profile extends BaseController {
         $Keluarga   = new \App\Models\mKaryawanKel();
         
         // Get employee data
-        $sql_kary   = $Karyawan->asObject()->where('id', $id)->first();
+        $sql_kary   = $Karyawan->asObject()->where('id', $ID->id)->first();
         
         // If employee not found, redirect to profile
         if (!$sql_kary) {
@@ -267,7 +267,7 @@ class Profile extends BaseController {
         }
         
         // Get family data
-        $sql_kel    = $Keluarga->asObject()->where('id_karyawan', $id)->findAll();
+        $sql_kel    = $Keluarga->getKeluarga();
                                 
         $data  = [
             'SQLKary'       => $sql_kary,
@@ -334,22 +334,6 @@ class Profile extends BaseController {
                 'errors' => [
                     'required' => 'Tanggal lahir ibu harus diisi'
                 ]
-            ],
-            'file_kk' => [
-                'rules' => 'permit_empty|uploaded[file_kk,0]|max_size[file_kk,2048]|mime_in[file_kk,image/jpg,image/jpeg,image/png,application/pdf]|ext_in[file_kk,jpg,jpeg,png,pdf,tif]',
-                'errors' => [
-                    'max_size' => 'Ukuran file KK maksimal 2MB',
-                    'mime_in' => 'Format file KK tidak valid (jpg/jpeg/png/pdf/tif)',
-                    'ext_in' => 'Ekstensi file KK tidak valid (jpg/jpeg/png/pdf/tif)'
-                ]
-            ],
-            'file_ktp' => [
-                'rules' => 'permit_empty|uploaded[file_ktp,0]|max_size[file_ktp,2048]|mime_in[file_ktp,image/jpg,image/jpeg,image/png,application/pdf]|ext_in[file_ktp,jpg,jpeg,png,pdf,tif]',
-                'errors' => [
-                    'max_size' => 'Ukuran file KTP maksimal 2MB',
-                    'mime_in' => 'Format file KTP tidak valid (jpg/jpeg/png/pdf/tif)',
-                    'ext_in' => 'Ekstensi file KTP tidak valid (jpg/jpeg/png/pdf/tif)'
-                ]
             ]
         ];
         
@@ -357,9 +341,7 @@ class Profile extends BaseController {
         if (!$this->validate($validationRules)) {
             // Validation failed, return to form with errors
             $this->session->setFlashdata('errors', $this->validator->getErrors());
-            // return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
-
-            echo base_url("profile/sdm/data_keluarga/{$id}");
+            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
         }
 
         // Get employee data
@@ -376,9 +358,9 @@ class Profile extends BaseController {
             'nm_ibu'        => $this->request->getPost('nm_ibu'), 
             'nm_pasangan'   => $this->request->getPost('nm_pasangan'),
             'nm_anak'       => $this->request->getPost('nm_anak'),
-            'tgl_lhr_ayah'  => $this->request->getPost('tgl_lhr_ayah'),
-            'tgl_lhr_ibu'   => $this->request->getPost('tgl_lhr_ibu'),
-            'tgl_lhr_psg'   => $this->request->getPost('tgl_lhr_psg'),
+            'tgl_lhr_ayah'  => !empty($this->request->getPost('tgl_lhr_ayah')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ayah')) : '0000-00-00',
+            'tgl_lhr_ibu'   => !empty($this->request->getPost('tgl_lhr_ibu')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ibu')) : '0000-00-00',
+            'tgl_lhr_psg'   => !empty($this->request->getPost('tgl_lhr_psg')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_psg')) : '0000-00-00',
             'jns_pasangan'  => $this->request->getPost('jns_pasangan'),
             'status_kawin'  => $this->request->getPost('status_kawin')
         ];
@@ -436,10 +418,9 @@ class Profile extends BaseController {
             $keluargaModel->save($data);
             $this->session->setFlashdata('pesan', 'Data keluarga berhasil disimpan');
             
-            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id_kary}"));
+            return redirect()->back()->with('success', 'Data keluarga berhasil disimpan');
         } catch (\Exception $e) {
-            $this->session->setFlashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
-            return redirect()->to(base_url("profile/sdm/data_keluarga/{$id}"));
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -449,13 +430,9 @@ class Profile extends BaseController {
      * @param int $id Family data ID
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
-    public function edit_data_keluarga($id)
-    {
-        if (!$this->ionAuth->loggedIn()) {
-            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
-            return redirect()->to(base_url());
-        }
-        
+    public function data_keluarga_edit($id)
+    {   
+        $id_kel     = $this->request->getVar('id');
         $ID         = $this->ionAuth->user()->row();
         $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
         $AksesGrup  = $this->ionAuth->groups()->result();
@@ -464,19 +441,20 @@ class Profile extends BaseController {
         $Karyawan   = new \App\Models\mKaryawan();
         
         // Get family data
-        $sql_kel    = $Keluarga->asObject()->where('id', $id)->first();
+        $sql_kel_row    = $Keluarga->asObject()->where('id', $id)->first();
         
         // If family data not found, redirect to profile
-        if (!$sql_kel) {
-            $this->session->setFlashdata('error', 'Data keluarga tidak ditemukan');
-            return redirect()->to(base_url("profile/{$ID->id}"));
+        if (!$sql_kel_row) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: Data keluarga tidak ditemukan');
         }
         
         // Get employee data
-        $sql_kary   = $Karyawan->asObject()->where('id', $sql_kel->id_karyawan)->first();
+        $sql_kary   = $Karyawan->asObject()->where('id', $sql_kel_row->id_karyawan)->first();
+        $sql_kel    = $Keluarga->getKeluarga();
         
         $data  = [
             'SQLKary'       => $sql_kary,
+            'SQLKelRw'      => $sql_kel_row,
             'SQLKel'        => $sql_kel,
             'MenuAktif'     => 'active',
             'MenuOpen'      => 'menu-open',
@@ -499,13 +477,8 @@ class Profile extends BaseController {
      * @param int $id Family data ID
      * @return \CodeIgniter\HTTP\RedirectResponse
      */
-    public function hapus_data_keluarga($id)
-    {
-        if (!$this->ionAuth->loggedIn()) {
-            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
-            return redirect()->to(base_url());
-        }
-        
+    public function data_keluarga_hapus($id)
+    {        
         $Keluarga   = new \App\Models\mKaryawanKel();
         
         // Get family data
@@ -513,8 +486,7 @@ class Profile extends BaseController {
         
         // If family data not found, redirect to profile
         if (!$sql_kel) {
-            $this->session->setFlashdata('error', 'Data keluarga tidak ditemukan');
-            return redirect()->to(base_url("profile/{$this->ionAuth->user()->row()->id}"));
+            return redirect()->back()->with('error', 'Data keluarga tidak ditemukan');
         }
         
         $id_karyawan = $sql_kel->id_karyawan;
@@ -522,7 +494,7 @@ class Profile extends BaseController {
         try {
             // Delete file if exists
             if (!empty($sql_kel->file_name)) {
-                $file_path = ROOTPATH . 'public/file/keluarga/' . $sql_kel->file_name;
+                $file_path = ROOTPATH . 'public/' . $sql_kel->file_name;
                 if (file_exists($file_path)) {
                     unlink($file_path);
                 }
@@ -530,7 +502,7 @@ class Profile extends BaseController {
             
             // Delete KTP file if exists
             if (!empty($sql_kel->file_name_ktp)) {
-                $file_path = ROOTPATH . 'public/file/keluarga/' . $sql_kel->file_name_ktp;
+                $file_path = ROOTPATH . 'public/' . $sql_kel->file_name_ktp;
                 if (file_exists($file_path)) {
                     unlink($file_path);
                 }
@@ -538,13 +510,10 @@ class Profile extends BaseController {
             
             // Delete record
             $Keluarga->delete($id);
-            
-            $this->session->setFlashdata('pesan', 'Data keluarga berhasil dihapus');
+            return redirect()->back()->with('success', 'Data keluarga berhasil dihapus');
         } catch (\Exception $e) {
-            $this->session->setFlashdata('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        
-        return redirect()->to(base_url("profile/sdm/data_keluarga/{$id_karyawan}"));
     }
 
     public function hapus_foto($id = null)

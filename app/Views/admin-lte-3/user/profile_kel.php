@@ -126,33 +126,10 @@
                             <h3 class="card-title">Data Keluarga Karyawan</h3>
                         </div>
                         <div class="card-body">
-                            <?php if (session()->getFlashdata('pesan')): ?>
-                                <div class="alert alert-success alert-dismissible fade show rounded-0" role="alert">
-                                    <?= session()->getFlashdata('pesan') ?>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if (session()->getFlashdata('errors')): ?>
-                                <div class="alert alert-danger alert-dismissible fade show rounded-0" role="alert">
-                                    <h5><i class="icon fas fa-exclamation-triangle"></i> Terjadi Kesalahan!</h5>
-                                    <ul>
-                                        <?php foreach (session()->getFlashdata('errors') as $error): ?>
-                                            <li><?= esc($error) ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                            <?php endif; ?>
-
                             <?php if (isset($SQLKary->id)): ?>
                                 <input type="hidden" name="id_karyawan" value="<?= $SQLKary->id ?? '' ?>">
                                 <input type="hidden" name="id_user" value="<?= $SQLKary->id_user ?? '' ?>">
-                                <input type="hidden" name="id" value="<?= $SQLKel->id ?? '' ?>">
+                                <input type="hidden" name="id" value="<?= $SQLKelRw->id ?? '' ?>">
 
                                 <div class="row">
                                     <!-- Left Column -->
@@ -165,7 +142,7 @@
                                                 'id' => 'nm_ayah',
                                                 'name' => 'nm_ayah',
                                                 'placeholder' => 'Isikan Nama Ayah ...',
-                                                'value' => $SQLKel->nm_ayah ?? old('nm_ayah'),
+                                                'value' => $SQLKelRw->nm_ayah ?? old('nm_ayah'),
                                                 'required' => true
                                             ]) ?>
                                             <?php if (isset(session()->getFlashdata('errors')['nm_ayah'])): ?>
@@ -188,7 +165,7 @@
                                                     'id' => 'tgl_lhr_ayah',
                                                     'name' => 'tgl_lhr_ayah',
                                                     'placeholder' => 'Inputkan Tgl Lahir Ayah ...',
-                                                    'value' => $SQLKel->tgl_lhr_ayah ?? old('tgl_lhr_ayah')
+                                                    'value' => $SQLKelRw->tgl_lhr_ayah ?? old('tgl_lhr_ayah')
                                                 ]) ?>
                                                 <?php if (isset(session()->getFlashdata('errors')['tgl_lhr_ayah'])): ?>
                                                     <div class="invalid-feedback">
@@ -202,9 +179,9 @@
                                             <label for="status_kawin">Pernikahan</label>
                                             <select class="form-control rounded-0" id="status_kawin" name="status_kawin">
                                                 <option value="">- Pilih -</option>
-                                                <option value="1" <?= (isset($SQLKel->status_kawin) && $SQLKel->status_kawin == '1') ? 'selected' : '' ?>>Menikah</option>
-                                                <option value="2" <?= (isset($SQLKel->status_kawin) && $SQLKel->status_kawin == '2') ? 'selected' : '' ?>>Belum Menikah</option>
-                                                <option value="3" <?= (isset($SQLKel->status_kawin) && $SQLKel->status_kawin == '3') ? 'selected' : '' ?>>Cerai</option>
+                                                <option value="1" <?= (isset($SQLKelRw->status_kawin) && $SQLKelRw->status_kawin == '1') ? 'selected' : '' ?>>Menikah</option>
+                                                <option value="2" <?= (isset($SQLKelRw->status_kawin) && $SQLKelRw->status_kawin == '2') ? 'selected' : '' ?>>Belum Menikah</option>
+                                                <option value="3" <?= (isset($SQLKelRw->status_kawin) && $SQLKelRw->status_kawin == '3') ? 'selected' : '' ?>>Cerai</option>
                                             </select>
                                         </div>
 
@@ -212,8 +189,8 @@
                                             <label for="jns_pasangan">Pasangan</label>
                                             <select class="form-control rounded-0" id="jns_pasangan" name="jns_pasangan">
                                                 <option value="">- Pilih -</option>
-                                                <option value="1" <?= (isset($SQLKel->jns_pasangan) && $SQLKel->jns_pasangan == '1') ? 'selected' : '' ?>>Suami</option>
-                                                <option value="2" <?= (isset($SQLKel->jns_pasangan) && $SQLKel->jns_pasangan == '2') ? 'selected' : '' ?>>Istri</option>
+                                                <option value="1" <?= (isset($SQLKelRw->jns_pasangan) && $SQLKelRw->jns_pasangan == '1') ? 'selected' : '' ?>>Suami</option>
+                                                <option value="2" <?= (isset($SQLKelRw->jns_pasangan) && $SQLKelRw->jns_pasangan == '2') ? 'selected' : '' ?>>Istri</option>
                                             </select>
                                         </div>
 
@@ -233,8 +210,8 @@
                                             <small class="text-muted">* File yang diijinkan :
                                                 jpg|png|pdf|jpeg|tif</small><br>
                                             <small class="text-muted">* Dokumen yg diunggah : KK</small>
-                                            <?php if (isset($SQLKel->file_name) && !empty($SQLKel->file_name)): ?>
-                                                <p class="mt-2">File saat ini: <?= $SQLKel->file_name ?></p>
+                                            <?php if (isset($SQLKelRw->file_name) && !empty($SQLKelRw->file_name)): ?>
+                                                <p class="mt-2">File saat ini: <?= $SQLKelRw->file_name ?></p>
                                             <?php endif; ?>
                                         </div>
                                         <div class="form-group">
@@ -254,8 +231,8 @@
                                             <small class="text-muted">* File yang diijinkan :
                                                 jpg|png|pdf|jpeg|tif</small><br>
                                             <small class="text-muted">* Dokumen yg diunggah : KTP</small>
-                                            <?php if (isset($SQLKel->file_ktp) && !empty($SQLKel->file_ktp)): ?>
-                                                <p class="mt-2">File saat ini: <?= $SQLKel->file_ktp ?></p>
+                                            <?php if (isset($SQLKelRw->file_ktp) && !empty($SQLKelRw->file_ktp)): ?>
+                                                <p class="mt-2">File saat ini: <?= $SQLKelRw->file_ktp ?></p>
                                             <?php endif; ?>
                                         </div>
                                     </div>
@@ -270,7 +247,7 @@
                                                 'id' => 'nm_ibu',
                                                 'name' => 'nm_ibu',
                                                 'placeholder' => 'Isikan Nama Ibu Kandung ...',
-                                                'value' => $SQLKel->nm_ibu ?? old('nm_ibu'),
+                                                'value' => $SQLKelRw->nm_ibu ?? old('nm_ibu'),
                                                 'required' => true
                                             ]) ?>
                                             <?php if (isset(session()->getFlashdata('errors')['nm_ibu'])): ?>
@@ -293,7 +270,7 @@
                                                     'id' => 'tgl_lhr_ibu',
                                                     'name' => 'tgl_lhr_ibu',
                                                     'placeholder' => 'Inputkan Tgl Lahir Ibu ...',
-                                                    'value' => $SQLKel->tgl_lhr_ibu ?? old('tgl_lhr_ibu')
+                                                    'value' => $SQLKelRw->tgl_lhr_ibu ?? old('tgl_lhr_ibu')
                                                 ]) ?>
                                                 <?php if (isset(session()->getFlashdata('errors')['tgl_lhr_ibu'])): ?>
                                                     <div class="invalid-feedback">
@@ -311,7 +288,7 @@
                                                 'id' => 'nm_pasangan',
                                                 'name' => 'nm_pasangan',
                                                 'placeholder' => 'Isikan Nama Pasangan ...',
-                                                'value' => $SQLKel->nm_pasangan ?? ''
+                                                'value' => $SQLKelRw->nm_pasangan ?? ''
                                             ]) ?>
                                         </div>
 
@@ -328,7 +305,7 @@
                                                     'id' => 'tgl_lhr_psg',
                                                     'name' => 'tgl_lhr_psg',
                                                     'placeholder' => 'Inputkan Tgl Lahir Pasangan ...',
-                                                    'value' => $SQLKel->tgl_lhr_psg ?? ''
+                                                    'value' => $SQLKelRw->tgl_lhr_psg ?? ''
                                                 ]) ?>
                                             </div>
                                         </div>
@@ -341,7 +318,7 @@
                                                 'name' => 'nm_anak',
                                                 'rows' => 4,
                                                 'placeholder' => '* Bisa dipisah menggunakan enter',
-                                                'value' => $SQLKel->nm_anak ?? ''
+                                                'value' => $SQLKelRw->nm_anak ?? ''
                                             ]) ?>
                                         </div>
                                     </div>
@@ -381,11 +358,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if (isset($SQLKel) && is_array($SQLKel) && count($SQLKel) > 0): ?>
+                                    <?php if (!empty($SQLKel)): ?>
                                         <?php $no = 1; foreach ($SQLKel as $row): ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td>
+                                                    <?php echo $row->nama.br(); ?>
                                                     <strong>Ayah:</strong> <?= $row->nm_ayah ?><br>
                                                     <strong>Ibu:</strong> <?= $row->nm_ibu ?><br>
                                                     <?php if (!empty($row->nm_pasangan)): ?>
@@ -439,10 +417,10 @@
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
-                                                    <a href="<?= base_url('profile/edit_data_keluarga/' . $row->id) ?>" class="btn btn-sm btn-warning">
+                                                    <a href="<?= base_url('profile/sdm/data_keluarga_edit/'.$row->id) ?>" class="btn btn-sm btn-warning">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="<?= base_url('profile/hapus_data_keluarga/' . $row->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                    <a href="<?= base_url('profile/sdm/data_keluarga_hapus/'.$row->id) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>

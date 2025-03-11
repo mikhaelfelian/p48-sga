@@ -38,11 +38,11 @@ $routes->group('', ['filter' => 'auth'], function($routes) {
 $routes->group('profile', ['filter' => 'auth'], function($routes) {
     $routes->get('(:num)', 'Profile::index/$1');
     $routes->post('profile_set_update.php', 'Profile::profile_set_update');
-    $routes->get('sdm/data_keluarga/(:num)', 'Profile::data_keluarga/$1');
-    $routes->post('simpan_data_kel.php/(:num)', 'Profile::simpan_data_kel/$1');
+    $routes->post('simpan_data_kel.php', 'Profile::simpan_data_kel');
     $routes->get('hapus_foto/(:num)', 'Profile::hapus_foto/$1');
-    $routes->get('edit_data_keluarga/(:num)', 'Profile::edit_data_keluarga/$1');
-    $routes->get('hapus_data_keluarga/(:num)', 'Profile::hapus_data_keluarga/$1');
+    $routes->get('sdm/data_keluarga', 'Profile::data_keluarga');
+    $routes->get('sdm/data_keluarga_edit/(:num)', 'Profile::data_keluarga_edit/$1');
+    $routes->get('sdm/data_keluarga_hapus/(:num)', 'Profile::data_keluarga_hapus/$1');
 });
 
 # Pengaturan

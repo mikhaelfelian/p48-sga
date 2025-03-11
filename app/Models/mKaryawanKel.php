@@ -55,7 +55,7 @@ class mKaryawanKel extends Model {
     public function getKeluarga()
     {
         $builder = $this->db->table($this->table);
-        $builder->select('tbl_m_karyawan_kel.*, tbl_m_karyawan.id, tbl_m_karyawan.nama');
+        $builder->select('tbl_m_karyawan_kel.*, tbl_m_karyawan.nama');
         $builder->join('tbl_m_karyawan', 'tbl_m_karyawan.id = tbl_m_karyawan_kel.id_karyawan');
         return $builder->get()->getResult();
     }

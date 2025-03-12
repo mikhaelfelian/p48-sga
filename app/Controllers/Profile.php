@@ -865,4 +865,220 @@ class Profile extends BaseController {
         
         return redirect()->to('profile/'.$IDUser);
     }
+
+    /**
+     * Display employee employment data form and list
+     * 
+     * @param int $id_karyawan Optional employee ID
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_pegawai($id_karyawan = null)
+    {
+        if (!$this->ionAuth->loggedIn()) {
+            $this->session->setFlashdata('error', 'Sesi berakhir, silahkan login kembali!');
+            return redirect()->to(base_url());
+        }
+        
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+
+        $Karyawan   = new \App\Models\mKaryawan();
+        $KaryawanPeg = new \App\Models\mKaryawanPeg();
+        $Departemen = new \App\Models\mDepartemen();
+        $Jabatan    = new \App\Models\mJabatan();
+        
+        // If id_karyawan is not provided, use the current user's ID
+        if (empty($id_karyawan)) {
+            $id_karyawan = $ID->id;
+        }
+        
+        // Get employee data
+        $sql_kary = $Karyawan->asObject()->where('id', $id_karyawan)->first();
+        
+        // If employee not found, redirect to profile
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get employee employment data
+        $sql_peg = $KaryawanPeg->asObject()->getKaryawanPeg($id_karyawan);
+        
+        // Get departments and positions for dropdown
+        $sql_dept = $Departemen->asObject()->getDepartemen(true);
+        $sql_jabatan = $Jabatan->asObject()->getJabatan();
+                                
+        $data = [
+            'SQLKary'       => $sql_kary,
+            'SQLPeg'        => $sql_peg,
+            'SQLDept'       => $sql_dept,
+            'SQLJabatan'    => $sql_jabatan,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_peg',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
+    }
+    
+    /**
+     * Save employee employment data
+     * 
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_pegawai_simpan()
+    {        
+        // Get current user data
+        $id          = $this->request->getPost('id');
+        $id_karyawan = $this->request->getPost('id_karyawan');
+        $id_dept     = $this->request->getPost('id_dept');
+        $id_jabatan  = $this->request->getPost('id_jabatan');
+        $tgl_masuk   = $this->request->getPost('tgl_masuk');
+        $tgl_keluar  = $this->request->getPost('tgl_keluar');
+        $kode        = $this->request->getPost('kode');
+        $no_bpjs_tk  = $this->request->getPost('no_bpjs_tk');
+        $no_bpjs_ks  = $this->request->getPost('no_bpjs_ks');
+        $no_npwp     = $this->request->getPost('no_npwp');
+        $no_ptkp     = $this->request->getPost('no_ptkp');
+        $no_rek      = $this->request->getPost('no_rek');
+        $keterangan  = $this->request->getPost('keterangan');
+        $tipe        = $this->request->getPost('tipe');
+        $IDUser      = $this->ionAuth->user()->row()->id;
+        
+        // Load models
+        $karyawanModel = new \App\Models\mKaryawan();
+        $pegawaiModel = new \App\Models\mKaryawanPeg();
+        
+        // Set validation rules
+        $validationRules = [
+            'kode' => [
+                'rules' => 'required|max_length[50]',
+                'errors' => [
+                    'required' => 'Kode Pegawai harus diisi',
+                    'max_length' => 'Kode Pegawai maksimal 50 karakter'
+                ]
+            ],
+            'id_dept' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Departemen harus dipilih'
+                ]
+            ],
+            'id_jabatan' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Jabatan harus dipilih'
+                ]
+            ],
+            'tgl_masuk' => [
+                'rules' => 'required|valid_date[m/d/Y]',
+                'errors' => [
+                    'valid_date' => 'Format Tanggal Masuk tidak valid (MM/DD/YYYY)',
+                    'required' => 'Tanggal masuk harus diisi'
+                ]
+            ],
+            'tgl_keluar' => [
+                'rules' => 'permit_empty|valid_date[m/d/Y]',
+                'errors' => [
+                    'valid_date' => 'Format Tanggal Keluar tidak valid (MM/DD/YYYY)',
+                ]
+            ]
+        ];
+        
+        // Run validation
+        if (!$this->validate($validationRules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        
+        // Prepare data for saving
+        $data = [
+            'id'          => $id,
+            'id_karyawan' => $id_karyawan,
+            'id_user'     => $IDUser,
+            'id_dept'     => $id_dept,
+            'id_jabatan'  => $id_jabatan,
+            'tgl_masuk'   => !empty($tgl_masuk) ? tgl_indo_sys2($tgl_masuk) :   null,
+            'tgl_keluar'  => !empty($tgl_keluar) ? tgl_indo_sys2($tgl_keluar) : null,
+            'kode'        => $kode,
+            'no_bpjs_tk'  => $no_bpjs_tk,
+            'no_bpjs_ks'  => $no_bpjs_ks,
+            'no_npwp'     => $no_npwp,
+            'no_ptkp'     => $no_ptkp,
+            'no_rek'      => $no_rek,
+            'keterangan'  => $keterangan,
+            'tipe'        => $tipe
+        ];
+        
+        // Add timestamps
+        if (empty($id)) {
+            $data['tgl_simpan'] = date('Y-m-d H:i:s');
+        } else {
+            $data['tgl_modif'] = date('Y-m-d H:i:s');
+            $data['id'] = $id; // Add ID for update
+        }
+        
+        // Save data
+        try {
+            $pegawaiModel->save($data);
+            
+            if (empty($id)) {
+                return redirect()->back()->with('success', 'Data pegawai berhasil disimpan');
+            } else {
+                return redirect()->back()->with('success', 'Data pegawai berhasil diperbarui');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan data pegawai: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Delete employee employment data
+     * 
+     * @param int $id Employment data ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_pegawai_hapus($id)
+    {        
+        // Load model
+        $pegawaiModel = new \App\Models\mKaryawanPeg();
+        
+        // Get employment data
+        $pegawai = $pegawaiModel->find($id);
+        
+        // If data not found, redirect with error
+        if (!$pegawai) {
+            $this->session->setFlashdata('error', 'Data pegawai tidak ditemukan');
+            return redirect()->to(base_url('profile/sdm/data_pegawai'));
+        }
+        
+        // Store employee ID for redirect
+        $id_karyawan = $pegawai['id_karyawan'];
+        
+        // Delete record
+        if ($pegawaiModel->delete($id)) {
+            $this->session->setFlashdata('pesan', 'Data pegawai berhasil dihapus');
+        } else {
+            $this->session->setFlashdata('error', 'Gagal menghapus data pegawai');
+        }
+        
+        // Set success message and redirect
+        return redirect()->to(base_url("profile/sdm/data_pegawai/{$id_karyawan}"));
+    }
 } 

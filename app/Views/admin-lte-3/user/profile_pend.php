@@ -22,7 +22,7 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-10">
                     <?= form_open_multipart(base_url('profile/sdm/data_pendidikan_simpan.php'), ['method' => 'post']) ?>
                     <div class="card card-primary card-outline rounded-0">
                         <div class="card-header">
@@ -30,8 +30,7 @@
                         </div>
                         <div class="card-body">
                             <?php if (isset($SQLKary->id)): ?>
-                                <form action="<?= base_url('profile/sdm/data_pendidikan_simpan/'.$SQLKary->id) ?>" method="post" enctype="multipart/form-data">
-                                    <input type="hidden" name="id_karyawan" value="<?= $SQLKary->id ?? '' ?>">
+                                <input type="hidden" name="id_karyawan" value="<?= $SQLKary->id ?? '' ?>">
                                     <input type="hidden" name="id" value="<?= $SQLPend->id ?? '' ?>">
 
                                     <div class="row">
@@ -148,7 +147,6 @@
                                                     </div>
                                                 <?php endif; ?>
                                             </div>
-
                                             <div class="form-group">
                                                 <label for="thn_keluar">Tahun Lulus</label>
                                                 <?= form_input([
@@ -168,7 +166,6 @@
                                                     </div>
                                                 <?php endif; ?>
                                             </div>
-
                                             <div class="form-group">
                                                 <label>Status Lulus</label>
                                                 <div class="form-check">
@@ -209,12 +206,6 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                        </div>
-                                    </div>
-                                </form>
                             <?php endif; ?>
                         </div>
                         <div class="card-footer text-left">

@@ -18,5 +18,13 @@
                 </p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="<?php echo base_url('profile/sdm/data_pegawai') ?>" class="nav-link">
+                <i class="nav-icon fas fa-solid fa-id-card"></i>
+                <p>
+                    Data Kepegawaian
+                </p>
+            </a>
+        </li>
     <?php } ?>
 </ul>

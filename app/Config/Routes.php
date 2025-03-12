@@ -44,9 +44,17 @@ $routes->group('profile', ['filter' => 'auth'], function($routes) {
     $routes->get('sdm/data_keluarga_edit/(:num)', 'Profile::data_keluarga_edit/$1');
     $routes->get('sdm/data_keluarga_hapus/(:num)', 'Profile::data_keluarga_hapus/$1');
     $routes->get('sdm/data_pendidikan', 'Profile::data_pendidikan');
+    $routes->get('sdm/data_pendidikan/(:num)', 'Profile::data_pendidikan/$1');
     $routes->get('sdm/data_pendidikan_edit/(:num)', 'Profile::data_pendidikan_edit/$1');
-    $routes->post('sdm/data_pendidikan_simpan.php', 'Profile::data_pendidikan_simpan');
+    $routes->post('sdm/data_pendidikan_simpan/(:num)', 'Profile::data_pendidikan_simpan/$1');
+    $routes->post('sdm/data_pendidikan_simpan', 'Profile::data_pendidikan_simpan');
     $routes->get('sdm/data_pendidikan_hapus/(:num)', 'Profile::data_pendidikan_hapus/$1');
+    
+    // Employee employment data routes
+    $routes->get('sdm/data_pegawai', 'Profile::data_pegawai');
+    $routes->get('sdm/data_pegawai/(:num)', 'Profile::data_pegawai/$1');
+    $routes->post('sdm/data_pegawai_simpan.php', 'Profile::data_pegawai_simpan');
+    $routes->get('sdm/data_pegawai_hapus/(:num)', 'Profile::data_pegawai_hapus/$1');
 });
 
 # Pengaturan

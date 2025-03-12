@@ -546,3 +546,35 @@ function pre($data) {
     
     return $print;
 }
+
+/**
+ * Get employee status text based on status code
+ * 
+ * @param string $tipe Employee type code
+ * @return string Status text
+ */
+function status_pegawai($tipe) {
+    $status = '-';
+    
+    if (!empty($tipe)) {
+        switch ($tipe) {
+            case '0':
+                $status = 'Tetap';
+                break;
+            case '1':
+                $status = 'Kontrak';
+                break;
+            case '2':
+                $status = 'Magang';
+                break;
+            case '3':
+                $status = 'Outsourcing';
+                break;
+            default:
+                $status = '-';
+        }
+    }
+    
+    return $status;
+}
+

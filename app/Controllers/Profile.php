@@ -1151,7 +1151,7 @@ class Profile extends BaseController {
         // Get current user data
         $id          = $this->request->getPost('id');
         $id_karyawan = $this->request->getPost('id_karyawan');
-        $tgl_cuti   = $this->request->getPost('tgl_cuti'); // Get directly from hidden fields
+        $tgl_cuti    = $this->request->getPost('tgl_cuti'); // Get directly from hidden fields
         $keterangan  = $this->request->getPost('keterangan');
         $tipe        = $this->request->getPost('tipe');
         $IDUser      = $this->ionAuth->user()->row()->id;
@@ -1212,10 +1212,10 @@ class Profile extends BaseController {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
         
-        // // Check for overlapping leave requests
-        // if ($cutiModel->hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $id)) {
-        //     return redirect()->back()->withInput()->with('error', 'Terdapat pengajuan cuti lain pada rentang tanggal yang sama');
-        // }
+        // Check for overlapping leave requests
+        if ($cutiModel->hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $id)) {
+            return redirect()->back()->withInput()->with('error', 'Terdapat pengajuan cuti lain pada rentang tanggal yang sama');
+        }
         
         // Prepare data for saving
         $data = [

@@ -3,6 +3,13 @@
         <!-- Kepegawaian Section -->
         <li class="nav-header">KEPEGAWAIAN</li>
         <li class="nav-item">
+            <a href="<?= base_url('sdm/data_karyawan'); ?>"
+                class="nav-link <?= (strpos(current_url(), '/sdm/data_karyawan') !== false ? 'active' : ''); ?>">
+                <i class="fas fa-users nav-icon"></i>
+                <p>Data Karyawan</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="<?= base_url('sdm/pengajuan_cuti.php'); ?>"
                 class="nav-link <?= (strpos(current_url(), '/sdm/pengajuan_cuti') !== false ? 'active' : ''); ?>">
                 <i class="far fa-calendar-alt nav-icon"></i>

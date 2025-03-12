@@ -33,7 +33,7 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-<?php echo (isset($SQLCuti) && !empty($SQLCuti->file_name)) ? '8' : '12' ?>">
                     <?= form_open_multipart('profile/sdm/data_cuti_simpan.php', ['method' => 'post', 'id' => 'form-cuti', 'class' => 'needs-validation']) ?>
                     <div class="card card-primary card-outline rounded-0">
                         <div class="card-header rounded-0">
@@ -45,9 +45,9 @@
                                 <input type="hidden" name="id" value="<?= $SQLCuti->id ?? '' ?>">
 
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="keterangan">Keterangan</label>
+                                            <label for="keterangan">Keterangan<span class="text-danger">*</span></label>
                                             <?= form_textarea([
                                                 'class' => 'form-control rounded-0' . (isset(session()->getFlashdata('errors')['keterangan']) ? ' is-invalid' : ''),
                                                 'id' => 'keterangan',
@@ -63,10 +63,9 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
-
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="tanggal_rentang">Tanggal Cuti</label>
+                                            <label for="tanggal_rentang">Tanggal Cuti<span class="text-danger">*</span></label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text rounded-0"><i
@@ -94,10 +93,9 @@
                                                 value="<?= $SQLCuti->tgl_keluar ?? old('tgl_keluar') ?>">
                                         </div>
                                     </div>
-
                                     <div class="col-md-5">
                                         <div class="form-group">
-                                            <label for="file_berkas">Unggah Berkas<span class="text-danger">*</span></label>
+                                            <label for="file_berkas">Unggah Berkas</label>
                                             <div class="custom-file">
                                                 <input type="file"
                                                     class="custom-file-input rounded-0 <?= isset(session()->getFlashdata('errors')['file_berkas']) ? 'is-invalid' : '' ?>"
@@ -115,12 +113,9 @@
                                                 dll</small>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="row">
                                     <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="tipe">Tipe Cuti</label>
+                                            <label for="tipe">Tipe Cuti<span class="text-danger">*</span></label>
                                             <select name="tipe" id="tipe"
                                                 class="form-control rounded-0 <?= isset(session()->getFlashdata('errors')['tipe']) ? 'is-invalid' : '' ?>">
                                                 <option value="">- Tipe -</option>
@@ -138,6 +133,9 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                </div>
                             <?php endif; ?>
                         </div>
                         <div class="card-footer text-left">
@@ -149,6 +147,39 @@
                     </div>
                     <?= form_close() ?>
                 </div>
+
+                <?php if (isset($SQLCuti) && !empty($SQLCuti->file_name)): ?>
+                    <div class="col-lg-4">
+                        <div class="card card-primary card-outline rounded-0">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-paperclip"></i> Informasi Cuti & Lampiran</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <?php
+                                    $isPdf = (isset($SQLCuti->file_ext) && strtolower($SQLCuti->file_ext) === 'pdf') ||
+                                        (isset($SQLCuti->file_type) && $SQLCuti->file_type === 'application/pdf');
+                                    $is_image = !$isPdf && isset($SQLCuti->file_ext) && in_array(strtolower($SQLCuti->file_ext), ['jpg', 'jpeg', 'png']);
+                                    $file_url = base_url($SQLCuti->file_name);
+                                    ?>
+
+                                    <?php if ($is_image): ?>
+                                        <a href="<?= $file_url ?>" data-toggle="lightbox" data-title="Berkas Cuti"
+                                            data-gallery="gallery">
+                                            <img src="<?= $file_url ?>" alt="Berkas Cuti" class="img-thumbnail rounded-0"
+                                                style="max-height: 250px;">
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?= $file_url ?>" data-toggle="lightbox" data-title="Berkas Cuti"
+                                            class="btn btn-sm btn-info rounded-0">
+                                            <i class="fas fa-file-<?= ($isPdf) ? 'pdf' : 'alt' ?>"></i> Lihat Berkas
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="row">
@@ -180,17 +211,37 @@
                                                     <td>
                                                         <?= $cuti->keterangan ?>
                                                         <?= br() . status_cuti($cuti->status) ?>
+                                                        <?php if (!empty($cuti->file_name)): ?>
+                                                            <br />
+                                                            <?php
+                                                            $isPdf = (isset($cuti->file_ext) && strtolower($cuti->file_ext) === 'pdf') ||
+                                                                (isset($cuti->file_type) && $cuti->file_type === 'application/pdf');
+                                                            $fileUrl = base_url($cuti->file_name);
+                                                            ?>
+                                                            <?php if (!$isPdf): ?>
+                                                                <a href="<?= $fileUrl ?>" data-toggle="lightbox"
+                                                                    data-title="<?= $cuti->keterangan ?>"
+                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <i class="fas fa-paperclip"></i> Lampiran
+                                                                </a>
+                                                            <?php else: ?>
+                                                                <a href="<?= $fileUrl ?>" target="_blank"
+                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <i class="fas fa-paperclip"></i> Lampiran
+                                                                </a>
+                                                            <?php endif; ?>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
                                                         <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-danger rounded-0"
+                                                            class="btn btn-sm btn-danger rounded-0 mb-1"
                                                             onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                         <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-primary rounded-0">
+                                                            class="btn btn-sm btn-primary rounded-0 mb-1">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     </td>
@@ -205,17 +256,38 @@
                                                     <td>
                                                         <?= $cuti->keterangan ?>
                                                         <?= br() . status_cuti($cuti->status) ?>
+
+                                                        <?php if (!empty($cuti->file_name)): ?>
+                                                            <br />
+                                                            <?php
+                                                            $cutiModel = new \App\Models\trSdmCuti();
+                                                            $isImage = $cutiModel->isImage($cuti->file_ext, $cuti->file_type);
+                                                            $fileUrl = $cutiModel->getFileUrl($cuti->file_name);
+                                                            ?>
+                                                            <?php if ($isImage): ?>
+                                                                <a href="<?= $fileUrl ?>" data-toggle="lightbox"
+                                                                    data-title="<?= $cuti->keterangan ?>"
+                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <i class="fas fa-paperclip"></i> Lihat
+                                                                </a>
+                                                            <?php else: ?>
+                                                                <a href="<?= $fileUrl ?>" target="_blank"
+                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <i class="fas fa-paperclip"></i> Lampiran
+                                                                </a>
+                                                            <?php endif; ?>
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
                                                         <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-danger rounded-0"
+                                                            class="btn btn-sm btn-danger rounded-0 mb-1"
                                                             onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
                                                         <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-primary rounded-0">
+                                                            class="btn btn-sm btn-primary rounded-0 mb-1">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     </td>
@@ -244,6 +316,15 @@
             locale: {
                 format: 'MM/DD/YYYY'
             }
+        });
+
+        // Initialize Ekko Lightbox
+        $(document).on('click', '[data-toggle="lightbox"]', function (e) {
+            e.preventDefault();
+            $(this).ekkoLightbox({
+                alwaysShowClose: true,
+                showArrows: false
+            });
         });
     });
 </script>

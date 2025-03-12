@@ -31,9 +31,10 @@
     <!-- Main content -->
     <div class="content">
         <div class="container-fluid">
-            <div class="row">
+               <!--
+                <div class="row">
                 <div class="col-md-10">
-                <?= form_open('profile/sdm/data_pegawai_simpan.php', ['method' => 'post', 'id' => 'form-pegawai', 'class' => 'needs-validation']) ?>
+                 <?= form_open('profile/sdm/data_pegawai_simpan.php', ['method' => 'post', 'id' => 'form-pegawai', 'class' => 'needs-validation']) ?>
                     <div class="card card-primary card-outline rounded-0">
                         <div class="card-header rounded-0">
                             <h3 class="card-title">DATA KEPEGAWAIAN - <?= strtoupper($SQLKary->nama ?? '') ?></h3>
@@ -289,6 +290,7 @@
                     <?= form_close() ?>
                 </div>
             </div>
+                                                -->
             <div class="row">
                 <div class="col-md-12">
                     <div class="card card-primary card-outline rounded-0">
@@ -366,7 +368,7 @@
                                                     ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="<?= base_url('profile/sdm/data_pegawai_hapus/' . ($SQLPeg->id ?? '')) ?>" 
+                                                    <!-- <a href="<?= base_url('profile/sdm/data_pegawai_hapus/' . ($SQLPeg->id ?? '')) ?>" 
                                                        class="btn btn-sm btn-danger rounded-0" 
                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
@@ -374,7 +376,7 @@
                                                     <a href="<?= base_url('profile/sdm/data_pegawai/' . ($SQLKary->id ?? '')) ?>" 
                                                        class="btn btn-sm btn-primary rounded-0">
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    </a> -->
                                                 </td>
                                             </tr>
                                         <?php else: ?>

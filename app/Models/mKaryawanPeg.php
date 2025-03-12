@@ -67,7 +67,8 @@ class mKaryawanPeg extends Model {
         'no_ptkp',
         'no_rek',
         'keterangan',
-        'tipe'
+        'tipe',
+        'status'
     ];
     
     /**

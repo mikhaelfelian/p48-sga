@@ -65,7 +65,7 @@ function tgl_indo7($tglan) {
 function tgl_indo8($tglan) {
     $str_tgl = $tglan;
     $dta_tgl = ($str_tgl != '0000-00-00' ? $str_tgl : '');
-    $tgln = (!empty($dta_tgl) ? date('d-m-Y', strtotime($dta_tgl)) : '');
+    $tgln = (!empty($dta_tgl) ? date('d-m-Y', strtotime($dta_tgl)) : '-');
     $tgle = $tgln;
     return $tgle;
 }

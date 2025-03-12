@@ -578,3 +578,36 @@ function status_pegawai($tipe) {
     return $status;
 }
 
+/**
+ * Generate HTML badge for leave status
+ * 
+ * @param string|int $status Status code (0: Pending, 1: Approved, 2: Rejected)
+ * @return string HTML badge element
+ * 
+ * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+ * @date 2025-03-13
+ */
+function status_cuti($status) {
+    switch ($status) {
+        default:
+            $badge = '<span class="badge badge-secondary">Unknown</span>';
+            break;
+        
+        case '0':
+        case 0:
+            $badge = '<span class="badge badge-warning">Pending</span>';
+            break;
+
+        case '1':
+        case 1:
+            $badge = '<span class="badge badge-success">Disetujui</span>';
+            break;
+
+        case '2':
+        case 2:
+            $badge = '<span class="badge badge-danger">Ditolak</span>';
+            break;
+    }
+    return $badge;
+}
+

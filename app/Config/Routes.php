@@ -55,6 +55,13 @@ $routes->group('profile', ['filter' => 'auth'], function($routes) {
     $routes->get('sdm/data_pegawai/(:num)', 'Profile::data_pegawai/$1');
     $routes->post('sdm/data_pegawai_simpan.php', 'Profile::data_pegawai_simpan');
     $routes->get('sdm/data_pegawai_hapus/(:num)', 'Profile::data_pegawai_hapus/$1');
+    
+    // Employee leave/time-off data routes
+    $routes->get('sdm/data_cuti', 'Profile::data_cuti');
+    $routes->get('sdm/data_cuti/(:num)', 'Profile::data_cuti/$1');
+    $routes->post('sdm/data_cuti_simpan.php', 'Profile::data_cuti_simpan');
+    $routes->get('sdm/data_cuti_hapus/(:num)', 'Profile::data_cuti_hapus/$1');
+    $routes->get('sdm/data_cuti_edit/(:num)', 'Profile::data_cuti_edit/$1');
 });
 
 # Pengaturan

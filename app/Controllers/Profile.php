@@ -354,15 +354,15 @@ class Profile extends BaseController {
             'id_karyawan'   => $id_kary,
             'id_user'       => $this->ionAuth->user()->row()->id,
             'tgl_simpan'    => date('Y-m-d H:i:s'),
-            'nm_ayah'       => $this->request->getPost('nm_ayah'),
-            'nm_ibu'        => $this->request->getPost('nm_ibu'), 
-            'nm_pasangan'   => $this->request->getPost('nm_pasangan'),
-            'nm_anak'       => $this->request->getPost('nm_anak'),
-            'tgl_lhr_ayah'  => !empty($this->request->getPost('tgl_lhr_ayah')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ayah')) : '0000-00-00',
-            'tgl_lhr_ibu'   => !empty($this->request->getPost('tgl_lhr_ibu')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ibu')) : '0000-00-00',
-            'tgl_lhr_psg'   => !empty($this->request->getPost('tgl_lhr_psg')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_psg')) : '0000-00-00',
-            'jns_pasangan'  => $this->request->getPost('jns_pasangan'),
-            'status_kawin'  => $this->request->getPost('status_kawin')
+            'nm_ayah'        => $this->request->getPost('nm_ayah'),
+            'nm_ibu'         => $this->request->getPost('nm_ibu'), 
+            'nm_pasangan'    => $this->request->getPost('nm_pasangan'),
+            'nm_anak'         => $this->request->getPost('nm_anak'),
+            'tgl_lhr_ayah'   => !empty($this->request->getPost('tgl_lhr_ayah')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ayah')) : '0000-00-00',
+            'tgl_lhr_ibu'    => !empty($this->request->getPost('tgl_lhr_ibu')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_ibu')) : '0000-00-00',
+            'tgl_lhr_psg'     => !empty($this->request->getPost('tgl_lhr_psg')) ? tgl_indo_sys($this->request->getPost('tgl_lhr_psg')) : '0000-00-00',
+            'jns_pasangan'    => $this->request->getPost('jns_pasangan'),
+            'status_kawin'     => $this->request->getPost('status_kawin')
         ];
         
         // Check if record ID exists (update case)
@@ -707,13 +707,13 @@ class Profile extends BaseController {
         
         // Add file validation rule if this is a new record or file is uploaded
         $file = $this->request->getFile('file_berkas');
-        if (empty($id) || ($file && $file->isValid() && !$file->hasMoved())) {
+        if (empty($id) || ($file && $file->getSize() > 0)) {
             $validationRules['file_berkas'] = [
-                'rules' => 'uploaded[file_berkas]|max_size[file_berkas,2048]|mime_in[file_berkas,image/jpg,image/jpeg,image/png,application/pdf,image/tif]',
+                'rules' => 'uploaded[file_berkas]|max_size[file_berkas,2048]|mime_in[file_berkas,image/jpg,image/jpeg,image/png,application/pdf]',
                 'errors' => [
                     'uploaded' => 'File berkas harus diunggah',
                     'max_size' => 'Ukuran file maksimal 2MB',
-                    'mime_in' => 'Format file harus jpg, jpeg, png, pdf, atau tif'
+                    'mime_in' => 'Format file harus jpg, jpeg, png, atau pdf'
                 ]
             ];
         }
@@ -739,42 +739,29 @@ class Profile extends BaseController {
             'status_lulus' => $status_lulus
         ];
         
-        // Save data
-        try {
-            // Handle file upload
-            $path       = FCPATH.'/';
-            $dir        = 'file/profile/userid_'.$IDUser.'/';
-            if ($file && $file->isValid() && !$file->hasMoved()) {
-                // Create directory if it doesn't exist
-                if (!is_dir($path.$dir)) {
-                    mkdir($path.$dir, 0777, true);
-                }
-                
-                // Generate unique filename
-                $filename = 'pendidikan_'.strtolower($pendidikan).'_'.strtolower(str_replace(' ', '', $IDUser.$user)).'.'.$file->getClientExtension();
-                $fullname = $dir.$filename;
-                
-                // Move file to upload directory
-                $file->move($path.$dir, $filename, true);
-                
-                // Add file info to data array
-                $data['file_name'] = $fullname;
-                $data['file_ext'] = $file->getClientExtension();
-                $data['file_type'] = $file->getClientMimeType();
-                
-                // If updating and old file exists, delete it
-                if (!empty($id)) {
-                    $oldData = $pendidikanModel->asObject()->find($id);
-                    if ($oldData && !empty($oldData->file_name)) {
-                        $oldFilePath = FCPATH . $oldData->file_name;
-                        if (file_exists($oldFilePath)) {
-                            unlink($oldFilePath);
-                        }
-                    }
-                }
+        // Handle file upload
+        if ($file && $file->getSize() > 0) {
+            $path = ROOTPATH . 'public/';
+            $dir = 'file/profile/userid_'.$IDUser.'/';
+            $filename = 'pendidikan_' . date('YmdHis') . '_' . $file->getRandomName();
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($path.$dir)) {
+                mkdir($path.$dir, 0777, true);
             }
             
-            // Save data
+            // Move file to directory
+            if ($file->move($path.$dir, $filename)) {
+                $data['file_name'] = $filename;
+                $data['file_ext'] = $file->getExtension();
+                $data['file_type'] = $file->getClientMimeType();
+            } else {
+                return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file');
+            }
+        }
+        
+        // Save data
+        try {
             $pendidikanModel->save($data);
 
             if (!empty($id)) {
@@ -985,16 +972,17 @@ class Profile extends BaseController {
                 ]
             ],
             'tgl_masuk' => [
-                'rules' => 'required|valid_date[m/d/Y]',
+                'rules' => 'required|valid_date[Y-m-d]',
                 'errors' => [
-                    'valid_date' => 'Format Tanggal Masuk tidak valid (MM/DD/YYYY)',
-                    'required' => 'Tanggal masuk harus diisi'
+                    'required' => 'Tanggal mulai cuti harus diisi',
+                    'valid_date' => 'Format tanggal mulai cuti tidak valid'
                 ]
             ],
             'tgl_keluar' => [
-                'rules' => 'permit_empty|valid_date[m/d/Y]',
+                'rules' => 'required|valid_date[Y-m-d]',
                 'errors' => [
-                    'valid_date' => 'Format Tanggal Keluar tidak valid (MM/DD/YYYY)',
+                    'required' => 'Tanggal selesai cuti harus diisi',
+                    'valid_date' => 'Format tanggal selesai cuti tidak valid'
                 ]
             ]
         ];
@@ -1080,5 +1068,341 @@ class Profile extends BaseController {
         
         // Set success message and redirect
         return redirect()->to(base_url("profile/sdm/data_pegawai/{$id_karyawan}"));
+    }
+
+    /**
+     * Display employee leave/time-off data
+     * 
+     * @param int $id_karyawan Employee ID
+     * @return \CodeIgniter\HTTP\Response View response
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_cuti($id_karyawan = null)
+    {             
+        // Get user and group information
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+        
+        // Load models
+        $Karyawan    = new \App\Models\mKaryawan();
+        $KaryawanPeg = new \App\Models\mKaryawanPeg();
+        $Departemen  = new \App\Models\mDepartemen();
+        $Jabatan     = new \App\Models\mJabatan();
+        $CutiModel   = new \App\Models\mKaryawanCuti();
+        
+        // If id_karyawan is not provided, use the current user's ID
+        if (empty($id_karyawan)) {
+            $id_karyawan = $ID->id;
+        }
+        
+        // Get employee data
+        $sql_kary = $Karyawan->asObject()->where('id', $id_karyawan)->first();
+        
+        // If employee not found, redirect to profile
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get employee employment data
+        $sql_peg = $KaryawanPeg->asObject()->getKaryawanPeg($id_karyawan);
+        
+        // Get departments and positions for dropdown
+        $sql_dept = $Departemen->asObject()->getDepartemen(true);
+        $sql_jabatan = $Jabatan->asObject()->getJabatan();
+        
+        // Get employee leave data
+        $SQLCuti = $CutiModel->asObject()->getCuti($id_karyawan);
+        
+        $data = [
+            'SQLKary'       => $sql_kary,
+            'SQLPeg'        => $sql_peg,
+            'SQLDept'       => $sql_dept,
+            'SQLJabatan'    => $sql_jabatan,
+            'SQLCuti'       => $SQLCuti,
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_cuti',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
+    }
+
+    /**
+     * Save employee leave/time-off data
+     * 
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_cuti_simpan()
+    {        
+        // Get current user data
+        $id          = $this->request->getPost('id');
+        $id_karyawan = $this->request->getPost('id_karyawan');
+        $tgl_masuk   = $this->request->getPost('tgl_masuk'); // Get directly from hidden fields
+        $tgl_keluar  = $this->request->getPost('tgl_keluar'); // Get directly from hidden fields
+        $keterangan  = $this->request->getPost('keterangan');
+        $tipe        = $this->request->getPost('tipe');
+        $IDUser      = $this->ionAuth->user()->row()->id;
+        
+        // Load models
+        $karyawanModel = new \App\Models\mKaryawan();
+        $cutiModel = new \App\Models\mKaryawanCuti();
+        
+        // Set validation rules
+        $validationRules = [
+            'id_karyawan' => [
+                'rules' => 'required|numeric',
+                'errors' => [
+                    'required' => 'ID Karyawan harus diisi',
+                    'numeric' => 'ID Karyawan harus berupa angka'
+                ]
+            ],
+            'tgl_masuk' => [
+                'rules' => 'required|valid_date[Y-m-d]',
+                'errors' => [
+                    'required' => 'Tanggal mulai cuti harus diisi',
+                    'valid_date' => 'Format tanggal mulai cuti tidak valid'
+                ]
+            ],
+            'tgl_keluar' => [
+                'rules' => 'required|valid_date[Y-m-d]',
+                'errors' => [
+                    'required' => 'Tanggal selesai cuti harus diisi',
+                    'valid_date' => 'Format tanggal selesai cuti tidak valid'
+                ]
+            ],
+            'keterangan' => [
+                'rules' => 'required|min_length[5]',
+                'errors' => [
+                    'required' => 'Keterangan harus diisi',
+                    'min_length' => 'Keterangan minimal 5 karakter'
+                ]
+            ],
+            'tipe' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Tipe cuti harus dipilih'
+                ]
+            ]
+        ];
+        
+        // Add file validation rule if it's a new record or file is uploaded
+        $file = $this->request->getFile('file_berkas');
+        // if (empty($id) || ($file && $file->getSize() > 0)) {
+        //     $validationRules['file_berkas'] = [
+        //         'rules' => 'uploaded[file_berkas]|max_size[file_berkas,2048]|mime_in[file_berkas,image/jpg,image/jpeg,image/png,application/pdf]',
+        //         'errors' => [
+        //             'uploaded' => 'File berkas harus diunggah',
+        //             'max_size' => 'Ukuran file maksimal 2MB',
+        //             'mime_in' => 'Format file harus jpg, jpeg, png, atau pdf'
+        //         ]
+        //     ];
+        // }
+        
+        // Run validation
+        if (!$this->validate($validationRules)) {
+            log_message('debug', 'CUTI VALIDATION ERRORS: ' . json_encode($this->validator->getErrors()));
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        
+        // Check for overlapping leave requests
+        if ($cutiModel->hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $id)) {
+            return redirect()->back()->withInput()->with('error', 'Terdapat pengajuan cuti lain pada rentang tanggal yang sama');
+        }
+        
+        // Prepare data for saving
+        $data = [
+            'id_karyawan' => $id_karyawan,
+            'id_user'     => $IDUser,
+            'tgl_masuk'   => $tgl_masuk,
+            'tgl_keluar'  => $tgl_keluar,
+            'keterangan'  => $keterangan,
+            'status'      => '0', // Default status is pending
+            'tipe'        => $tipe  // Changed from 'kode' to 'tipe' to match database field
+        ];
+        
+        // Handle file upload
+        if ($file && $file->getSize() > 0) {
+            try {
+                $path = FCPATH;  // Changed from ROOTPATH . 'public/' to FCPATH
+                $dir = 'file/profile/userid_'.$IDUser.'/';
+                $filename = 'cuti_' . date('YmdHis') . '_' . $file->getRandomName();
+                
+                // Create directory if it doesn't exist
+                if (!is_dir($path.$dir)) {
+                    mkdir($path.$dir, 0777, true);
+                }
+                
+                // Move file to directory
+                if ($file->move($path.$dir, $filename)) {
+                    $data['file_name'] = $dir . $filename;  // Store relative path
+                    $data['file_ext'] = $file->getExtension();
+                    $data['file_type'] = $file->getClientMimeType();
+                    log_message('debug', 'CUTI FILE UPLOADED: ' . $data['file_name']);
+                } else {
+                    log_message('error', 'CUTI FILE UPLOAD FAILED: ' . $file->getErrorString());
+                    return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file: ' . $file->getErrorString());
+                }
+            } catch (\Exception $e) {
+                log_message('error', 'CUTI FILE UPLOAD EXCEPTION: ' . $e->getMessage());
+                return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
+            }
+        }
+        
+        // Add timestamps
+        if (empty($id)) {
+            $data['tgl_simpan'] = date('Y-m-d H:i:s');
+        } else {
+            $data['tgl_modif'] = date('Y-m-d H:i:s');
+            $data['id'] = $id; // Add ID for update
+        }
+        
+        // Debug data to be saved
+        log_message('debug', 'CUTI DATA TO SAVE: ' . json_encode($data));
+        
+        // Save data
+        try {
+            $result = $cutiModel->save($data);
+            log_message('debug', 'CUTI SAVE RESULT: ' . ($result ? 'SUCCESS' : 'FAILED'));
+            
+            if (empty($id)) {
+                return redirect()->back()->with('success', 'Pengajuan cuti berhasil disimpan');
+            } else {
+                return redirect()->back()->with('success', 'Pengajuan cuti berhasil diperbarui');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'CUTI SAVE EXCEPTION: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan pengajuan cuti: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete employee leave/time-off data
+     * 
+     * @param int $id Leave/time-off record ID
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_cuti_hapus($id)
+    {
+        // Load model
+        $CutiModel = new \App\Models\mKaryawanCuti();
+        
+        // Get leave data
+        $cuti = $CutiModel->getCutiById($id);
+        
+        // If leave data not found, set error message and redirect
+        if (!$cuti) {
+            $this->session->setFlashdata('error', 'Data cuti tidak ditemukan');
+            return redirect()->to(base_url('profile/sdm/data_cuti'));
+        }
+        
+        // Store employee ID for redirection after deletion
+        $id_karyawan = $cuti['id_karyawan'];
+        
+        // Check if file exists and delete it
+        if (!empty($cuti['file_berkas']) && file_exists(FCPATH . 'uploads/cuti/' . $cuti['file_berkas'])) {
+            unlink(FCPATH . 'uploads/cuti/' . $cuti['file_berkas']);
+        }
+        
+        // Delete leave record
+        if ($CutiModel->delete($id)) {
+            $this->session->setFlashdata('success', 'Data cuti berhasil dihapus');
+        } else {
+            $this->session->setFlashdata('error', 'Data cuti gagal dihapus');
+        }
+        
+        return redirect()->to(base_url("profile/sdm/data_cuti/{$id_karyawan}"));
+    }
+
+    /**
+     * Edit employee leave/time-off data
+     * 
+     * @param int $id Leave/time-off record ID
+     * @return \CodeIgniter\HTTP\RedirectResponse|string
+     * 
+     * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+     * @date 2025-03-13
+     */
+    public function data_cuti_edit($id)
+    {
+        // Get user and group information
+        $ID         = $this->ionAuth->user()->row();
+        $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+        $AksesGrup  = $this->ionAuth->groups()->result();
+        
+        // Load models
+        $Karyawan    = new \App\Models\mKaryawan();
+        $KaryawanPeg = new \App\Models\mKaryawanPeg();
+        $Departemen  = new \App\Models\mDepartemen();
+        $Jabatan     = new \App\Models\mJabatan();
+        $CutiModel   = new \App\Models\mKaryawanCuti();
+        
+        // Get leave data by ID
+        $sql_cuti = $CutiModel->asObject()->getCutiById($id);
+        
+        // If leave data not found, set error message and redirect
+        if (!$sql_cuti) {
+            $this->session->setFlashdata('error', 'Data cuti tidak ditemukan');
+            return redirect()->to(base_url('profile/sdm/data_cuti'));
+        }
+        
+        // Get employee ID from leave data
+        $id_karyawan = $sql_cuti->id_karyawan;
+        
+        // Get employee data
+        $sql_kary = $Karyawan->asObject()->where('id', $id_karyawan)->first();
+        
+        // If employee not found, redirect to profile
+        if (!$sql_kary) {
+            $this->session->setFlashdata('error', 'Data karyawan tidak ditemukan');
+            return redirect()->to(base_url("profile/{$ID->id}"));
+        }
+        
+        // Get employee employment data
+        $sql_peg = $KaryawanPeg->asObject()->getKaryawanPeg($id_karyawan);
+        
+        // Get departments and positions for dropdown
+        $sql_dept = $Departemen->asObject()->getDepartemen(true);
+        $sql_jabatan = $Jabatan->asObject()->getJabatan();
+        
+        // Get all employee leave data for history
+        $SQLCutiList = $CutiModel->asObject()->getCuti($id_karyawan);
+        
+        $data = [
+            'SQLKary'       => $sql_kary,
+            'SQLPeg'        => $sql_peg,
+            'SQLDept'       => $sql_dept,
+            'SQLJabatan'    => $sql_jabatan,
+            'SQLCuti'       => $sql_cuti,     // Single leave record for editing
+            'SQLCutiList'   => $SQLCutiList,  // All leave records for history table
+            'MenuAktif'     => 'active',
+            'MenuOpen'      => 'menu-open',
+            'AksesGrup'     => $AksesGrup,
+            'Pengguna'      => $ID,
+            'PenggunaGrup'  => $IDGrup,
+            'Pengaturan'    => $this->Setting,
+            'ThemePath'     => $this->ThemePath,
+            'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+            'menu_kiri'     => $this->ThemePath.'/user/menu_kiri',
+            'konten'        => $this->ThemePath.'/user/profile_cuti',
+        ];
+        
+        return view($this->ThemePath.'/index', $data); 
     }
 } 

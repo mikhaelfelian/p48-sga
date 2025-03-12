@@ -1091,7 +1091,7 @@ class Profile extends BaseController {
         $KaryawanPeg = new \App\Models\mKaryawanPeg();
         $Departemen  = new \App\Models\mDepartemen();
         $Jabatan     = new \App\Models\mJabatan();
-        $CutiModel   = new \App\Models\mKaryawanCuti();
+        $CutiModel   = new \App\Models\trSdmCuti();
         
         // If id_karyawan is not provided, use the current user's ID
         if (empty($id_karyawan)) {
@@ -1151,15 +1151,18 @@ class Profile extends BaseController {
         // Get current user data
         $id          = $this->request->getPost('id');
         $id_karyawan = $this->request->getPost('id_karyawan');
-        $tgl_masuk   = $this->request->getPost('tgl_masuk'); // Get directly from hidden fields
-        $tgl_keluar  = $this->request->getPost('tgl_keluar'); // Get directly from hidden fields
+        $tgl_cuti   = $this->request->getPost('tgl_cuti'); // Get directly from hidden fields
         $keterangan  = $this->request->getPost('keterangan');
         $tipe        = $this->request->getPost('tipe');
         $IDUser      = $this->ionAuth->user()->row()->id;
+
+        $tgl         = explode('-', $tgl_cuti);
+        $tgl_masuk   = tgl_indo_sys2($tgl[0]);
+        $tgl_keluar  = tgl_indo_sys2($tgl[1]);
         
         // Load models
-        $karyawanModel = new \App\Models\mKaryawan();
-        $cutiModel = new \App\Models\mKaryawanCuti();
+        $karyawanModel  = new \App\Models\mKaryawan();
+        $cutiModel      = new \App\Models\trSdmCuti();
         
         // Set validation rules
         $validationRules = [
@@ -1170,18 +1173,10 @@ class Profile extends BaseController {
                     'numeric' => 'ID Karyawan harus berupa angka'
                 ]
             ],
-            'tgl_masuk' => [
-                'rules' => 'required|valid_date[Y-m-d]',
+            'tgl_cuti' => [
+                'rules' => 'required',
                 'errors' => [
                     'required' => 'Tanggal mulai cuti harus diisi',
-                    'valid_date' => 'Format tanggal mulai cuti tidak valid'
-                ]
-            ],
-            'tgl_keluar' => [
-                'rules' => 'required|valid_date[Y-m-d]',
-                'errors' => [
-                    'required' => 'Tanggal selesai cuti harus diisi',
-                    'valid_date' => 'Format tanggal selesai cuti tidak valid'
                 ]
             ],
             'keterangan' => [
@@ -1214,14 +1209,13 @@ class Profile extends BaseController {
         
         // Run validation
         if (!$this->validate($validationRules)) {
-            log_message('debug', 'CUTI VALIDATION ERRORS: ' . json_encode($this->validator->getErrors()));
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
         
-        // Check for overlapping leave requests
-        if ($cutiModel->hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $id)) {
-            return redirect()->back()->withInput()->with('error', 'Terdapat pengajuan cuti lain pada rentang tanggal yang sama');
-        }
+        // // Check for overlapping leave requests
+        // if ($cutiModel->hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $id)) {
+        //     return redirect()->back()->withInput()->with('error', 'Terdapat pengajuan cuti lain pada rentang tanggal yang sama');
+        // }
         
         // Prepare data for saving
         $data = [
@@ -1236,29 +1230,24 @@ class Profile extends BaseController {
         
         // Handle file upload
         if ($file && $file->getSize() > 0) {
-            try {
-                $path = FCPATH;  // Changed from ROOTPATH . 'public/' to FCPATH
-                $dir = 'file/profile/userid_'.$IDUser.'/';
-                $filename = 'cuti_' . date('YmdHis') . '_' . $file->getRandomName();
-                
-                // Create directory if it doesn't exist
-                if (!is_dir($path.$dir)) {
-                    mkdir($path.$dir, 0777, true);
-                }
-                
-                // Move file to directory
-                if ($file->move($path.$dir, $filename)) {
-                    $data['file_name'] = $dir . $filename;  // Store relative path
-                    $data['file_ext'] = $file->getExtension();
-                    $data['file_type'] = $file->getClientMimeType();
-                    log_message('debug', 'CUTI FILE UPLOADED: ' . $data['file_name']);
-                } else {
-                    log_message('error', 'CUTI FILE UPLOAD FAILED: ' . $file->getErrorString());
-                    return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file: ' . $file->getErrorString());
-                }
-            } catch (\Exception $e) {
-                log_message('error', 'CUTI FILE UPLOAD EXCEPTION: ' . $e->getMessage());
-                return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file: ' . $e->getMessage());
+            $path       = ROOTPATH . 'public/';
+            $dir        = 'file/profile/userid_' . $IDUser . '/';
+            $filename   = 'cuti_' . date('YmdHis') . '_' . $file->getRandomName();
+            
+            $data['file_ext'] = $file->getExtension();
+
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($path.$dir)) {
+                mkdir($path.$dir, 0777, true);
+            }
+            
+            // Move file to directory
+            if ($file->move($path.$dir, $filename)) {
+                $data['file_name'] = $dir.$filename;
+                $data['file_type'] = $file->getClientMimeType();
+            } else {
+                return redirect()->back()->withInput()->with('error', 'Gagal mengunggah file');
             }
         }
         
@@ -1269,15 +1258,10 @@ class Profile extends BaseController {
             $data['tgl_modif'] = date('Y-m-d H:i:s');
             $data['id'] = $id; // Add ID for update
         }
-        
-        // Debug data to be saved
-        log_message('debug', 'CUTI DATA TO SAVE: ' . json_encode($data));
-        
+
         // Save data
         try {
             $result = $cutiModel->save($data);
-            log_message('debug', 'CUTI SAVE RESULT: ' . ($result ? 'SUCCESS' : 'FAILED'));
-            
             if (empty($id)) {
                 return redirect()->back()->with('success', 'Pengajuan cuti berhasil disimpan');
             } else {
@@ -1301,10 +1285,10 @@ class Profile extends BaseController {
     public function data_cuti_hapus($id)
     {
         // Load model
-        $CutiModel = new \App\Models\mKaryawanCuti();
+        $CutiModel = new \App\Models\trSdmCuti();
         
         // Get leave data
-        $cuti = $CutiModel->getCutiById($id);
+        $cuti = $CutiModel->asObject()->getCutiById($id);
         
         // If leave data not found, set error message and redirect
         if (!$cuti) {
@@ -1313,11 +1297,16 @@ class Profile extends BaseController {
         }
         
         // Store employee ID for redirection after deletion
-        $id_karyawan = $cuti['id_karyawan'];
+        $id_karyawan = $cuti->id_karyawan;
         
         // Check if file exists and delete it
-        if (!empty($cuti['file_berkas']) && file_exists(FCPATH . 'uploads/cuti/' . $cuti['file_berkas'])) {
-            unlink(FCPATH . 'uploads/cuti/' . $cuti['file_berkas']);
+        if (!empty($cuti->file_name)) {
+            $path       = FCPATH . '/';
+            $filepath   = $path . $cuti->file_name;
+            
+            if (file_exists($filepath)) {
+                unlink($filepath);
+            }
         }
         
         // Delete leave record
@@ -1351,7 +1340,7 @@ class Profile extends BaseController {
         $KaryawanPeg = new \App\Models\mKaryawanPeg();
         $Departemen  = new \App\Models\mDepartemen();
         $Jabatan     = new \App\Models\mJabatan();
-        $CutiModel   = new \App\Models\mKaryawanCuti();
+        $CutiModel   = new \App\Models\trSdmCuti();
         
         // Get leave data by ID
         $sql_cuti = $CutiModel->asObject()->getCutiById($id);

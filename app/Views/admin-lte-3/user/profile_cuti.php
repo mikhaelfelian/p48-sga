@@ -78,8 +78,8 @@
                                                     'id' => 'tgl_cuti',
                                                     'name' => 'tgl_cuti',
                                                     'placeholder' => 'DD/MM/YYYY - DD/MM/YYYY',
-                                                    'value' => (isset($SQLCuti) && !is_array($SQLCuti) && isset($SQLCuti->tgl_masuk) && isset($SQLCuti->tgl_keluar)) 
-                                                        ? date('d/m/Y', strtotime($SQLCuti->tgl_masuk)) . ' - ' . date('d/m/Y', strtotime($SQLCuti->tgl_keluar)) 
+                                                    'value' => (isset($SQLCuti) && !is_array($SQLCuti) && isset($SQLCuti->tgl_masuk) && isset($SQLCuti->tgl_keluar))
+                                                        ? date('d/m/Y', strtotime($SQLCuti->tgl_masuk)) . ' - ' . date('d/m/Y', strtotime($SQLCuti->tgl_keluar))
                                                         : old('tanggal_rentang')
                                                 ]) ?>
                                                 <?php if (isset(session()->getFlashdata('errors')['tanggal_rentang'])): ?>
@@ -179,7 +179,7 @@
                                                     <td><?= tgl_indo8($cuti->tgl_simpan) ?></td>
                                                     <td>
                                                         <?= $cuti->keterangan ?>
-                                                        <?= br().status_cuti($cuti->status) ?>
+                                                        <?= br() . status_cuti($cuti->status) ?>
                                                     </td>
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
@@ -204,7 +204,7 @@
                                                     <td><?= tgl_indo8($cuti->tgl_simpan) ?></td>
                                                     <td>
                                                         <?= $cuti->keterangan ?>
-                                                        <?= br().status_cuti($cuti->status) ?>
+                                                        <?= br() . status_cuti($cuti->status) ?>
                                                     </td>
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
@@ -239,49 +239,11 @@
 
 <script>
     $(document).ready(function () {
-        // Initialize daterangepicker
-        <?php if (isset($SQLCuti) && !is_array($SQLCuti) && isset($SQLCuti->tgl_masuk) && isset($SQLCuti->tgl_keluar)): ?>
-            // When editing an existing record, use the saved dates
-            $('.daterange').daterangepicker({
-                locale: {
-                    format: 'DD/MM/YYYY'
-                },
-                autoApply: true,
-                startDate: '<?= date('d/m/Y', strtotime($SQLCuti->tgl_masuk)) ?>',
-                endDate: '<?= date('d/m/Y', strtotime($SQLCuti->tgl_keluar)) ?>'
-            });
-        <?php else: ?>
-            // For new records, use default dates
-            $('.daterange').daterangepicker({
-                locale: {
-                    format: 'DD/MM/YYYY'
-                },
-                autoApply: true,
-                startDate: moment().format('DD/MM/YYYY'),
-                endDate: moment().add(1, 'days').format('DD/MM/YYYY')
-            });
-        <?php endif; ?>
-
-        // Update hidden fields when date range changes
-        $('.daterange').on('apply.daterangepicker', function(ev, picker) {
-            $('#tgl_masuk').val(picker.startDate.format('YYYY-MM-DD'));
-            $('#tgl_keluar').val(picker.endDate.format('YYYY-MM-DD'));
-        });
-
-        // Trigger the apply event to set initial values
-        setTimeout(function() {
-            $('.daterange').trigger('apply.daterangepicker', $('.daterange').data('daterangepicker'));
-        }, 100);
-        
-        // Show the daterangepicker when clicking on the input
-        $('.daterange').on('click', function() {
-            $(this).data('daterangepicker').show();
-        });
-        
-        // Show file name when a file is selected
-        $('.custom-file-input').on('change', function() {
-            var fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName || "Choose File");
+        // For new records, use default dates
+        $('.daterange').daterangepicker({
+            locale: {
+                format: 'MM/DD/YYYY'
+            }
         });
     });
 </script>

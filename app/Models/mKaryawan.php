@@ -8,9 +8,14 @@
 namespace App\Models;
 use CodeIgniter\Model;
 /**
- * Description of KategoriModel
+ * Employee Model (mKaryawan)
+ * 
+ * This model handles employee data using the tbl_m_karyawan table.
+ * It provides methods for retrieving, creating, updating, and deleting employee records,
+ * as well as counting employees by different statuses.
  *
- * @author mike
+ * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+ * @date 2025-03-13
  */
 class mKaryawan extends Model {
     public $nm_tabel;

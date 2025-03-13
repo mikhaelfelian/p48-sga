@@ -20,6 +20,7 @@ $routes->post('login/cek_login.php', 'Login::cek_login');
 $routes->get('/logout.php', 'Login::logout');
 $routes->get('/dashboard.php', 'Home::index');
 
+
 # Publik Modul
 # Modul yang di akses oleh berbagai controller
 $routes->group('', ['filter' => 'auth'], function($routes) {
@@ -293,6 +294,15 @@ $routes->post('/gudang/pengiriman/cart_hapus.php', 'Gudang::cart_mutasi_hapus');
 $routes->get('/gudang/stok/data_item.php', 'Gudang::data_item');
 $routes->get('/gudang/stok/data_item_det.php', 'Gudang::data_item_stok');
 $routes->post('/gudang/stok/set_item_simpan.php', 'Gudang::set_item_simpan');
+
+# --- SDM - KARYAWAN ---
+# SDM Module
+$routes->group('sdm', ['filter' => 'auth'], function($routes) {
+    # Employee management routes
+    $routes->get('data_karyawan.php', 'Sdm::data_karyawan');
+    $routes->get('dashboard.php', 'Sdm::dashboard');
+});
+
 
 
 #==========================================================================================

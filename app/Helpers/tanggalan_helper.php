@@ -70,6 +70,26 @@ function tgl_indo8($tglan) {
     return $tgle;
 }
 
+/**
+ * Format date and time to dd-mm-yyyy HH:MM format
+ * 
+ * @param string $tglan Date string in any format
+ * @return string Formatted date string (e.g., 20-03-2020 20:55)
+ */
+function tgl_indo9($tglan) {
+    $str_tgl = $tglan;
+    $dta_tgl = ($str_tgl != '0000-00-00' ? $str_tgl : '');
+    if (empty($dta_tgl)) {
+        return '-';
+    }
+    
+    $tgl_format = date('d-m-Y', strtotime($dta_tgl));
+    $waktu_format = date('H:i', strtotime($dta_tgl));
+    
+    return $tgl_format . ' ' . $waktu_format;
+}
+
+
 function bln_indo($tglan) {
     $str_tgl = $tglan;
     $dta_tgl = ($str_tgl != '0000-00-00' ? $str_tgl : '');

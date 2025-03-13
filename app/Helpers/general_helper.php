@@ -608,6 +608,48 @@ function status_cuti($status) {
             $badge = '<span class="badge badge-danger">Ditolak</span>';
             break;
     }
+    
     return $badge;
+}
+
+/**
+ * Generate HTML badge for employee status
+ * 
+ * This function returns an HTML badge with appropriate color based on employee status.
+ * 
+ * @param string|int $status Employee status code (0: Non-Active, 1: Permanent, 2: Contract)
+ * @param bool $rounded Whether to use rounded-0 class or not
+ * @return string HTML badge element
+ * 
+ * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
+ * @date 2025-03-13
+ */
+function status_karyawan($status, $rounded = true) {
+    $status_label = '';
+    $status_class = '';
+    $rounded_class = $rounded ? '' : ' rounded-0';
+    
+    switch ($status) {
+        case '0':
+        case 0:
+            $status_label = 'Non-Aktif';
+            $status_class = 'badge-danger' . $rounded_class;
+            break;
+        case '1':
+        case 1:
+            $status_label = 'Tetap';
+            $status_class = 'badge-success' . $rounded_class;
+            break;
+        case '2':
+        case 2:
+            $status_label = 'Kontrak';
+            $status_class = 'badge-warning' . $rounded_class;
+            break;
+        default:
+            $status_label = 'Tidak Diketahui';
+            $status_class = 'badge-secondary' . $rounded_class;
+    }
+    
+    return '<span class="badge ' . $status_class . '">' . $status_label . '</span>';
 }
 

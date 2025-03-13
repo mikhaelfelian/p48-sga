@@ -1,5 +1,12 @@
 <?php
 $session = \Config\Services::session();
+
+// Initialize the mKaryawan model to get employee counts
+$karyawanModel = new \App\Models\mKaryawan();
+$totalEmployees = $karyawanModel->countAllEmployees();
+$activeEmployees = $karyawanModel->countActiveEmployees();
+$contractEmployees = $karyawanModel->countContractEmployees();
+$inactiveEmployees = $karyawanModel->countInactiveEmployees();
 ?>
 
 <!-- Content Header (Page header) -->
@@ -32,7 +39,7 @@ $session = \Config\Services::session();
                         <div class="info-box-content">
                             <span class="info-box-text">Total Karyawan</span>
                             <span class="info-box-number">
-                                12
+                                <?= $totalEmployees ?>
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -46,7 +53,7 @@ $session = \Config\Services::session();
                         <div class="info-box-content">
                             <span class="info-box-text">Karyawan Aktif</span>
                             <span class="info-box-number">
-                                1
+                                <?= $activeEmployees ?>
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -64,7 +71,7 @@ $session = \Config\Services::session();
                         <div class="info-box-content">
                             <span class="info-box-text">Karyawan Kontrak</span>
                             <span class="info-box-number">
-                                1
+                                <?= $contractEmployees ?>
                             </span>
                         </div>
                         <!-- /.info-box-content -->
@@ -78,55 +85,12 @@ $session = \Config\Services::session();
                         <div class="info-box-content">
                             <span class="info-box-text">Karyawan Non-Aktif</span>
                             <span class="info-box-number">
-                                5
+                                <?= $inactiveEmployees ?>
                             </span>
                         </div>
                         <!-- /.info-box-content -->
                     </div>
                     <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-            </div>
-            <!-- /.row -->
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">Karyawan Terbaru</h5>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 10px">#</th>
-                                            <th>NIK</th>
-                                            <th>Nama</th>
-                                            <th>Jabatan</th>
-                                            <th>Status</th>
-                                            <th style="width: 100px">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer clearfix">
-                            <a href="<?= base_url('sdm/karyawan/data_karyawan.php'); ?>"
-                                class="btn btn-sm btn-info float-right">Lihat Semua Karyawan</a>
-                        </div>
-                        <!-- /.card-footer -->
-                    </div>
-                    <!-- /.card -->
                 </div>
                 <!-- /.col -->
             </div>

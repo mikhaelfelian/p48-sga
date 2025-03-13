@@ -30,5 +30,44 @@ class mKaryawan extends Model {
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
-
+    
+    /**
+     * Count all employees
+     * 
+     * @return int Total number of employees
+     */
+    public function countAllEmployees()
+    {
+        return $this->countAllResults();
+    }
+    
+    /**
+     * Count active employees
+     * 
+     * @return int Total number of active employees
+     */
+    public function countActiveEmployees()
+    {
+        return $this->where('status', '1')->countAllResults();
+    }
+    
+    /**
+     * Count contract employees
+     * 
+     * @return int Total number of contract employees
+     */
+    public function countContractEmployees()
+    {
+        return $this->where('status', '2')->countAllResults();
+    }
+    
+    /**
+     * Count inactive employees
+     * 
+     * @return int Total number of inactive employees
+     */
+    public function countInactiveEmployees()
+    {
+        return $this->where('status', '0')->countAllResults();
+    }
 }

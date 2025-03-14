@@ -5,70 +5,63 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 /**
- * Employee Leave/Time-off Model (trSdmCuti)
+ * Employee Leave/Time-off Model
  * 
- * This model handles employee leave/time-off data using the trSDMCuti table.
+ * This model handles employee leave/time-off requests data from the tbl_sdm_cuti table.
+ * It provides methods for retrieving, creating, updating, and managing leave requests.
  * 
  * @author Mikhael Felian Waskito - mikhaelfelian@gmail.com
- * @date 2023-06-23
+ * @date 2025-03-14
  */
 class trSdmCuti extends Model
 {
-    protected $table         = 'tbl_sdm_cuti';
-    protected $primaryKey    = 'id';
+    protected $table            = 'tbl_sdm_cuti';
+    protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType    = 'object';
-    protected $useSoftDeletes = false;
-    protected $allowedFields = [
-        'id_karyawan', 
-        'id_user', 
-        'id_manajemen',
-        'id_kategori',
-        'tgl_simpan', 
-        'tgl_modif', 
-        'tgl_masuk', 
-        'tgl_keluar', 
-        'keterangan',
-        'no_surat',
-        'ttd',
-        'file_name',
-        'file_type',
-        'file_ext',
-        'catatan',
-        'status'
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $allowedFields    = [
+        'id_karyawan', 'id_user', 'id_manajemen', 'id_kategori',
+        'tgl_simpan', 'tgl_modif', 'tgl_masuk', 'tgl_keluar',
+        'keterangan', 'no_surat', 'ttd', 'file_name', 'file_type', 
+        'file_ext', 'catatan', 'status'
     ];
 
     // Dates
-    protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
-    protected $createdField  = 'tgl_simpan';
-    protected $updatedField  = 'tgl_modif';
-    protected $deletedField  = '';
+    protected $useTimestamps    = false;
+    protected $dateFormat       = 'datetime';
+    protected $createdField     = 'tgl_simpan';
+    protected $updatedField     = 'tgl_modif';
+    protected $deletedField     = '';
 
     // Validation
-    protected $validationRules = [];
+    protected $validationRules  = [];
     protected $validationMessages = [];
-    protected $skipValidation = false;
+    protected $skipValidation   = false;
     protected $cleanValidationRules = true;
 
     /**
-     * Get employee leave/time-off data by employee ID
+     * Get leave requests for a specific employee
      * 
      * @param int $id_karyawan Employee ID
-     * @return array Employee leave/time-off data
+     * @return array Leave requests
      */
-    public function getCuti($id_karyawan)
+    public function getCuti($id_karyawan = null)
     {
-        return $this->where('id_karyawan', $id_karyawan)
-                    ->orderBy('tgl_masuk', 'DESC')
-                    ->findAll();
+        if ($id_karyawan) {
+            return $this->where('id_karyawan', $id_karyawan)
+                        ->orderBy('tgl_simpan', 'DESC')
+                        ->findAll();
+        }
+        
+        return $this->orderBy('tgl_simpan', 'DESC')->findAll();
     }
 
     /**
-     * Get employee leave/time-off data by ID
+     * Get a specific leave request by ID
      * 
-     * @param int $id Leave/time-off record ID
-     * @return array|null Employee leave/time-off data
+     * @param int $id Leave request ID
+     * @return array|null Leave request data
      */
     public function getCutiById($id)
     {
@@ -76,9 +69,9 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Get pending leave/time-off requests
+     * Get all pending leave requests
      * 
-     * @return array Pending leave/time-off requests
+     * @return array Pending leave requests
      */
     public function getPendingRequests()
     {
@@ -88,9 +81,9 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Get approved leave/time-off requests
+     * Get all approved leave requests
      * 
-     * @return array Approved leave/time-off requests
+     * @return array Approved leave requests
      */
     public function getApprovedRequests()
     {
@@ -100,9 +93,9 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Get rejected leave/time-off requests
+     * Get all rejected leave requests
      * 
-     * @return array Rejected leave/time-off requests
+     * @return array Rejected leave requests
      */
     public function getRejectedRequests()
     {
@@ -112,11 +105,11 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Approve a leave/time-off request
+     * Approve a leave request
      * 
-     * @param int $id Leave/time-off record ID
+     * @param int $id Leave request ID
      * @param int $id_manajemen Manager/HR ID who approved the request
-     * @param string $catatan Optional notes from management
+     * @param string $catatan Notes/comments from the manager
      * @return bool Success status
      */
     public function approveRequest($id, $id_manajemen, $catatan = '')
@@ -130,9 +123,9 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Reject a leave/time-off request
+     * Reject a leave request
      * 
-     * @param int $id Leave/time-off record ID
+     * @param int $id Leave request ID
      * @param int $id_manajemen Manager/HR ID who rejected the request
      * @param string $catatan Reason for rejection
      * @return bool Success status
@@ -148,18 +141,18 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Check if employee has overlapping leave/time-off requests
+     * Check if employee has overlapping leave requests
      * 
      * @param int $id_karyawan Employee ID
      * @param string $tgl_masuk Start date
      * @param string $tgl_keluar End date
-     * @param int|null $exclude_id ID to exclude from check (for updates)
+     * @param int|null $exclude_id Exclude this request ID (for updates)
      * @return bool True if overlapping requests exist
      */
     public function hasOverlappingRequests($id_karyawan, $tgl_masuk, $tgl_keluar, $exclude_id = null)
     {
         $builder = $this->where('id_karyawan', $id_karyawan)
-                        ->where('status !=', '2') // Not rejected
+                        ->where('status', '1') // Only check approved requests
                         ->groupStart()
                             ->where("('$tgl_masuk' BETWEEN tgl_masuk AND tgl_keluar)")
                             ->orWhere("('$tgl_keluar' BETWEEN tgl_masuk AND tgl_keluar)")
@@ -167,7 +160,6 @@ class trSdmCuti extends Model
                             ->orWhere("(tgl_keluar BETWEEN '$tgl_masuk' AND '$tgl_keluar')")
                         ->groupEnd();
         
-        // Exclude current record if updating
         if ($exclude_id) {
             $builder->where('id !=', $exclude_id);
         }
@@ -179,19 +171,19 @@ class trSdmCuti extends Model
      * Get leave requests with employee and category information
      * 
      * @param array $filters Optional filters
-     * @return array Leave requests with related information
+     * @return array Leave requests with details
      */
     public function getCutiWithDetails($filters = [])
     {
-        $builder = $this->db->table($this->table . ' c')
-            ->select('c.*, k.nama as nama_karyawan, k.nik, kat.nama as nama_kategori')
-            ->join('tbl_m_karyawan k', 'k.id = c.id_karyawan', 'left')
-            ->join('tbl_m_kategori kat', 'kat.id = c.id_kategori', 'left');
+        $builder = $this->db->table('tbl_sdm_cuti c')
+            ->select('c.*, k.nama as nama_karyawan, k.kode as kode_karyawan, kat.nama as nama_kategori')
+            ->join('tbl_karyawan k', 'k.id = c.id_karyawan', 'left')
+            ->join('tbl_kategori_cuti kat', 'kat.id = c.id_kategori', 'left');
         
         // Apply filters if provided
         if (!empty($filters)) {
             foreach ($filters as $field => $value) {
-                if ($value !== '') {
+                if ($value !== null && $value !== '') {
                     $builder->where("c.$field", $value);
                 }
             }
@@ -201,31 +193,38 @@ class trSdmCuti extends Model
     }
 
     /**
-     * Generate leave document number
+     * Generate a document number for leave requests
      * 
-     * @param int $id_kategori Category ID
-     * @return string Generated document number
+     * Format: CUTI/[CATEGORY_CODE]/[SEQUENTIAL_NUMBER]/[MONTH_ROMAN]/[YEAR]
+     * 
+     * @param int $id_kategori Leave category ID
+     * @return string Formatted document number
      */
     public function generateDocumentNumber($id_kategori)
     {
-        $year = date('Y');
-        $month = date('m');
-        
         // Get category code
-        $kategoriModel = new \App\Models\mKategori();
-        $kategori = $kategoriModel->find($id_kategori);
-        $kategoriCode = $kategori ? $kategori['kode'] : 'CT';
+        $kategori = $this->db->table('tbl_kategori_cuti')
+                            ->where('id', $id_kategori)
+                            ->get()
+                            ->getRowArray();
         
-        // Count existing documents for this month and year
-        $count = $this->where('YEAR(tgl_simpan)', $year)
-                      ->where('MONTH(tgl_simpan)', $month)
-                      ->countAllResults();
+        $kode_kategori = $kategori['kode'] ?? 'XXX';
         
-        // Format: CT/001/VI/2023
-        $sequence = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
-        $romanMonth = $this->getRomanMonth($month);
+        // Get current year and month
+        $year = date('Y');
+        $month = date('n');
+        $roman_month = $this->getRomanMonth($month);
         
-        return $kategoriCode . '/' . $sequence . '/' . $romanMonth . '/' . $year;
+        // Get sequential number
+        $count = $this->db->table('tbl_sdm_cuti')
+                        ->where('YEAR(tgl_simpan)', $year)
+                        ->where('MONTH(tgl_simpan)', $month)
+                        ->countAllResults();
+        
+        $sequential = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+        
+        // Format: CUTI/[CATEGORY_CODE]/[SEQUENTIAL_NUMBER]/[MONTH_ROMAN]/[YEAR]
+        return "CUTI/{$kode_kategori}/{$sequential}/{$roman_month}/{$year}";
     }
     
     /**
@@ -237,56 +236,60 @@ class trSdmCuti extends Model
     private function getRomanMonth($month)
     {
         $romans = [
-            1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI',
-            7 => 'VII', 8 => 'VIII', 9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII'
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII'
         ];
         
-        return $romans[(int)$month] ?? '';
+        return $romans[$month] ?? 'I';
     }
-    
+
     /**
-     * Check if a file is an image based on its extension or MIME type
+     * Handle file upload for leave requests
      * 
-     * @param string $file_ext File extension
-     * @param string $file_type File MIME type
-     * @return bool True if the file is an image
+     * @param object $file Uploaded file object
+     * @param int $id_user User ID
+     * @return array|bool File data on success, false on failure
      */
-    public function isImage($file_ext = null, $file_type = null)
+    public function handleFileUpload($file, $id_user)
     {
-        // List of common image extensions
-        $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
-        
-        // Check by extension
-        if (!empty($file_ext) && in_array(strtolower($file_ext), $image_extensions)) {
-            return true;
+        // Check if file exists and is valid
+        if (!$file || !$file->isValid() || $file->getSize() <= 0) {
+            log_message('error', 'File upload failed: No valid file provided');
+            return false;
         }
         
-        // Check by MIME type
-        if (!empty($file_type) && strpos($file_type, 'image/') === 0) {
-            return true;
+        try {
+            // Create directory if it doesn't exist
+            $uploadPath = FCPATH . 'uploads/cuti/' . $id_user;
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0777, true);
+            }
+            
+            // Move the file
+            if (!$file->move($uploadPath)) {
+                log_message('error', 'File upload failed: ' . $file->getErrorString());
+                return false;
+            }
+            
+            // Return file data
+            return [
+                'file_name' => $file->getName(),
+                'file_type' => $file->getClientMimeType(),
+                'file_ext' => $file->getClientExtension()
+            ];
+        } catch (\Exception $e) {
+            log_message('error', 'File upload exception: ' . $e->getMessage());
+            return false;
         }
-        
-        return false;
-    }
-    
-    /**
-     * Get the URL for viewing a file
-     * 
-     * @param string $file_name File name/path
-     * @return string URL to the file
-     */
-    public function getFileUrl($file_name)
-    {
-        if (empty($file_name)) {
-            return '';
-        }
-        
-        // If the file path already starts with http, return it as is
-        if (strpos($file_name, 'http') === 0) {
-            return $file_name;
-        }
-        
-        // Otherwise, prepend the base URL
-        return base_url($file_name);
     }
 } 

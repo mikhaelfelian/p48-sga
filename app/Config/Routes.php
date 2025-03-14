@@ -298,9 +298,9 @@ $routes->post('/gudang/stok/set_item_simpan.php', 'Gudang::set_item_simpan');
 # --- SDM - KARYAWAN ---
 # SDM Module
 $routes->group('sdm', ['filter' => 'auth'], function($routes) {
-    # Employee management routes
+    $routes->get('/', 'Sdm::index');
     $routes->get('data_karyawan.php', 'Sdm::data_karyawan');
-    $routes->get('dashboard.php', 'Sdm::dashboard');
+    $routes->get('cuti/data_cuti.php', 'Sdm::data_cuti');
 });
 
 

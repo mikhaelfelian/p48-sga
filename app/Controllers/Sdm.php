@@ -150,7 +150,7 @@ class Sdm extends BaseController
                     }
                 }
                 $sql_cuti = $filtered_cuti;
-            }
+            } 
 
             // Pagination setup
             $jml_limit = $this->Setting->jml_item;

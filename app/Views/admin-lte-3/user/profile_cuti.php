@@ -157,23 +157,30 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <?php
-                                    $isPdf = (isset($SQLCuti->file_ext) && strtolower($SQLCuti->file_ext) === 'pdf') ||
-                                        (isset($SQLCuti->file_type) && $SQLCuti->file_type === 'application/pdf');
-                                    $is_image = !$isPdf && isset($SQLCuti->file_ext) && in_array(strtolower($SQLCuti->file_ext), ['jpg', 'jpeg', 'png']);
-                                    $file_url = base_url($SQLCuti->file_name);
+                                    $cutiModel = new \App\Models\trSdmCuti();
+                                    $isImage = $cutiModel->isImage($SQLCuti->file_ext, $SQLCuti->file_type);
+                                    $file_url = $cutiModel->getFileUrl($SQLCuti->file_name);
+                                    
+                                    // Ensure the file URL is valid
+                                    if (!empty($file_url)):
                                     ?>
-
-                                    <?php if ($is_image): ?>
-                                        <a href="<?= $file_url ?>" data-toggle="lightbox" data-title="Berkas Cuti"
-                                            data-gallery="gallery">
-                                            <img src="<?= $file_url ?>" alt="Berkas Cuti" class="img-thumbnail rounded-0"
-                                                style="max-height: 250px;">
-                                        </a>
-                                    <?php else: ?>
-                                        <a href="<?= $file_url ?>" data-toggle="lightbox" data-title="Berkas Cuti"
-                                            class="btn btn-sm btn-info rounded-0">
-                                            <i class="fas fa-file-<?= ($isPdf) ? 'pdf' : 'alt' ?>"></i> Lihat Berkas
-                                        </a>
+                                        <?php if ($isImage): ?>
+                                            <a href="<?= $file_url ?>" 
+                                               data-toggle="lightbox" 
+                                               data-title="<?= htmlspecialchars($SQLCuti->keterangan ?? 'Berkas Cuti') ?>"
+                                               data-gallery="gallery">
+                                                <img src="<?= $file_url ?>" 
+                                                     alt="Berkas Cuti" 
+                                                     class="img-thumbnail rounded-0"
+                                                     style="max-height: 250px;">
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="<?= $file_url ?>" 
+                                               target="_blank" 
+                                               class="btn btn-sm btn-info rounded-0">
+                                                <i class="fas fa-file-<?= ($SQLCuti->file_ext == 'pdf') ? 'pdf' : 'alt' ?>"></i> Lihat Berkas
+                                            </a>
+                                        <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -214,21 +221,27 @@
                                                         <?php if (!empty($cuti->file_name)): ?>
                                                             <br />
                                                             <?php
-                                                            $isPdf = (isset($cuti->file_ext) && strtolower($cuti->file_ext) === 'pdf') ||
-                                                                (isset($cuti->file_type) && $cuti->file_type === 'application/pdf');
-                                                            $fileUrl = base_url($cuti->file_name);
+                                                            $cutiModel = new \App\Models\trSdmCuti();
+                                                            $isImage = $cutiModel->isImage($cuti->file_ext, $cuti->file_type);
+                                                            $fileUrl = $cutiModel->getFileUrl($cuti->file_name);
+                                                            
+                                                            // Ensure the file URL is valid
+                                                            if (!empty($fileUrl)):
                                                             ?>
-                                                            <?php if (!$isPdf): ?>
-                                                                <a href="<?= $fileUrl ?>" data-toggle="lightbox"
-                                                                    data-title="<?= $cuti->keterangan ?>"
-                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
-                                                                    <i class="fas fa-paperclip"></i> Lampiran
-                                                                </a>
-                                                            <?php else: ?>
-                                                                <a href="<?= $fileUrl ?>" target="_blank"
-                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
-                                                                    <i class="fas fa-paperclip"></i> Lampiran
-                                                                </a>
+                                                                <?php if ($isImage): ?>
+                                                                    <a href="<?= $fileUrl ?>" 
+                                                                       data-toggle="lightbox" 
+                                                                       data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
+                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                        <i class="fas fa-paperclip"></i> Lihat
+                                                                    </a>
+                                                                <?php else: ?>
+                                                                    <a href="<?= $fileUrl ?>" 
+                                                                       target="_blank"
+                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                        <i class="fas fa-paperclip"></i> Lampiran
+                                                                    </a>
+                                                                <?php endif; ?>
                                                             <?php endif; ?>
                                                         <?php endif; ?>
                                                     </td>
@@ -263,18 +276,24 @@
                                                             $cutiModel = new \App\Models\trSdmCuti();
                                                             $isImage = $cutiModel->isImage($cuti->file_ext, $cuti->file_type);
                                                             $fileUrl = $cutiModel->getFileUrl($cuti->file_name);
+                                                            
+                                                            // Ensure the file URL is valid
+                                                            if (!empty($fileUrl)):
                                                             ?>
-                                                            <?php if ($isImage): ?>
-                                                                <a href="<?= $fileUrl ?>" data-toggle="lightbox"
-                                                                    data-title="<?= $cuti->keterangan ?>"
-                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
-                                                                    <i class="fas fa-paperclip"></i> Lihat
-                                                                </a>
-                                                            <?php else: ?>
-                                                                <a href="<?= $fileUrl ?>" target="_blank"
-                                                                    class="btn btn-sm btn-info rounded-0 mb-1">
-                                                                    <i class="fas fa-paperclip"></i> Lampiran
-                                                                </a>
+                                                                <?php if ($isImage): ?>
+                                                                    <a href="<?= $fileUrl ?>" 
+                                                                       data-toggle="lightbox" 
+                                                                       data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
+                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                        <i class="fas fa-paperclip"></i> Lihat
+                                                                    </a>
+                                                                <?php else: ?>
+                                                                    <a href="<?= $fileUrl ?>" 
+                                                                       target="_blank"
+                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                        <i class="fas fa-paperclip"></i> Lampiran
+                                                                    </a>
+                                                                <?php endif; ?>
                                                             <?php endif; ?>
                                                         <?php endif; ?>
                                                     </td>
@@ -318,13 +337,69 @@
             }
         });
 
-        // Initialize Ekko Lightbox
+        // Custom Ekko Lightbox initialization function to address the 'Cannot read properties of null (reading 'on')' error
+        function safeInitLightbox(element) {
+            var href = $(element).attr('href');
+            
+            // Verify href is valid
+            if (!href || href === '#' || href === 'javascript:void(0)') {
+                console.warn('Invalid lightbox target:', href);
+                return false;
+            }
+            
+            // Create a new options object
+            var options = {
+                alwaysShowClose: true,
+                showArrows: false,
+                wrapping: false
+            };
+            
+            // Create a new lightbox instance
+            var lightbox = new ekkoLightbox(options);
+            
+            // Manually set the source
+            if (lightbox && typeof lightbox.setContent === 'function') {
+                try {
+                    lightbox.setContent(element);
+                    return true;
+                } catch (error) {
+                    console.error('Error setting lightbox content:', error);
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+
+        // Initialize Ekko Lightbox with enhanced error handling
         $(document).on('click', '[data-toggle="lightbox"]', function (e) {
             e.preventDefault();
-            $(this).ekkoLightbox({
-                alwaysShowClose: true,
-                showArrows: false
-            });
+            
+            // Store the href for fallback
+            var href = $(this).attr('href');
+            
+            try {
+                // First try our custom safe initialization
+                if (!safeInitLightbox(this)) {
+                    // If that fails, try the standard initialization with a delay
+                    setTimeout(function() {
+                        try {
+                            $(e.currentTarget).ekkoLightbox({
+                                alwaysShowClose: true,
+                                showArrows: false,
+                                wrapping: false
+                            });
+                        } catch (innerError) {
+                            console.error('Lightbox initialization error:', innerError);
+                            window.open(href, '_blank');
+                        }
+                    }, 50);
+                }
+            } catch (error) {
+                console.error('Lightbox error:', error);
+                // Fallback: open in new tab if lightbox fails
+                window.open(href, '_blank');
+            }
         });
     });
 </script>

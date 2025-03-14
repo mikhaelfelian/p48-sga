@@ -292,4 +292,50 @@ class trSdmCuti extends Model
             return false;
         }
     }
+
+    /**
+     * Check if a file is an image based on its extension or MIME type
+     * 
+     * @param string $file_ext File extension
+     * @param string $file_type File MIME type
+     * @return bool True if the file is an image
+     */
+    public function isImage($file_ext = null, $file_type = null)
+    {
+        // List of common image extensions
+        $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+        
+        // Check by extension
+        if (!empty($file_ext) && in_array(strtolower($file_ext), $image_extensions)) {
+            return true;
+        }
+        
+        // Check by MIME type
+        if (!empty($file_type) && strpos($file_type, 'image/') === 0) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get the URL for viewing a file
+     * 
+     * @param string $file_name File name/path
+     * @return string URL to the file
+     */
+    public function getFileUrl($file_name)
+    {
+        if (empty($file_name)) {
+            return '';
+        }
+        
+        // If the file path already starts with http, return it as is
+        if (strpos($file_name, 'http') === 0) {
+            return $file_name;
+        }
+        
+        // Otherwise, prepend the base URL
+        return base_url($file_name);
+    }
 } 

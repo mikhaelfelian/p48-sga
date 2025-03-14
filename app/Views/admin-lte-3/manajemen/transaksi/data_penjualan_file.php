@@ -168,13 +168,67 @@
 <script src="<?php echo base_url('assets/theme/' . $ThemePath . '/plugins/ekko-lightbox/ekko-lightbox.min.js') ?>"></script>
 <!-- Page script -->
 <script type="text/javascript">
-                                            $(function () {
-                                                $(document).on('click', '[data-toggle="lightbox"]', function (event) {
-                                                    event.preventDefault();
-                                                    $(this).ekkoLightbox({
-                                                        alwaysShowClose: true
-                                                    });
-                                                });
-<?php echo session()->getFlashdata('transaksi_toast'); ?>
-                                            });
+    $(function () {
+        // Custom Ekko Lightbox initialization function to address the 'Cannot read properties of null (reading 'on')' error
+        function safeInitLightbox(element) {
+            var href = $(element).attr('href');
+            
+            // Verify href is valid
+            if (!href || href === '#' || href === 'javascript:void(0)') {
+                console.warn('Invalid lightbox target:', href);
+                return false;
+            }
+            
+            // Create a new options object
+            var options = {
+                alwaysShowClose: true
+            };
+            
+            // Create a new lightbox instance
+            var lightbox = new ekkoLightbox(options);
+            
+            // Manually set the source
+            if (lightbox && typeof lightbox.setContent === 'function') {
+                try {
+                    lightbox.setContent(element);
+                    return true;
+                } catch (error) {
+                    console.error('Error setting lightbox content:', error);
+                    return false;
+                }
+            }
+            
+            return false;
+        }
+
+        // Initialize Ekko Lightbox with enhanced error handling
+        $(document).on('click', '[data-toggle="lightbox"]', function (event) {
+            event.preventDefault();
+            
+            // Store the href for fallback
+            var href = $(this).attr('href');
+            
+            try {
+                // First try our custom safe initialization
+                if (!safeInitLightbox(this)) {
+                    // If that fails, try the standard initialization with a delay
+                    setTimeout(function() {
+                        try {
+                            $(event.currentTarget).ekkoLightbox({
+                                alwaysShowClose: true
+                            });
+                        } catch (innerError) {
+                            console.error('Lightbox initialization error:', innerError);
+                            window.open(href, '_blank');
+                        }
+                    }, 50);
+                }
+            } catch (error) {
+                console.error('Lightbox error:', error);
+                // Fallback: open in new tab if lightbox fails
+                window.open(href, '_blank');
+            }
+        });
+        <?php echo session()->getFlashdata('transaksi_toast'); ?>
+    });
 </script>

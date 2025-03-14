@@ -377,20 +377,26 @@
                                                 <td>
                                                     <?php if (!empty($row->file_name_ktp)): ?>
                                                         <?php 
-                                                        $file_path = $row->file_name_ktp;
-                                                        $file_ext = strtolower($row->file_ext_ktp ?? pathinfo($row->file_name_ktp, PATHINFO_EXTENSION));
-                                                        $is_image = in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif']);
+                                                        // Use the trSdmCuti model for file handling
+                                                        $fileModel = new \App\Models\trSdmCuti();
+                                                        $isImage = $fileModel->isImage($row->file_ext_ktp, null);
+                                                        $file_url = $fileModel->getFileUrl($row->file_name_ktp);
+                                                        
+                                                        if (!empty($file_url)):
                                                         ?>
-                                                        <a href="<?= base_url($file_path) ?>" 
+                                                        <a href="<?= $file_url ?>" 
                                                            data-toggle="lightbox" 
-                                                           data-title="KTP - <?= $row->nm_ayah ?>"
+                                                           data-title="KTP - <?= htmlspecialchars($row->nm_ayah ?? '') ?>"
                                                            data-gallery="ktp-gallery"
-                                                           <?php if (!$is_image): ?>
+                                                           <?php if (!$isImage): ?>
                                                            data-type="iframe"
                                                            <?php endif; ?>
                                                            class="btn btn-sm btn-info rounded-0">
                                                             <i class="fas fa-eye"></i> Lihat
                                                         </a>
+                                                        <?php else: ?>
+                                                            <span class="badge badge-secondary rounded-0">File tidak ditemukan</span>
+                                                        <?php endif; ?>
                                                     <?php else: ?>
                                                         <span class="badge badge-secondary rounded-0">Tidak ada</span>
                                                     <?php endif; ?>
@@ -398,20 +404,26 @@
                                                 <td>
                                                     <?php if (!empty($row->file_name)): ?>
                                                         <?php 
-                                                        $file_path = $row->file_name;
-                                                        $file_ext = strtolower($row->file_ext ?? pathinfo($row->file_name, PATHINFO_EXTENSION));
-                                                        $is_image = in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif']);
+                                                        // Use the trSdmCuti model for file handling
+                                                        $fileModel = new \App\Models\trSdmCuti();
+                                                        $isImage = $fileModel->isImage($row->file_ext, null);
+                                                        $file_url = $fileModel->getFileUrl($row->file_name);
+                                                        
+                                                        if (!empty($file_url)):
                                                         ?>
-                                                        <a href="<?= base_url($file_path) ?>" 
+                                                        <a href="<?= $file_url ?>" 
                                                            data-toggle="lightbox" 
-                                                           data-title="Kartu Keluarga - <?= $row->nm_ayah ?>"
+                                                           data-title="Kartu Keluarga - <?= htmlspecialchars($row->nm_ayah ?? '') ?>"
                                                            data-gallery="kk-gallery"
-                                                           <?php if (!$is_image): ?>
+                                                           <?php if (!$isImage): ?>
                                                            data-type="iframe"
                                                            <?php endif; ?>
                                                            class="btn btn-sm btn-info rounded-0">
                                                             <i class="fas fa-eye"></i> Lihat
                                                         </a>
+                                                        <?php else: ?>
+                                                            <span class="badge badge-secondary rounded-0">File tidak ditemukan</span>
+                                                        <?php endif; ?>
                                                     <?php else: ?>
                                                         <span class="badge badge-secondary rounded-0">Tidak ada</span>
                                                     <?php endif; ?>
@@ -474,82 +486,69 @@
         // Trigger change on page load
         $('#status_kawin').trigger('change');
 
-        // Initialize Ekko Lightbox
-        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-            event.preventDefault();
-            $(this).ekkoLightbox({
+        // Custom Ekko Lightbox initialization function to address the 'Cannot read properties of null (reading 'on')' error
+        function safeInitLightbox(element) {
+            var href = $(element).attr('href');
+            
+            // Verify href is valid
+            if (!href || href === '#' || href === 'javascript:void(0)') {
+                console.warn('Invalid lightbox target:', href);
+                return false;
+            }
+            
+            // Create a new options object
+            var options = {
                 alwaysShowClose: true,
                 showArrows: false,
-                wrapping: false,
-                loadingMessage: '',
-                onContentLoaded: function() {
-                    // Adjust iframe height for PDF files
-                    var $iframe = $('.ekko-lightbox-container iframe');
-                    if ($iframe.length > 0) {
-                        $iframe.css('height', '80vh');
-                    }
-                    
-                    // Remove any loading elements
-                    $('.ekko-lightbox-loader, .modal-loading').remove();
-                },
-                onShow: function() {
-                    // Add custom class for styling
-                    $('.ekko-lightbox').addClass('custom-lightbox');
-                    
-                    // Fix accessibility issues
-                    setTimeout(function() {
-                        // Remove aria-hidden from the modal
-                        $('.ekko-lightbox').removeAttr('aria-hidden');
-                        
-                        // Set proper focus management
-                        $('.ekko-lightbox').attr({
-                            'role': 'dialog',
-                            'aria-modal': 'true',
-                            'aria-labelledby': 'lightbox-title',
-                            'tabindex': '0'  // Make the modal focusable
-                        });
-                        
-                        // Add ID to the title for aria-labelledby reference
-                        $('.modal-title').attr('id', 'lightbox-title');
-                        
-                        // Make sure close button is accessible
-                        $('.ekko-lightbox button.close').attr({
-                            'aria-label': 'Close',
-                            'tabindex': '0'
-                        });
-                        
-                        // Set focus to the modal
-                        $('.ekko-lightbox').focus();
-                        
-                        // Add keyboard navigation for the lightbox
-                        $('.ekko-lightbox').on('keydown', function(e) {
-                            // ESC key closes the lightbox
-                            if (e.keyCode === 27) {
-                                $('.ekko-lightbox button.close').click();
-                            }
-                            
-                            // TAB key should be trapped within the modal
-                            if (e.keyCode === 9) {
-                                // Find all focusable elements
-                                var focusableElements = $('.ekko-lightbox').find('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                                var firstElement = focusableElements.first();
-                                var lastElement = focusableElements.last();
-                                
-                                // If shift+tab and focus is on first element, move to last
-                                if (e.shiftKey && document.activeElement === firstElement[0]) {
-                                    e.preventDefault();
-                                    lastElement.focus();
-                                }
-                                // If tab and focus is on last element, move to first
-                                else if (!e.shiftKey && document.activeElement === lastElement[0]) {
-                                    e.preventDefault();
-                                    firstElement.focus();
-                                }
-                            }
-                        });
-                    }, 300);
+                wrapping: false
+            };
+            
+            // Create a new lightbox instance
+            var lightbox = new ekkoLightbox(options);
+            
+            // Manually set the source
+            if (lightbox && typeof lightbox.setContent === 'function') {
+                try {
+                    lightbox.setContent(element);
+                    return true;
+                } catch (error) {
+                    console.error('Error setting lightbox content:', error);
+                    return false;
                 }
-            });
+            }
+            
+            return false;
+        }
+
+        // Initialize Ekko Lightbox with enhanced error handling
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+            event.preventDefault();
+            
+            // Store the href for fallback
+            var href = $(this).attr('href');
+            
+            try {
+                // First try our custom safe initialization
+                if (!safeInitLightbox(this)) {
+                    // If that fails, try the standard initialization with a delay
+                    setTimeout(function() {
+                        try {
+                            $(event.currentTarget).ekkoLightbox({
+                                alwaysShowClose: true,
+                                showArrows: false,
+                                wrapping: false
+                            });
+                        } catch (innerError) {
+                            console.error('Lightbox initialization error:', innerError);
+                            window.open(href, '_blank');
+                        }
+                    }, 50);
+                }
+            } catch (error) {
+                console.error('Lightbox error:', error);
+                // Fallback: open in new tab if lightbox fails
+                window.open(href, '_blank');
+            }
         });
     });
 </script>

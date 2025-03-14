@@ -176,9 +176,9 @@ class trSdmCuti extends Model
     public function getCutiWithDetails($filters = [])
     {
         $builder = $this->db->table('tbl_sdm_cuti c')
-            ->select('c.*, k.nama as nama_karyawan, k.kode as kode_karyawan, kat.nama as nama_kategori')
-            ->join('tbl_karyawan k', 'k.id = c.id_karyawan', 'left')
-            ->join('tbl_kategori_cuti kat', 'kat.id = c.id_kategori', 'left');
+            ->select('c.*, k.nama as nama_karyawan, k.kode as kode_karyawan, kat.kategori as nama_kategori')
+            ->join('tbl_m_karyawan k', 'k.id = c.id_karyawan', 'left')
+            ->join('tbl_m_kategori kat', 'kat.id = c.id_kategori', 'left');
         
         // Apply filters if provided
         if (!empty($filters)) {
@@ -203,7 +203,7 @@ class trSdmCuti extends Model
     public function generateDocumentNumber($id_kategori)
     {
         // Get category code
-        $kategori = $this->db->table('tbl_kategori_cuti')
+        $kategori = $this->db->table('tbl_m_kategori')
                             ->where('id', $id_kategori)
                             ->get()
                             ->getRowArray();

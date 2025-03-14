@@ -48,7 +48,7 @@
                                 <div class="col-md-6">
                                     <?= form_open('', ['method' => 'get', 'class' => 'form-inline']); ?>
                                     <div class="input-group rounded-0">
-                                        <?= form_input('filter_nama', $this->input->getVar('filter_nama'), 'class="form-control rounded-0" placeholder="Isikan Nama Karyawan ..."'); ?>
+                                        <?= form_input('filter_nama', request()->getVar('filter_nama') ?? '', 'class="form-control rounded-0" placeholder="Isikan Nama Karyawan ..."'); ?>
                                         <div class="input-group-append">
                                             <button type="submit" class="btn btn-primary rounded-0"><i class="fas fa-search"></i> Filter</button>
                                         </div>
@@ -56,12 +56,14 @@
                                     <?= form_close(); ?>
                                 </div>
                                 <div class="col-md-6">
-                                    <select name="filter_status" class="form-control rounded-0 float-right" style="width: 200px;" onchange="this.form.submit()">
+                                    <?= form_open('', ['method' => 'get', 'id' => 'statusFilterForm']); ?>
+                                    <select name="filter_status" class="form-control rounded-0 float-right" style="width: 200px;" onchange="document.getElementById('statusFilterForm').submit()">
                                         <option value="-">- [Pilih Status] -</option>
-                                        <option value="0" <?= ($this->input->getVar('filter_status') == '0') ? 'selected' : ''; ?>>Menunggu</option>
-                                        <option value="1" <?= ($this->input->getVar('filter_status') == '1') ? 'selected' : ''; ?>>Disetujui</option>
-                                        <option value="2" <?= ($this->input->getVar('filter_status') == '2') ? 'selected' : ''; ?>>Ditolak</option>
+                                        <option value="0" <?= (request()->getVar('filter_status') == '0') ? 'selected' : ''; ?>>Menunggu</option>
+                                        <option value="1" <?= (request()->getVar('filter_status') == '1') ? 'selected' : ''; ?>>Disetujui</option>
+                                        <option value="2" <?= (request()->getVar('filter_status') == '2') ? 'selected' : ''; ?>>Ditolak</option>
                                     </select>
+                                    <?= form_close(); ?>
                                 </div>
                             </div>
 

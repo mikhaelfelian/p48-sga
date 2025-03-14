@@ -10,8 +10,8 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="<?= base_url('sdm/pengajuan_cuti.php'); ?>"
-                class="nav-link <?= (strpos(current_url(), '/sdm/pengajuan_cuti') !== false ? 'active' : ''); ?>">
+            <a href="<?= base_url('sdm/cuti/data_cuti.php'); ?>"
+                class="nav-link <?= (strpos(current_url(), '/sdm/cuti/data_cuti') !== false ? 'active' : ''); ?>">
                 <i class="far fa-calendar-alt nav-icon"></i>
                 <p>Pengajuan Cuti <span class="badge badge-info right">6</span></p>
             </a>

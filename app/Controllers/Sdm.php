@@ -117,20 +117,21 @@ class Sdm extends BaseController
     public function data_cuti()
     {
         if ($this->ionAuth->loggedIn()) {
-            $ID = $this->ionAuth->user()->row();
-            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
-            $AksesGrup = $this->ionAuth->groups()->result();
+            // Get user information
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
 
-            // Get filter parameters
-            $nama = $this->request->getVar('filter_nama');
-            $status = $this->request->getVar('filter_status');
-            $hlmn = $this->request->getVar('page');
+            // Get filter parameters from request
+            $nama       = $this->request->getVar('filter_nama');
+            $status     = $this->request->getVar('filter_status');
+            $hlmn       = $this->request->getVar('page');
 
             // Initialize the trSdmCuti model
-            $Cuti = new \App\Models\trSdmCuti();
+            $Cuti       = new \App\Models\trSdmCuti();
 
             // Get employee model for employee names
-            $Karyawan = new \App\Models\mKaryawan();
+            $Karyawan   = new \App\Models\mKaryawan();
 
             // Prepare filters
             $filters = [];
@@ -153,30 +154,31 @@ class Sdm extends BaseController
             } 
 
             // Pagination setup
-            $jml_limit = $this->Setting->jml_item;
-            $total_rows = count($sql_cuti);
-            $total_pages = ceil($total_rows / $jml_limit);
+            // Set pagination parameters
+            $jml_limit    = $this->Setting->jml_item;
+            $total_rows   = count($sql_cuti);
+            $total_pages  = ceil($total_rows / $jml_limit);
             $current_page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-            $offset = ($current_page - 1) * $jml_limit;
+            $offset       = ($current_page - 1) * $jml_limit;
 
             // Slice the data for pagination
             $sql_cuti = array_slice($sql_cuti, $offset, $jml_limit);
 
             $data = [
-                'SQLCuti' => $sql_cuti,
-                'Halaman' => (isset($_GET['page']) ? ($_GET['page'] != '1' ? (($_GET['page'] - 1) * $jml_limit) + 1 : 1) : 1),
-                'TotalPages' => $total_pages,
+                'SQLCuti'     => $sql_cuti,
+                'Halaman'     => (isset($_GET['page']) ? ($_GET['page'] != '1' ? (($_GET['page'] - 1) * $jml_limit) + 1 : 1) : 1),
+                'TotalPages'  => $total_pages,
                 'CurrentPage' => $current_page,
-                'MenuAktif' => 'active',
-                'MenuOpen' => 'menu-open',
-                'AksesGrup' => $AksesGrup,
-                'Pengguna' => $ID,
-                'PenggunaGrup' => $IDGrup,
-                'Pengaturan' => $this->Setting,
-                'ThemePath' => $this->ThemePath,
-                'menu_atas' => $this->ThemePath . '/layout/menu_atas',
-                'menu_kiri' => $this->ThemePath . '/manajemen/sdm/menu_kiri',
-                'konten' => $this->ThemePath . '/manajemen/sdm/cuti/data_cuti',
+                'MenuAktif'   => 'active',
+                'MenuOpen'    => 'menu-open',
+                'AksesGrup'   => $AksesGrup,
+                'Pengguna'    => $ID,
+                'PenggunaGrup'=> $IDGrup,
+                'Pengaturan'  => $this->Setting,
+                'ThemePath'   => $this->ThemePath,
+                'menu_atas'   => $this->ThemePath . '/layout/menu_atas',
+                'menu_kiri'   => $this->ThemePath . '/manajemen/sdm/menu_kiri',
+                'konten'      => $this->ThemePath . '/manajemen/sdm/cuti/data_cuti',
             ];
 
             return view($this->ThemePath . '/index', $data);

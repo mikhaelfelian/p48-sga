@@ -307,7 +307,12 @@ $routes->group('sdm', ['filter' => 'auth'], function($routes) {
 
 #==========================================================================================
 # --- LAPORAN ---
-$routes->get('/laporan/index.php', 'Laporan::index');
-$routes->get('/laporan/omset/data_rab.php', 'Laporan::data_rab');
+# Laporan Module
+$routes->group('laporan', ['filter' => 'auth'], function($routes) {
+    $routes->get('index.php', 'Laporan::index');
+    $routes->get('omset/data_rab.php', 'Laporan::data_rab');
+    $routes->get('omset/data_penjualan.php', 'Laporan::data_penjualan');
+    $routes->get('omset/data_pembelian.php', 'Laporan::data_pembelian');
+});
 
 $routes->get('pengaturan/hapus_img.php', 'Pengaturan::hapus_img');

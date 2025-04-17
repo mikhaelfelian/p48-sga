@@ -98,7 +98,7 @@ function bln_indo($tglan) {
     return $tgle;
 }
 
-function tgl_indo_sys2($tglan) {
+function tgl_indo_sys($tglan) {
     $str_tgl = $tglan;
     $dta_tgl = ($str_tgl != '0000-00-00' ? strtotime($str_tgl) : '');
     $tgln = (!empty($dta_tgl) ? date('Y-m-d', $dta_tgl) : '');
@@ -106,7 +106,7 @@ function tgl_indo_sys2($tglan) {
     return $tgle;
 }
 
-function tgl_indo_sys($tglan) {
+function tgl_indo_sys2($tglan) {
     $tgl = explode('/', $tglan);
     $tanggal = $tgl[0];
     $bulan = $tgl[1];

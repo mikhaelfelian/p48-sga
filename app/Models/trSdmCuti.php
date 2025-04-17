@@ -24,7 +24,7 @@ class trSdmCuti extends Model
         'id_karyawan', 'id_user', 'id_manajemen', 'id_kategori',
         'tgl_simpan', 'tgl_modif', 'tgl_masuk', 'tgl_keluar',
         'keterangan', 'no_surat', 'ttd', 'file_name', 'file_type', 
-        'file_ext', 'catatan', 'status'
+        'file_ext', 'catatan', 'status','tipe'
     ];
 
     // Dates

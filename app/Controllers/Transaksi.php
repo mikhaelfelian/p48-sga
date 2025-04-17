@@ -2791,12 +2791,28 @@ class Transaksi extends BaseController {
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
             
-            $kode       = $this->input->getVar('filter_kode');
-            $kat        = $this->input->getVar('filter_kat');
             $hlmn       = $this->input->getVar('page');
 
             $vtrPenj    = new \App\Models\vtrPenj();
-            $sql_penj   = $vtrPenj->asObject()->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            $sql_penj   = $vtrPenj->asObject()->orderBy('id', 'DESC');
+            
+            // Apply filters from GET parameters
+            $no_nota = $this->input->getVar('no_nota');
+            $pelanggan = $this->input->getVar('pelanggan');
+            $status_bayar = $this->input->getVar('status_bayar');
+            
+            if (!empty($no_nota)) {
+                $sql_penj->like('no_nota', $no_nota);
+            }
+            
+            if (!empty($pelanggan)) {
+                $sql_penj->like('p_nama', $pelanggan);
+            }
+            
+            if ($status_bayar !== '' && $status_bayar !== null) {
+                $sql_penj->where('status_bayar', $status_bayar);
+            }
+            
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [

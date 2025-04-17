@@ -43,18 +43,27 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php echo form_open(base_url('transaksi/set_trans_cari.php')) ?>
+                                    <?php echo form_open(base_url('transaksi/data_penjualan.php'), ['method' => 'GET']) ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'no_nota', 'name' => 'no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'no_nota', 'name' => 'no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'No. Nota...', 'value' => $request->getGet('no_nota')]) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'pelanggan', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'pelanggan', 'name' => 'pelanggan', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Customer...', 'value' => $request->getGet('pelanggan')]) ?>
                                         </th>
-                                        <th></th>
                                         <th>
-                                            <button class="btn btn-primary btn-flat" style="width: 120px;">
+                                            <?php 
+                                            $status_options = [
+                                                '' => 'Semua',
+                                                '1' => 'Lunas',
+                                                '0' => 'Belum'
+                                            ];
+                                            echo form_dropdown('status_bayar', $status_options, $request->getGet('status_bayar'), 'class="form-control input-sm rounded-0"');
+                                            ?>
+                                        </th>
+                                        <th>
+                                            <button type="submit" class="btn btn-primary btn-flat" style="width: 120px;">
                                                 <i class="fa fa-search"></i> Cari
                                             </button>
                                         </th>

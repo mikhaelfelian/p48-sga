@@ -164,7 +164,7 @@ class Profile extends BaseController {
                 if($this->ionAuth->usernameCheck($user) AND $ID->username != $user){
                     $this->session->setFlashdata('pengaturan_toast', 'toastr.error("Username sudah digunakan, silahkan ulangi !");');
                     return redirect()->to(base_url('profile/'.$IDKary));
-                }else{
+                }else{                
                     
                     
                     # Muat library untuk unggah file
@@ -286,7 +286,7 @@ class Profile extends BaseController {
         
         return view($this->ThemePath.'/index', $data); 
     }
-    
+
     /**
      * Save employee family data
      * 

@@ -276,7 +276,7 @@ class Pembelian extends BaseController {
                     'id_perusahaan' => $idp,
                     'id_supplier'   => $ids,
                     'id_rab'        => $idrab,
-                    'tgl_masuk'     => tgl_indo_sys($tgl_msk),
+                    'tgl_masuk'     => tgl_indo_sys2($tgl_msk),
                     'no_po'         => $no_nota,
                     'supplier'      => $sql_supp->nama,
                     'keterangan'    => $ket,
@@ -697,7 +697,25 @@ class Pembelian extends BaseController {
             $AksesGrup  = $this->ionAuth->groups()->result();
             
             $vtrBeli    = new \App\Models\vtrPembelian();
-            $sql_beli   = $vtrBeli->asObject()->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            $sql_beli   = $vtrBeli->asObject()->orderBy('id', 'DESC');
+            
+            // Apply filters from search form
+            $no_pi = $this->request->getGet('no_pi');
+            $supplier = $this->request->getGet('supplier');
+            $status_bayar = $this->request->getGet('status_bayar');
+            
+            if (!empty($no_pi)) {
+                $sql_beli->like('no_nota', $no_pi);
+            }
+            
+            if (!empty($supplier)) {
+                $sql_beli->like('supplier', $supplier);
+            }
+            
+            if ($status_bayar !== '' && $status_bayar !== null) {
+                $sql_beli->where('status_bayar', $status_bayar);
+            }
+            
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [
@@ -909,6 +927,15 @@ class Pembelian extends BaseController {
                 # Start Transact SQL
                 $this->db->transBegin();
                 
+                // Get PO data if idpo is provided
+                $po_no_nota = '';
+                if (!empty($idpo)) {
+                    $sql_po = $PO->asObject()->where('id', $idpo)->first();
+                    if (!empty($sql_po)) {
+                        $po_no_nota = $sql_po->no_nota;
+                    }
+                }
+                
                 $data = [
                     'id'            => $id,
                     'id_user'       => $ID->id,
@@ -918,7 +945,7 @@ class Pembelian extends BaseController {
                     'tgl_masuk'     => tgl_indo_sys($tgl_msk),
                     'tgl_keluar'    => tgl_indo_sys($tgl_klr),
                     'no_nota'       => $no_nota,
-                    'no_po'         => (!empty($sql_po->no_nota) ? $sql_po->no_nota : ''),
+                    'no_po'         => $po_no_nota,
                     'supplier'      => $sql_supp->nama,
                     'status'        => '0',
                     'status_ppn'    => $status_ppn,
@@ -1037,29 +1064,40 @@ class Pembelian extends BaseController {
                 # Start Transact SQL
                 $this->db->transBegin();
                 
-                $data = [
-                    'id'            => $id,
-                    'jml_total'     => $sql_beli_det->jml_total,
-                    'jml_subtotal'  => $sql_beli_det->jml_total,
-                    'jml_diskon'    => $diskon,
-                    'jml_gtotal'    => $sql_beli_det->jml_total - $diskon,
-                    'status'        => $status,
-                ];
+                try {
+                    // Convert values to appropriate types to prevent operand type errors
+                    $jmlTotal = (float)$sql_beli_det->jml_total;
+                    $jmlDiskon = (float)$diskon;
+                    
+                    $data = [
+                        'id'            => $id,
+                        'jml_total'     => $jmlTotal,
+                        'jml_subtotal'  => $jmlTotal,
+                        'jml_diskon'    => $jmlDiskon,
+                        'jml_gtotal'    => $jmlTotal - $jmlDiskon,
+                        'status'        => $status,
+                    ];
 
-                # Simpan ke tabel pembelian
-                $Beli->save($data);
-                $last_id = (!empty($id) ? $id : $Beli->insertID());
-                
-                # Cek status transact SQL, jika gagal maka rollback
-                if ($this->db->transStatus() === false) {
+                    # Simpan ke tabel pembelian
+                    $Beli->save($data);
+                    $last_id = (!empty($id) ? $id : $Beli->insertID());
+                    
+                    # Cek status transact SQL, jika gagal maka rollback
+                    if ($this->db->transStatus() === false) {
+                        $this->db->transRollback();
+                        $this->session->setFlashdata('pembelian_toast', 'toastr.error("Gagal memproses faktur!");');
+                    } else {
+                        # Set commit jika berhasil
+                        $this->db->transCommit();
+                        
+                        if($last_id > 0){
+                            $this->session->setFlashdata('pembelian_toast', 'toastr.success("Faktur berhasil diproses !!");');
+                        }
+                    }
+                } catch (\Exception $e) {
                     $this->db->transRollback();
-                }else{
-                    # Set commit jika berhasil
-                    $this->db->transCommit();
-                }
-
-                if($last_id > 0){
-                    $this->session->setFlashdata('pembelian_toast', 'toastr.success("Faktur berhasil diproses !!");');
+                    $this->session->setFlashdata('pembelian_toast', 'toastr.error("Error: ' . $e->getMessage() . '");');
+                    log_message('error', $e->getMessage());
                 }
 
                 return redirect()->to(base_url('pembelian/faktur/data_pembelian.php'));
@@ -1086,12 +1124,10 @@ class Pembelian extends BaseController {
             $rute       = $this->input->getVar('route');
             $keterangan = $this->input->getVar('keterangan');
 
-            $Profile    = new \App\Models\PengaturanProfile();
-            $Plgn       = new \App\Models\mPelanggan();
-            $Platform   = new \App\Models\mPlatform();
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
             $BeliPlat   = new \App\Models\trPembelianPlat();
+            $Platform   = new \App\Models\mPlatform();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -1137,61 +1173,67 @@ class Pembelian extends BaseController {
 
                 return redirect()->to(base_url('pembelian/faktur/data_pembayaran_tambah.php?id='.$id));
             }else{
-                $sql_beli           = $Beli->asObject()->where('id', $id)->first();
-                $sql_beli_det       = $BeliDet->asObject()->where('id_pembelian', $sql_beli->id)->find();
-                $jml_bayar          = format_angka_db($jml_bayar);
-                
-                if($jml_bayar >= $sql_beli->jml_gtotal){
-                    $status_bayar = '1';
-                }else{
-                    $status_bayar = '0';
-                }               
-                
-                # Start Transact SQL
-                $this->db->transBegin();
-                
-                # Masukkan data pembayaran
-                $data = [
-                    'id'            => $id,
-                    'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
-                    'jml_bayar'     => (float)$jml_bayar,
-                    'metode_bayar'  => $metode,
-                    'status_bayar'  => $status_bayar,
-                ];
+                $sql_beli      = $Beli->asObject()->where('id', $id)->first();
+                $sql_beli_det  = $BeliDet->asObject()->where('id_pembelian', $sql_beli->id)->find();
+                $jml_bayar     = format_angka_db($jml_bayar);
 
-                $Beli->save($data);
-                $last_id = $id;
-
-                $sql_plat = $Platform->asObject()->where('id', $metode)->first();
-                # Masukkan data platform pembayaran
-                $data_plat = [
-                    'id_platform'   => $metode,
-                    'id_pembelian'  => $last_id,
-                    'tgl_simpan'    => date('Y-m-d H:i:s'),
-                    'platform'      => $sql_plat->platform,
-                    'keterangan'    => $sql_plat->platform.' '.$keterangan,
-                    'nominal'       => (float)$jml_bayar
-                ];
-
-                $BeliPlat->save($data_plat);
-
+                // # Start Transact SQL
+                // $this->db->transStart();
                 
-                # End off transact SQL
-                $this->db->transComplete();
-                
-                # Cek status transact SQL, jika gagal maka rollback
-                if ($this->db->transStatus() === false) {
-                    $this->db->transRollback();
-                }else{
-                    # Set commit jika berhasil
-                    $this->db->transCommit();
-                }
+                try {              
+                    if($jml_bayar >= $sql_beli->jml_gtotal){
+                        $status_bayar = '1';
+                    }else{
+                        $status_bayar = '0';
+                    }
+                    
+                    # Masukkan data pembayaran
+                    $data = [
+                        'id'            => $id,
+                        'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
+                        'jml_bayar'     => (float)$jml_bayar,
+                        'metode_bayar'  => $metode,
+                        'status_bayar'  => $status_bayar,
+                    ];
 
-                if($last_id > 0){
+                    $result = $Beli->save($data);
+                    if (!$result) {
+                        throw new \Exception('Gagal menyimpan data pembayaran ke database');
+                    }
+
+                    $sql_plat = $Platform->asObject()->where('id', $metode)->first();
+
+                    # Masukkan data platform pembayaran
+                    $data_plat = [
+                        'id_pembelian'  => $id,
+                        'id_platform'   => (int)$metode,
+                        'platform'      => $sql_plat->platform,
+                        'keterangan'    => $sql_plat->platform.' '.$keterangan,
+                        'nominal'       => (float)$jml_bayar,
+                        'tgl_simpan'    => date('Y-m-d H:i:s')
+                    ];
+
+                    $result_plat = $BeliPlat->save($data_plat);
+                    if (!$result_plat) {
+                        throw new \Exception('Gagal menyimpan data platform pembayaran ke database');
+                    }
+                    
+                    # Commit transaction
+                    $this->db->transComplete();
+                    
+                    if ($this->db->transStatus() === false) {
+                        throw new \Exception('Gagal menyimpan data pembayaran');
+                    }
+                    
                     $this->session->setFlashdata('pembelian_toast', 'toastr.success("Transaksi berhasil dibayar !!");');
+                    return redirect()->to(base_url('pembelian/faktur/data_pembayaran.php'));
+                    
+                } catch (\Exception $e) {
+                    # Rollback transaction if error occurs
+                    $this->db->transRollback();
+                    $this->session->setFlashdata('pembelian_toast', 'toastr.error("' . $e->getMessage() . '");');
+                    return redirect()->to(base_url('pembelian/faktur/data_pembayaran_tambah.php?id='.$id));
                 }
-
-                return redirect()->to(base_url('pembelian/faktur/data_pembayaran.php'));
             }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
@@ -1279,8 +1321,8 @@ class Pembelian extends BaseController {
                 $disk1      = $hrg - (($diskon1 / 100) * $hrg);
                 $disk2      = $disk1 - (($diskon2 / 100) * $disk1);
                 $disk3      = $disk2 - (($diskon3 / 100) * $disk2);
-                $diskon     = ($hrg - $disk3) * $jml;
-                $subtotal   = ($disk3 * $jml) - $potongan;
+                $diskon     = ($hrg - $disk3) * (int)$jml;
+                $subtotal   = ($disk3 * (int)$jml) - $potongan;
                                 
                 $data = [
                     'id'                => $idbelidet,

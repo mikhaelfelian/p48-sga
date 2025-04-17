@@ -179,26 +179,22 @@
                 return false;
             }
             
-            // Create a new options object
-            var options = {
-                alwaysShowClose: true
-            };
-            
-            // Create a new lightbox instance
-            var lightbox = new ekkoLightbox(options);
-            
-            // Manually set the source
-            if (lightbox && typeof lightbox.setContent === 'function') {
-                try {
-                    lightbox.setContent(element);
-                    return true;
-                } catch (error) {
-                    console.error('Error setting lightbox content:', error);
-                    return false;
-                }
+            try {
+                // Use the jQuery plugin method instead of direct constructor
+                $(element).ekkoLightbox({
+                    alwaysShowClose: true,
+                    onShow: function() {
+                        console.log('Lightbox shown successfully');
+                    },
+                    onHidden: function() {
+                        console.log('Lightbox hidden successfully');
+                    }
+                });
+                return true;
+            } catch (error) {
+                console.error('Error initializing lightbox:', error);
+                return false;
             }
-            
-            return false;
         }
 
         // Initialize Ekko Lightbox with enhanced error handling

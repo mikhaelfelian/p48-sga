@@ -21,10 +21,11 @@
             <?php $subt = $subt + $det->subtotal ?>
                 <tr>
                     <td class="text-center">
-                        <?php if(isset($_GET['status'])){ ?>
-                            <?php // if($det->status == '2'){ ?>
+                        <?php if(hakOwner() == TRUE){    ?>
+                            <?php if(isset($_GET['status'])){ ?>
+                                <?php // if($det->status == '2'){ ?>
                                 <a href="<?php echo base_url('transaksi/cart_hapus.php?id='.$request->getVar('id').'&status='.$request->getVar('status').'&id_item='.$det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
-                            <?php // } ?>   
+                            <?php } ?>   
                         <?php } ?>   
                     </td>
                     <td class="text-center"><?php echo $no; ?></td>

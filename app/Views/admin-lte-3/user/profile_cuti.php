@@ -300,15 +300,17 @@
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
-                                                        <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-danger rounded-0 mb-1"
-                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                        <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-primary rounded-0 mb-1">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
+                                                        <?php if ($cuti->status == 0): ?>
+                                                            <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
+                                                                class="btn btn-sm btn-danger rounded-0 mb-1"
+                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
+                                                            <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
+                                                                class="btn btn-sm btn-primary rounded-0 mb-1">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -347,28 +349,24 @@
                 return false;
             }
             
-            // Create a new options object
-            var options = {
-                alwaysShowClose: true,
-                showArrows: false,
-                wrapping: false
-            };
-            
-            // Create a new lightbox instance
-            var lightbox = new ekkoLightbox(options);
-            
-            // Manually set the source
-            if (lightbox && typeof lightbox.setContent === 'function') {
-                try {
-                    lightbox.setContent(element);
-                    return true;
-                } catch (error) {
-                    console.error('Error setting lightbox content:', error);
-                    return false;
-                }
+            try {
+                // Use the jQuery plugin method instead of direct constructor
+                $(element).ekkoLightbox({
+                    alwaysShowClose: true,
+                    showArrows: false,
+                    wrapping: false,
+                    onShow: function() {
+                        console.log('Lightbox shown successfully');
+                    },
+                    onHidden: function() {
+                        console.log('Lightbox hidden successfully');
+                    }
+                });
+                return true;
+            } catch (error) {
+                console.error('Error initializing lightbox:', error);
+                return false;
             }
-            
-            return false;
         }
 
         // Initialize Ekko Lightbox with enhanced error handling

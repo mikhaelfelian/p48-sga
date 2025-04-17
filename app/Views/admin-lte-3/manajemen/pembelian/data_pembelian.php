@@ -44,24 +44,33 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php // echo form_open(base_url('master/set_item_cari.php')) ?>
+                                    <?php echo form_open(base_url('pembelian/faktur/data_pembelian.php'), ['method' => 'GET']) ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'no_pi', 'name' => 'no_pi', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'No. PI...', 'value' => $request->getGet('no_pi')]) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'supplier', 'name' => 'supplier', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Supplier...', 'value' => $request->getGet('supplier')]) ?>
+                                        </th>
+                                        <th>
+                                            <?php 
+                                            $status_options = [
+                                                '' => 'Semua',
+                                                '1' => 'Lunas',
+                                                '0' => 'Belum'
+                                            ];
+                                            echo form_dropdown('status_bayar', $status_options, $request->getGet('status_bayar'), 'class="form-control input-sm rounded-0"');
+                                            ?>
                                         </th>
                                         <th></th>
-                                        <th></th>
                                         <th>
-                                            <button class="btn btn-primary btn-flat" style="width: 120px;">
+                                            <button type="submit" class="btn btn-primary btn-flat" style="width: 120px;">
                                                 <i class="fa fa-search"></i> Cari
                                             </button>
                                         </th>
                                     </tr>
-                                    <?php // echo form_close(); ?>
+                                    <?php echo form_close(); ?>
                                     <?php
                                     if (!empty($SQLBeli)) {
                                         $no = $Halaman;

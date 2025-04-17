@@ -377,11 +377,11 @@ class Laporan extends BaseController
     {
         if ($this->ionAuth->loggedIn()) {
             // Get filter parameters
-            $kode       = $this->input->getVar('filter_kode');
-            $nama       = $this->input->getVar('filter_nama');
-            $supplier   = $this->input->getVar('filter_supplier');
-            $status     = $this->input->getVar('status');
-            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $kode        = $this->request->getVar('filter_kode');
+            $nama        = $this->request->getVar('filter_nama');
+            $supplier    = $this->request->getVar('filter_supplier');
+            $status      = $this->request->getVar('status');
+            $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
 
             // Initialize models
             $trPembelian = new \App\Models\trPembelian();

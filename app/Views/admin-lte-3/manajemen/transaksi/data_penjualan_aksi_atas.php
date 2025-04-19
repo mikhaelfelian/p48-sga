@@ -11,7 +11,7 @@
         <i class="fas fa-dollar"></i> Biaya
     </a>
 <?php } ?>
-<?php if (hakOwner() == TRUE or hakAdmin() == TRUE) { ?>
+<?php if (hakOwner() == TRUE or hakAdmin() == TRUE OR hakPurchasing() == TRUE) { ?>
     <a class="btn btn-app bg-info"
         href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=3') ?>">
         <i class="fas fa-file-invoice"></i> PO

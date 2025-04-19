@@ -30,9 +30,9 @@ class Pembelian extends BaseController {
             $sql_bli_pr = $vtrBeli->asObject()->where('status', '1');
             
             $data  = [
-                'SQLPsnBaru'    => $sql_psn_pr->countAllResults(),
+                'SQLPsnBaru'    => $sql_psn_br->countAllResults(),
                 'SQLPsnPros'    => $sql_psn_pr->countAllResults(),
-                'SQLBeliBaru'   => $sql_bli_pr->countAllResults(),
+                'SQLBeliBaru'   => $sql_bli_br->countAllResults(),
                 'SQLBeliPros'   => $sql_bli_pr->countAllResults(),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -932,7 +932,7 @@ class Pembelian extends BaseController {
                 if (!empty($idpo)) {
                     $sql_po = $PO->asObject()->where('id', $idpo)->first();
                     if (!empty($sql_po)) {
-                        $po_no_nota = $sql_po->no_nota;
+                        $po_no_nota = $sql_po->no_po;
                     }
                 }
                 

@@ -90,7 +90,7 @@ class Laporan extends BaseController
             return redirect()->to(base_url());
         }
     }
-
+    
     /**
      * Display sales data report
      * 
@@ -103,7 +103,7 @@ class Laporan extends BaseController
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
-
+            
             // Get filter parameters
             $kode       = $this->input->getVar('filter_kode');
             $nama       = $this->input->getVar('filter_nama');

@@ -14,7 +14,7 @@
 </a>
 <?php } ?>
 
-<?php if (hakOwner() == TRUE OR hakAdmin() == TRUE) { ?>
+<?php if (hakOwner() == TRUE OR hakAdmin() == TRUE OR hakPurchasing() == TRUE) { ?>
     <?php if ($SQLRab->status == '4' or $SQLRab->status == '6') { ?>
         <a class="btn btn-app bg-info"
             href="<?php echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=3') ?>">

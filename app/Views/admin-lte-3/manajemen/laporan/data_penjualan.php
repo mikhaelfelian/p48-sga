@@ -45,7 +45,7 @@
                                                 <option value="<?php echo $profile->id ?>" <?php echo (request()->getVar('filter_perusahaan') == $profile->id ? 'selected' : '') ?>><?php echo strtoupper($profile->nama) ?></option>
                                             <?php } ?>
                                         </select>
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">

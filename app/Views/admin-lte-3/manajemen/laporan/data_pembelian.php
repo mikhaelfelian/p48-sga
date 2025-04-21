@@ -124,13 +124,14 @@
                                     if (!empty($SQLPembelian)) {
                                         $no = $Halaman;
                                         foreach ($SQLPembelian as $det) {
+                                            $user = $ionAuth->user($det->id_user)->row();
                                             ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
                                                     <?php echo anchor(base_url('transaksi/pembelian/data_pembelian_det.php?id=' . $det->id), $det->no_nota) ?><br/>
                                                     <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br/>
-                                                    <small><i><?php echo strtolower($det->username) ?></i></small><br/>
+                                                    <small><i><?php echo !empty($user) ? strtolower($user->username) : '-' ?></i></small><br/>
                                                 </td>
                                                 <td style="width: 450px;">
                                                     <?php echo $det->supplier ?><br/>
@@ -146,11 +147,23 @@
                                                     <?php echo status_penj($det->status) ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $det->username ?>
+                                                    <?php 
+                                                    if (!empty($user)) {
+                                                        echo $user->first_name . ' ' . $user->last_name;
+                                                    } else {
+                                                        echo '<span class="text-muted">-</span>';
+                                                    }
+                                                    ?>
                                                 </td>
                                             </tr>
                                             <?php
                                         }
+                                    } else {
+                                        ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center">Tidak ada data pembelian</td>
+                                        </tr>
+                                        <?php
                                     }
                                     ?>
                                 </tbody>
@@ -166,7 +179,17 @@
 </div>
 <script type="text/javascript">
     $(function () {
+        // Initialize daterangepicker for date range
         $('#tgl_rentang').daterangepicker({
+            locale: {
+                format: 'MM/DD/YYYY'
+            }
+        });
+
+        // Initialize datepicker for single date
+        $('#tgl').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }

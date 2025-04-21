@@ -653,7 +653,7 @@ class Pembelian extends BaseController {
                 $subtot = $subtot + $det->subtotal;
                 
                 $pdf->Cell(1, .5, $no.'.', '', 0, 'C', $fill);
-                $pdf->Cell(10, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(10, .5, (!empty($det->kode) ? '[' . $det->kode . '] ' : '') . $det->item, '', 0, 'L', $fill);
                 $pdf->Cell(1, .5, (int)$det->jml, '', 0, 'C', $fill);
                 $pdf->Cell(2, .5, $det->satuan, '', 0, 'L', $fill);
                 $pdf->Cell(2.5, .5, format_angka($det->harga), '', 0, 'R', $fill);
@@ -1310,7 +1310,7 @@ class Pembelian extends BaseController {
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
 
-                return redirect()->to(base_url('pembelian/faktur/data_pembelian_tambah.php'.(!empty($idpsn) ? '?id='.$idpsn : '').(!empty($iditem) ? '&id_item='.$iditem : '')));
+                return redirect()->to(base_url('pembelian/faktur/data_pembelian_tambah.php'.(!empty($idbeli) ? '?id='.$idbeli : '').(!empty($iditem) ? '&id_item='.$iditem : '')));
             }else{
                 $sql_item   = $Item->asObject()->where('id', $iditem)->first();
                 $sql_sat    = $Satuan->asObject()->where('id', $satuan)->first();
@@ -1318,11 +1318,16 @@ class Pembelian extends BaseController {
                 $hrg        = format_angka_db($harga);
                 $potongan   = format_angka_db($pot);
                 
+                // Convert diskon values to float to avoid type issues
+                $diskon1 = (float)$diskon1;
+                $diskon2 = (float)$diskon2;
+                $diskon3 = (float)$diskon3;
+                
                 $disk1      = $hrg - (($diskon1 / 100) * $hrg);
                 $disk2      = $disk1 - (($diskon2 / 100) * $disk1);
                 $disk3      = $disk2 - (($diskon3 / 100) * $disk2);
-                $diskon     = ($hrg - $disk3) * (int)$jml;
-                $subtotal   = ($disk3 * (int)$jml) - $potongan;
+                $diskon     = ($hrg - $disk3) * (float)$jml;
+                $subtotal   = ($disk3 * (float)$jml) - (float)$potongan;
                                 
                 $data = [
                     'id'                => $idbelidet,
@@ -1336,9 +1341,9 @@ class Pembelian extends BaseController {
                     'jml_satuan'        => (int)$sql_sat->jml,
                     'satuan'            => $sql_sat->satuanBesar,
                     'harga'             => (float)$hrg,
-                    'disk1'             => (int)$diskon1,
-                    'disk2'             => (int)$diskon2,
-                    'disk3'             => (int)$diskon3,
+                    'disk1'             => (float)$diskon1,
+                    'disk2'             => (float)$diskon2,
+                    'disk3'             => (float)$diskon3,
                     'diskon'            => (float)$diskon,
                     'potongan'          => (float)$potongan,
                     'subtotal'          => (float)$subtotal,
@@ -1372,7 +1377,44 @@ class Pembelian extends BaseController {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());
         }
-    }    
+    }
+
+    public function cart_pembelian_hapus(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $IDBeli     = $this->input->getVar('id');
+            $IDItm      = $this->input->getVar('id_item');
+            $route      = $this->input->getVar('route');
+            
+            if($this->input->is('get') == 1){
+                $BeliDet = new \App\Models\trPembelianDet();
+                $Beli    = new \App\Models\trPembelian();
+                
+                $BeliDet->where('id', $IDItm)->delete();
+                
+                $sql_sum = $BeliDet->asObject()->select('SUM(diskon) AS diskon, SUM(potongan) AS potongan, SUM(subtotal) AS subtotal')->where('id_pembelian', $IDBeli)->first();
+                
+                $data_beli = [
+                    'id'            => $IDBeli,
+                    'jml_diskon'    => (!empty($sql_sum->diskon) ? $sql_sum->diskon : 0),
+                    'jml_potongan'  => (!empty($sql_sum->potongan) ? $sql_sum->potongan : 0),
+                    'jml_gtotal'    => (!empty($sql_sum->subtotal) ? $sql_sum->subtotal : 0),
+                ];
+                
+                $Beli->save($data_beli);
+                
+                $this->session->setFlashdata('pembelian_toast', 'toastr.success("Item berhasil dihapus !!");');
+            }
+            
+            return redirect()->to(base_url(!empty($route) ? $route : 'pembelian/faktur/data_pembelian_tambah.php?id='.$IDBeli));         
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
     
 
     public function data_pembayaran(){

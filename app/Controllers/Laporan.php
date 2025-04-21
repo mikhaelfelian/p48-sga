@@ -248,6 +248,7 @@ class Laporan extends BaseController
                 'menu_atas'     => $this->ThemePath . '/layout/menu_atas',
                 'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
                 'konten'        => $this->ThemePath . '/manajemen/laporan/data_pembelian',
+                'ionAuth'       => $this->ionAuth,
             ];
 
             return view($this->ThemePath . '/index', $data);
@@ -267,11 +268,11 @@ class Laporan extends BaseController
     {
         if ($this->ionAuth->loggedIn()) {
             // Get filter parameters
-            $kode       = $this->input->getVar('filter_kode');
-            $nama       = $this->input->getVar('filter_nama');
-            $sales      = $this->input->getVar('filter_sales');
-            $status     = $this->input->getVar('status');
-            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $kode       = $this->request->getVar('filter_kode');
+            $nama       = $this->request->getVar('filter_nama');
+            $sales      = $this->request->getVar('filter_sales');
+            $status     = $this->request->getVar('status');
+            $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
 
             // Initialize models
             $trPenj = new \App\Models\trPenj();
@@ -334,11 +335,16 @@ class Laporan extends BaseController
             foreach ($data as $item) {
                 $sheet->setCellValue('A' . $row, $item->no_nota);
                 $sheet->setCellValue('B' . $row, tgl_indo5($item->tgl_simpan));
-                $sheet->setCellValue('C' . $row, $item->p_nama);
-                $sheet->setCellValue('D' . $row, $item->p_alamat);
+                $sheet->setCellValue('C' . $row, $item->p_nama ?? '-');
+                $sheet->setCellValue('D' . $row, $item->p_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
                 $sheet->setCellValue('F' . $row, status_penj($item->status));
-                $sheet->setCellValue('G' . $row, $this->ionAuth->user($item->id_sales)->row()->first_name);
+                
+                // Safely get sales user name
+                $salesUser = $this->ionAuth->user($item->id_sales)->row();
+                $salesName = $salesUser ? $salesUser->first_name . ' ' . $salesUser->last_name : '-';
+                $sheet->setCellValue('G' . $row, $salesName);
+                
                 $row++;
             }
 
@@ -440,11 +446,16 @@ class Laporan extends BaseController
             foreach ($data as $item) {
                 $sheet->setCellValue('A' . $row, $item->no_nota);
                 $sheet->setCellValue('B' . $row, tgl_indo5($item->tgl_simpan));
-                $sheet->setCellValue('C' . $row, $item->supplier);
-                $sheet->setCellValue('D' . $row, $item->alamat);
+                $sheet->setCellValue('C' . $row, $item->s_nama ?? '-');
+                $sheet->setCellValue('D' . $row, $item->s_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
                 $sheet->setCellValue('F' . $row, status_penj($item->status));
-                $sheet->setCellValue('G' . $row, $this->ionAuth->user($item->id_user)->row()->username);
+                
+                // Safely get user name
+                $user = $this->ionAuth->user($item->id_user)->row();
+                $userName = $user ? $user->first_name . ' ' . $user->last_name : '-';
+                $sheet->setCellValue('G' . $row, $userName);
+                
                 $row++;
             }
 

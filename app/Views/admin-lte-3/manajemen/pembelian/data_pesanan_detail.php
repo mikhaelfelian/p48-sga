@@ -66,8 +66,7 @@
                                                 <th class="text-center" style="width: 50px;">No</th>
                                                 <th class="text-left" style="width: 100px;">Item</th>
                                                 <th class="text-center" style="width: 150px;">Jml</th>
-                                                <th class="text-left">Harga</th>
-                                                <th class="text-left">Subtotal</th>
+                                                <th class="text-left">Keterangan</th>
                                             </tr>                                    
                                         </thead>
                                         <tbody>
@@ -77,14 +76,13 @@
                                                     <tr>
                                                         <td class="text-center" style="width: 55px;"><?php echo $no; ?></td>
                                                         <td class="text-left" style="width: 350px;">
-                                                            <?php echo $det->item; ?>
+                                                            <?php echo (!empty($det->kode) ? '[' . $det->kode . '] ' : '') . $det->item; ?>
                                                             <?php if(!empty($det->keterangan_itm)){ ?>
                                                                 <small><?php echo $det->keterangan_itm; ?></small>
                                                             <?php } ?>
                                                         </td>
                                                         <td class="text-center" style="width: 150px;"><?php echo $det->jml . ' ' . $det->satuan ?></td>
-                                                        <td class="text-left" style="width: 150px;"><?php echo format_angka($det->harga) ?></td>
-                                                        <td class="text-left" style="width: 150px;"><?php echo format_angka($det->subtotal) ?></td>
+                                                        <td class="text-left" style="width: 150px;"><?php echo $det->keterangan ?></td>
                                                     </tr>
                                                     <?php $no++; ?>
                                                 <?php } ?>
@@ -109,6 +107,7 @@
                                     <?php }else{ ?>
                                         <button type="button" class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo base_url('pembelian/faktur/data_pembelian_det.php?id=' . (!empty($SQLBeli->id) ? $SQLBeli->id : '')) ?>'"><i class="fa fa-shopping-cart"></i> Lihat PI</button>
                                     <?php } ?>
+                                    
                                     <button type="button" class="btn btn-primary btn-flat" onclick="window.location.href = '<?php echo base_url('pembelian/pesanan/pdf_pesanan.php?id=' . $request->getVar('id')) ?>'"><i class="fas fa-file-pdf"></i> Cetak PO</button>
                                 </div>
                             </div>

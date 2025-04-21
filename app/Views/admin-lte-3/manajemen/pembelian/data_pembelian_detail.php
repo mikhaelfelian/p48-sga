@@ -75,6 +75,8 @@
                                                 <th class="text-center" style="width: 50px;">No</th>
                                                 <th class="text-left" style="width: 100px;">Item</th>
                                                 <th class="text-center" style="width: 150px;">Jml</th>
+                                                <th class="text-center" style="width: 150px;">Harga</th>
+                                                <th class="text-center" style="width: 150px;">Total</th>
                                                 <th class="text-left" style="width: 200px;">Keterangan</th>
                                             </tr>                                    
                                         </thead>
@@ -86,10 +88,27 @@
                                                         <td class="text-center" style="width: 55px;"><?php echo $no; ?></td>
                                                         <td class="text-left" style="width: 350px;"><?php echo $det->item; ?></td>
                                                         <td class="text-center" style="width: 150px;"><?php echo $det->jml . ' ' . $det->satuan ?></td>
+                                                        <td class="text-center" style="width: 150px;"><?php echo format_angka($det->harga) ?></td>
+                                                        <td class="text-center" style="width: 150px;"><?php echo format_angka($det->subtotal) ?></td>
                                                         <td class="text-right" style="width: 200px;"><?php echo $det->keterangan; ?></td>
                                                     </tr>
                                                     <?php $no++; ?>
                                                 <?php } ?>
+                                                <tr>
+                                                    <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                                                    <td class="text-center"><?php echo format_angka($SQLBeli->jml_total) ?></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" class="text-right"><strong>Diskon:</strong></td>
+                                                    <td class="text-center"><?php echo format_angka($SQLBeli->jml_diskon) ?></td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" class="text-right"><strong>Grand Total:</strong></td>
+                                                    <td class="text-center"><strong><?php echo format_angka($SQLBeli->jml_gtotal) ?></strong></td>
+                                                    <td></td>
+                                                </tr>
                                             <?php } else { ?>
                                                 <tr>
                                                     <th class="text-center" colspan="8">Tidak Ada Data</th>

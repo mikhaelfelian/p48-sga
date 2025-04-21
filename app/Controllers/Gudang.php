@@ -337,9 +337,23 @@ class Gudang extends BaseController {
                 $sql_beli_det       = $BeliDet->asObject()->where('id_pembelian', $IDBeli)->find();
                 $sql_beli_det_rw    = $BeliDet->asObject()->where('id', $IDItmDet)->first();
                 $sql_item           = $Item->asObject()->where('id', $IDItm)->first();
-                $sql_item_stok      = $ItemStok->asObject()->where('id_item', $sql_item->id)->where('id_gudang', $sql_gudang->id)->first();
-                $sql_item_stok_det  = $ItemStokDet->asObject()->where('id_item_stok', $sql_item_stok->id)->find();
-                $sql_item_stok_hist = $ItemStokHist->asObject()->where('id_pembelian', $IDBeli)->where('id_item', $sql_item->id)->find();
+                
+                // Initialize variables to prevent null property access
+                $sql_item_stok      = null;
+                $sql_item_stok_det  = [];
+                $sql_item_stok_hist = [];
+                
+                // Only proceed with these queries if $sql_item is not null
+                if(!empty($sql_item) && !empty($sql_gudang)) {
+                    $sql_item_stok = $ItemStok->asObject()->where('id_item', $sql_item->id)->where('id_gudang', $sql_gudang->id)->first();
+                    
+                    if(!empty($sql_item_stok)) {
+                        $sql_item_stok_det = $ItemStokDet->asObject()->where('id_item_stok', $sql_item_stok->id)->find();
+                    }
+                    
+                    $sql_item_stok_hist = $ItemStokHist->asObject()->where('id_pembelian', $IDBeli)->where('id_item', $sql_item->id)->find();
+                }
+                
                 $sql_sat            = $Sat->asObject()->where('status', '1')->find();
                 $sql_gdg            = $Gudang->asObject()->where('status', '1')->find();
             }else{
@@ -348,6 +362,10 @@ class Gudang extends BaseController {
                 $sql_beli_det_rw    = '';
                 $sql_item           = '';
                 $sql_sat            = '';
+                $sql_item_stok      = null;
+                $sql_item_stok_det  = [];
+                $sql_item_stok_hist = [];
+                $sql_gdg            = [];
             }
                         
             $data  = [
@@ -540,7 +558,25 @@ class Gudang extends BaseController {
                 # HITUNG SUM STOK
                 $ItemStok       = new \App\Models\mItemStok();
                 $sql_item_stok  = $ItemStok->asObject()->where('id_item', $sql_item->id)->where('id_gudang', $gudang)->first();
-                $stok           = $sql_item_stok->jml + $jml;
+                
+                // Check if $sql_item_stok exists before accessing its properties
+                if (!empty($sql_item_stok)) {
+                    $stok = $sql_item_stok->jml + $jml;
+                } else {
+                    // If item stock doesn't exist yet, create new stock record
+                    $stok = $jml;
+                    
+                    // Create new item stock record
+                    $data_new_stok = [
+                        'id_item'    => $sql_item->id,
+                        'id_gudang'  => $gudang,
+                        'jml'        => 0, // Will be updated later
+                        'keterangan' => $ket,
+                    ];
+                    
+                    $ItemStok->insert($data_new_stok);
+                    $sql_item_stok = $ItemStok->asObject()->where('id_item', $sql_item->id)->where('id_gudang', $gudang)->first();
+                }
                 
                 $data_stok = [
                     'id'            => $sql_item_stok->id,

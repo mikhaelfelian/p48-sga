@@ -151,7 +151,11 @@
                                                 <td>
                                                     <?php 
                                                     $sales = $ionAuth->user($det->id_sales)->row();
-                                                    echo $sales->first_name . ' ' . $sales->last_name;
+                                                    if (!empty($sales)) {
+                                                        echo $sales->first_name . ' ' . $sales->last_name;
+                                                    } else {
+                                                        echo '<span class="text-muted">-</span>';
+                                                    }
                                                     ?>
                                                 </td>
                                             </tr>
@@ -178,7 +182,17 @@
 </div>
 <script type="text/javascript">
     $(function () {
+        // Initialize daterangepicker for date range
         $('#tgl_rentang').daterangepicker({
+            locale: {
+                format: 'MM/DD/YYYY'
+            }
+        });
+
+        // Initialize datepicker for single date
+        $('#tgl').daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }

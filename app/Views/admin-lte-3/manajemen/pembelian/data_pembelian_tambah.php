@@ -292,7 +292,7 @@
                                                         <?php $subtotal = $subtotal + $det->subtotal; ?>
                                                         <tr>
                                                             <td class="text-right" style="width: 50px;">
-                                                                <?php echo anchor(base_url('pembelian/faktur/cart_hapus.php?id=' . $det->id_pembelian . '&id_item=' . $det->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm rounded-0" onclick="return confirm(\'Hapus [' . $det->item . '] ?\')"') ?>
+                                                                <?php echo anchor(base_url('pembelian/faktur/cart_hapus.php?id=' . $det->id_pembelian . '&id_item=' . $det->id . '&route=pembelian/faktur/data_pembelian_tambah.php'), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm rounded-0" onclick="return confirm(\'Hapus [' . $det->item . '] ?\')"') ?>
                                                             </td>
                                                             <td class="text-center"><?php echo $no; ?></td>
                                                             <td class="text-left" style="width: 350px;">

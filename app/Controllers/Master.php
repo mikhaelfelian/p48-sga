@@ -258,14 +258,14 @@ class Master extends BaseController {
             return redirect()->to(base_url());
         }
     }
-    
+
     public function data_merk_tambah(){
         if ($this->ionAuth->loggedIn()) {
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
             
-            $IDMerk = $this->input->getVar('id');
+            $IDMerk     = $this->input->getVar('id');
             
             if(!empty($IDMerk)){
                 $Merk       = new \App\Models\mMerk();
@@ -1550,12 +1550,8 @@ class Master extends BaseController {
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
 
-                return redirect()->to(base_url('master/data_pelanggan_tambah.php?id='.$id));
+                return redirect()->to(base_url('master/data_pelanggan_tambah.php?id='.$idp));
             }else{
-                $sql_cek = $Plgn->asObject();
-                $no_urut = $sql_cek->countAll() + 1;
-                $kode    = (!empty($this->Setting->kode_plgn) ? $this->Setting->kode_plgn : 'C').'-'.sprintf('%05d', $no_urut);
-
                 $data = [
                     'id_user'       => $ID->id,
                     'id_pelanggan'  => $idp,

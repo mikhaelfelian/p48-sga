@@ -21,11 +21,12 @@ class Pager extends BaseConfig
      * @var array<string, string>
      */
     public array $templates = [
-//        'default_full'      => 'CodeIgniter\Pager\Views\default_full',
-        'default_simple'    => 'CodeIgniter\Pager\Views\default_simple',
-        'default_head'      => 'CodeIgniter\Pager\Views\default_head',
-        'default_full'      => 'App\Views\admin-lte-3\layout\pager',
-        'adminlte3_full'    => 'App\Views\admin-lte-3\layout\pager',
+        'default_full'   => 'CodeIgniter\Pager\Views\default_full',
+        'default_simple' => 'CodeIgniter\Pager\Views\default_simple',
+        'default_head'   => 'CodeIgniter\Pager\Views\default_head',
+        
+        // Add AdminLTE 3 pager template
+        'admin_lte3_pager' => 'admin-lte-3/layouts/pagers',
     ];
 
     /**

@@ -1,5 +1,4 @@
 /nbproject/
-/database/
 /public/file/app/*
 !/public/file/app/.gitkeep
 /public/file/profile/*

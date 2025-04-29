@@ -102,7 +102,6 @@ class Pengaturan extends BaseController {
                 'fupload_logo' => [
                     'rules'     => 'is_image[fupload_logo]|max_size[fupload_logo,2048]',
                     'errors'    => [
-//                        'uploaded' => 'Berkas unggah tidak tersedia',
                         'is_image' => 'Berkas harus berupa gambar',
                         'max_size' => 'Berkas harus berukuran maksimal 2MB',
                     ]
@@ -110,7 +109,6 @@ class Pengaturan extends BaseController {
                 'fupload_logo_hdr' => [
                     'rules'     => 'is_image[fupload_logo_hdr]|max_size[fupload_logo_hdr,2048]',
                     'errors'    => [
-//                        'uploaded' => 'Berkas unggah tidak tersedia',
                         'is_image' => 'Berkas harus berupa gambar',
                         'max_size' => 'Berkas harus berukuran maksimal 2MB',
                     ]
@@ -118,7 +116,6 @@ class Pengaturan extends BaseController {
                 'fupload_logo_fav' => [
                     'rules'     => 'is_image[fupload_logo_fav]|max_size[fupload_logo_fav,2048]',
                     'errors'    => [
-//                        'uploaded' => 'Berkas unggah tidak tersedia',
                         'is_image' => 'Berkas harus berupa gambar',
                         'max_size' => 'Berkas harus berukuran maksimal 2MB',
                     ]
@@ -429,6 +426,7 @@ class Pengaturan extends BaseController {
             $kota           = $this->input->getVar('kota');
             $alamat         = $this->input->getVar('alamat');
             $no_telp        = $this->input->getVar('no_telp');
+            $dirut          = $this->input->getVar('direktur');
             $berkas_logo    = $this->request->getFile('fupload_logo');
             $berkas_logo_wm = $this->request->getFile('fupload_logo_wm');
 
@@ -475,10 +473,9 @@ class Pengaturan extends BaseController {
             }else{
                 $sql_cek    = $Setting->asObject()->where('id', $IDProf)->first();
 
-
-                
-                $file_logo      = new \CodeIgniter\Files\File($path.$berkas_logo);
-                $file_logo_wm   = new \CodeIgniter\Files\File($path.$berkas_logo_wm);
+                # Muat library untuk unggah file
+                # $path untuk mengatur lokasi unggah file
+                $path = FCPATH.'file/app/';
                 
                 $data = [
                     'id'            => $IDProf,
@@ -489,16 +486,13 @@ class Pengaturan extends BaseController {
                     'kota'          => $kota,
                     'alamat'        => $alamat,
                     'no_telp'       => $no_telp,
+                    'direktur'      => ucwords($dirut),
                 ];
-                
-                # Muat library untuk unggah file
-                # $path untuk mengatur lokasi unggah file
-                $path           = FCPATH.'file/app/';
-                $flname_logo_wm = 'logo_prof_'.strtolower(alnum($nama)).'_wm.'.$berkas_logo_wm->getClientExtension();
-                
                 
                 # Jika valid lanjut upload file logo
                 if ($berkas_logo->isValid() && !$berkas_logo->hasMoved()) {
+                    $flname_logo = 'logo_prof_'.strtolower(alnum($nama)).'.'.$berkas_logo->getClientExtension();
+                    
                     # Hapus file sebelumnya
                     if(!empty($sql_cek->logo_kop)){
                         unlink($path.$sql_cek->logo_kop);
@@ -512,6 +506,8 @@ class Pengaturan extends BaseController {
                 
                 # Jika valid lanjut upload file logo untuk watermark pdf
                 if ($berkas_logo_wm->isValid() && !$berkas_logo_wm->hasMoved()) {
+                    $flname_logo_wm = 'logo_prof_'.strtolower(alnum($nama)).'_wm.'.$berkas_logo_wm->getClientExtension();
+                    
                     # Hapus file sebelumnya
                     if(!empty($sql_cek->logo_wm)){
                         unlink($path.$sql_cek->logo_wm);
@@ -523,16 +519,14 @@ class Pengaturan extends BaseController {
                     $data['logo_wm'] = $flname_logo_wm;
                 }
                 
-                pre($data);
+                $Setting->save($data);
+                $last_id = $IDProf;
 
-                // $Setting->save($data);
-                // $last_id = $IDProf;
+                if($last_id > 0){
+                    $this->session->setFlashdata('pengaturan_toast', 'toastr.success("Profile perusahaan berhasil diubah !!");');
+                }
 
-                // if($last_id > 0){
-                //     $this->session->setFlashdata('pengaturan_toast', 'toastr.success("Profile perusahaan berhasil diubah !!");');
-                // }
-
-                // return redirect()->to(base_url('pengaturan/perusahaan_tambah.php?id='.$last_id));
+                return redirect()->to(base_url('pengaturan/perusahaan_tambah.php?id='.$last_id));
             }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');

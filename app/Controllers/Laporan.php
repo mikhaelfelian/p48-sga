@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 /**
@@ -60,11 +61,11 @@ class Laporan extends BaseController
                 ->like('p_nama', (!empty($nama) ? $nama : ''))
                 ->like('id_tipe', (!empty($tipe) ? $tipe : ''), (!empty($tipe) ? 'none' : ''))
                 ->like('status', (!empty($status) ? $status : ''), (!empty($status) ? 'none' : ''));
-                
+
             $sql_tipe = $Tipe->asObject()
                 ->where('status', '1')
                 ->find(); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
-                
+
             $jml_limit = $this->Setting->jml_item;
 
             $data = [
@@ -90,7 +91,7 @@ class Laporan extends BaseController
             return redirect()->to(base_url());
         }
     }
-    
+
     /**
      * Display sales data report
      * 
@@ -103,7 +104,7 @@ class Laporan extends BaseController
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
-            
+
             // Get filter parameters
             $kode       = $this->input->getVar('filter_kode');
             $nama       = $this->input->getVar('filter_nama');
@@ -114,6 +115,8 @@ class Laporan extends BaseController
 
             // Initialize models
             $trPenj = new \App\Models\trPenj();
+            $trTotal = new \App\Models\trPenj();
+            $trBiaya = new \App\Models\trPenj();
             $Profile = new \App\Models\PengaturanProfile();
             $sql_profile = $Profile->asObject()->where('status', '1')->find();
 
@@ -123,38 +126,54 @@ class Laporan extends BaseController
                 ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
                 ->orderBy('tbl_trans_jual.id', 'DESC');
 
-            // Apply filters if they exist
-            if (!empty($kode)) {
-                $sql_penj->groupStart()
-                    ->like('tbl_trans_jual.no_nota', $kode)
-                    ->orLike('tbl_trans_jual.no_kontrak', $kode)
-                    ->orLike('tbl_trans_jual.no_paket', $kode)
-                    ->groupEnd();
-            }
-
-            if (!empty($nama)) {
-                $sql_penj->like('tbl_m_pelanggan.nama', $nama);
-            }
-
-            if (!empty($sales)) {
-                $sql_penj->where('tbl_trans_jual.id_sales', $sales);
-            }
-
-            if (!empty($status)) {
-                $sql_penj->where('tbl_trans_jual.status', $status);
-            }
-
-            // Handle date range filter
-            if (!empty($tgl_rentang)) {
-                $dates = explode(' - ', $tgl_rentang);
-                if (count($dates) == 2) {
-                    $start_date = tgl_indo_sys($dates[0]);
-                    $end_date = tgl_indo_sys($dates[1]);
-                    $sql_penj->where('tbl_trans_jual.tgl_simpan >=', $start_date)
-                            ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($kode, $nama, $sales, $status, $tgl_rentang) {
+                if (!empty($kode)) {
+                    $query->groupStart()
+                        ->like('tbl_trans_jual.no_nota', $kode)
+                        ->orLike('tbl_trans_jual.no_kontrak', $kode)
+                        ->orLike('tbl_trans_jual.no_paket', $kode)
+                        ->groupEnd();
                 }
-            }
-            
+
+                if (!empty($nama)) {
+                    $query->like('tbl_m_pelanggan.nama', $nama);
+                }
+
+                if (!empty($sales)) {
+                    $query->where('tbl_trans_jual.id_sales', $sales);
+                }
+
+                if (!empty($status)) {
+                    $query->where('tbl_trans_jual.status', $status);
+                }
+
+                // Handle date range filter
+                if (!empty($tgl_rentang)) {
+                    $dates = explode(' - ', $tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tbl_trans_jual.tgl_simpan >=', $start_date)
+                            ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+
+            // Apply filters to the main query
+            $sql_penj = $applyFilters($sql_penj);
+
+            // Calculate total data with applied filters
+            $total_data = $applyFilters($trTotal->asObject())
+                ->select('COUNT(tbl_trans_jual.id) as total_data')
+                ->first();
+
+            // Calculate total biaya with applied filters
+            $total_biaya = $applyFilters($trBiaya->asObject())
+                ->select('SUM(tbl_trans_jual.jml_gtotal) as total_biaya')
+                ->first();
+
             // Set pagination limit
             $jml_limit = $this->Setting->jml_item;
 
@@ -162,7 +181,7 @@ class Laporan extends BaseController
                 'SQLPenjualan'  => $sql_penj->paginate($jml_limit),
                 'SQLUsers'      => $this->ionAuth->users('sales')->result(),
                 'SQLProfile'    => $sql_profile,
-                'Pagination'    => $trPenj->pager->links(),
+                'Pagination'    => $trPenj->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -173,6 +192,8 @@ class Laporan extends BaseController
                 'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
                 'konten'        => $this->ThemePath . '/manajemen/laporan/data_penjualan',
                 'ionAuth'       => $this->ionAuth,
+                'total_data'    => $total_data->total_data ?? 0,
+                'total_biaya'   => $total_biaya->total_biaya ?? 0,
             ];
 
             return view($this->ThemePath . '/index', $data);
@@ -201,9 +222,12 @@ class Laporan extends BaseController
             $nama = $this->input->getVar('filter_nama');
             $supplier = $this->input->getVar('filter_supplier');
             $status = $this->input->getVar('status');
+            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
             $hlmn = $this->input->getVar('page');
 
             $trPembelian = new \App\Models\trPembelian();
+            $trTotal = new \App\Models\trPembelian();
+            $trBiaya = new \App\Models\trPembelian();
             $Profile = new \App\Models\PengaturanProfile();
             $sql_profile = $Profile->asObject()
                 ->where('status', '1')
@@ -215,30 +239,58 @@ class Laporan extends BaseController
                 ->join('tbl_m_supplier', 'tbl_m_supplier.id = tbl_trans_beli.id_supplier', 'left')
                 ->orderBy('tbl_trans_beli.id', 'DESC');
 
-            // Apply filters if they exist
-            if (!empty($kode)) {
-                $sql_pembelian->like('tbl_trans_beli.no_nota', $kode);
-            }
 
-            if (!empty($nama)) {
-                $sql_pembelian->like('tbl_m_supplier.nama', $nama);
-            }
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($kode, $nama, $supplier, $status, $tgl_rentang) {
+                if (!empty($kode)) {
+                    $query->like('tbl_trans_beli.no_nota', $kode);
+                }
 
-            if (!empty($supplier)) {
-                $sql_pembelian->where('tbl_trans_beli.id_supplier', $supplier);
-            }
+                if (!empty($nama)) {
+                    $query->like('tbl_m_supplier.nama', $nama);
+                }
 
-            if (!empty($status)) {
-                $sql_pembelian->where('tbl_trans_beli.status', $status);
-            }
-            
+                if (!empty($supplier)) {
+                    $query->where('tbl_trans_beli.id_supplier', $supplier);
+                }
+
+                if (!empty($status)) {
+                    $query->where('tbl_trans_beli.status', $status);
+                }
+
+                // Handle date range filter
+                if (!empty($tgl_rentang)) {
+                    $dates = explode(' - ', $tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tbl_trans_beli.tgl_simpan >=', $start_date)
+                            ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+
+            // Apply filters to the main query
+            $sql_pembelian = $applyFilters($sql_pembelian);
+
+            // Calculate total data with applied filters
+            $total_data = $applyFilters($trTotal->asObject())
+                ->select('COUNT(tbl_trans_beli.id) as total_data')
+                ->first();
+
+            // Calculate total biaya with applied filters
+            $total_biaya = $applyFilters($trBiaya->asObject())
+                ->select('SUM(tbl_trans_beli.jml_gtotal) as total_biaya')
+                ->first();
+
             $jml_limit = $this->Setting->jml_item;
 
             $data = [
                 'SQLPembelian'  => $sql_pembelian->paginate($jml_limit),
                 'SQLSupplier'   => $this->ionAuth->users('supplier')->result(),
                 'SQLProfile'    => $sql_profile,
-                'Pagination'    => $trPembelian->pager->links(),
+                'Pagination'    => $trPembelian->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -249,6 +301,8 @@ class Laporan extends BaseController
                 'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
                 'konten'        => $this->ThemePath . '/manajemen/laporan/data_pembelian',
                 'ionAuth'       => $this->ionAuth,
+                'total_data'    => $total_data->total_data ?? 0,
+                'total_biaya'   => $total_biaya->total_biaya ?? 0,
             ];
 
             return view($this->ThemePath . '/index', $data);
@@ -311,7 +365,7 @@ class Laporan extends BaseController
                     $start_date = tgl_indo_sys($dates[0]);
                     $end_date = tgl_indo_sys($dates[1]);
                     $sql_penj->where('tbl_trans_jual.tgl_simpan >=', $start_date)
-                            ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+                        ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
                 }
             }
 
@@ -339,12 +393,12 @@ class Laporan extends BaseController
                 $sheet->setCellValue('D' . $row, $item->p_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
                 $sheet->setCellValue('F' . $row, status_penj($item->status));
-                
+
                 // Safely get sales user name
                 $salesUser = $this->ionAuth->user($item->id_sales)->row();
                 $salesName = $salesUser ? $salesUser->first_name . ' ' . $salesUser->last_name : '-';
                 $sheet->setCellValue('G' . $row, $salesName);
-                
+
                 $row++;
             }
 
@@ -422,7 +476,7 @@ class Laporan extends BaseController
                     $start_date = tgl_indo_sys($dates[0]);
                     $end_date = tgl_indo_sys($dates[1]);
                     $sql_pembelian->where('tbl_trans_beli.tgl_simpan >=', $start_date)
-                                ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
+                        ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
                 }
             }
 
@@ -450,12 +504,12 @@ class Laporan extends BaseController
                 $sheet->setCellValue('D' . $row, $item->s_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
                 $sheet->setCellValue('F' . $row, status_penj($item->status));
-                
+
                 // Safely get user name
                 $user = $this->ionAuth->user($item->id_user)->row();
                 $userName = $user ? $user->first_name . ' ' . $user->last_name : '-';
                 $sheet->setCellValue('G' . $row, $userName);
-                
+
                 $row++;
             }
 

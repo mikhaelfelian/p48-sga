@@ -555,6 +555,54 @@ class Laporan extends BaseController
         }
     }
 
+    public function data_karyawan()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $nama       = $this->input->getVar('filter_nama');
+            $kode       = $this->input->getVar('filter_kode');
+            $hlmn       = $this->input->getVar('page');
+
+            $Kary       = new \App\Models\mKaryawan();
+            $sql_kary   = $Kary->asObject()->orderBy('id', 'DESC');
+            // Apply filters if they exist
+            if (!empty($kode)) {
+                $sql_kary->like('kode', $kode);
+            }
+
+            if (!empty($nama)) {
+                $sql_kary->like('nama', $nama);
+            }
+
+            $jml_limit  = $this->Setting->jml_item;
+
+            $data  = [
+                'SQLKary'       => $sql_kary->paginate($jml_limit),
+                'Pagination'    => $sql_kary->pager->links('default', 'bootstrap_full'),
+                'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'MenuAktif'     => 'active',
+                'MenuOpen'      => 'menu-open',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath . '/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
+                'konten'        => $this->ThemePath . '/manajemen/laporan/data_karyawan',
+                'total_data'    => $total_data->total_data ?? 0,
+            ];
+
+            return view($this->ThemePath . '/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
     // EXPORT EXCEL
 
     /**
@@ -898,7 +946,7 @@ class Laporan extends BaseController
         }
     }
 
-     /**
+    /**
      * Export sales data to Excel
      * 
      * @author mike
@@ -1016,6 +1064,68 @@ class Laporan extends BaseController
             // Create Excel file
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $filename = 'Laporan_Untung_Rugi_' . date('YmdHis') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+            exit;
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function export_karyawan()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $nama       = $this->input->getVar('filter_nama');
+            $kode       = $this->input->getVar('filter_kode');
+            $hlmn       = $this->input->getVar('page');
+
+            $Kary       = new \App\Models\mKaryawan();
+            $sql_kary   = $Kary->asObject()->orderBy('id', 'DESC');
+            // Apply filters if they exist
+            if (!empty($kode)) {
+                $sql_kary->like('kode', $kode);
+            }
+
+            if (!empty($nama)) {
+                $sql_kary->like('nama', $nama);
+            }
+            $data = $sql_kary->findAll();
+
+            // Create Excel file
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $sheet->setCellValue('A1', 'Kode');
+            $sheet->setCellValue('B1', 'Nama');
+            $sheet->setCellValue('C1', 'Alamat');
+
+            // Fill data
+            $row = 2;
+            foreach ($data as $item) {
+                $sheet->setCellValue('A' . $row, $item->kode);
+                $sheet->setCellValue('B' . $row, $item->nama ?? '-');
+                $sheet->setCellValue('C' . $row, $item->alamat ?? '-');
+                $row++;
+            }
+
+            // Set column widths
+            $sheet->getColumnDimension('A')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(15);
+            $sheet->getColumnDimension('C')->setWidth(40);
+
+            // Create Excel file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $filename = 'Laporan_Karyawan_' . date('YmdHis') . '.xlsx';
 
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename="' . $filename . '"');

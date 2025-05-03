@@ -31,4 +31,11 @@
             <p>Untung Rugi</p>
         </a>
     </li>
+    <li class="nav-header">DATA RESUME</li>
+    <li class="nav-item">
+        <a href="<?php echo base_url('laporan/resume/data_karyawan.php') ?>" class="nav-link">
+            <i class="nav-icon fas fa-user-tie"></i>
+            <p>Data Karywan</p>
+        </a>
+    </li>
 </ul>

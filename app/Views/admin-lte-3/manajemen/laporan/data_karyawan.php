@@ -28,6 +28,9 @@
                         <div class="card-header">
                             <h3 class="card-title">Data Karyawan</h3>
                             <div class="card-tools">
+                                <a href="<?php echo base_url('laporan/export_karyawan?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Export Excel
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -38,20 +41,18 @@
                                         <th>Kode</th>
                                         <th>Nama</th>
                                         <th>Alamat</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php echo form_open(base_url('master/karyawan_set_cari.php')) ?>
+                                    <?php echo form_open(current_url(), ['method' => 'get']); ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'kode', 'name' => 'kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan kode ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan kode ...']) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'nama', 'name' => 'nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
+                                            <?php echo form_input(['id' => 'filer_nama', 'name' => 'filer_nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
                                         </th>
-                                        <td></td>
                                         <th>
                                             <button class="btn btn-primary btn-flat" style="width: 120px;">
                                                 <i class="fa fa-search"></i> Cari
@@ -63,22 +64,14 @@
                                     if (!empty($SQLKary)) {
                                         $no = $Halaman;
                                         foreach ($SQLKary as $karyawan) {
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 250px;"><?php echo $karyawan->kode ?></td>
                                                 <td style="width: 450px;"><?php echo format_nama($karyawan->nama) ?></td>
                                                 <td style="width: 450px;"><?php echo $karyawan->alamat ?></td>
-                                                <td style="width: 150px;">
-                                                    <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
-                                                    <?php // echo nbs() ?>
-                                                    <?php echo anchor(base_url('master/karyawan_tambah.php?id='.$karyawan->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
-                                                    &nbsp;
-                                                    <?php echo anchor(base_url('master/karyawan_set_hapus.php?id='.$karyawan->id_user.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $karyawan->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
-                                                    <?php // } ?>
-                                                </td>
                                             </tr>
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -86,8 +79,8 @@
                             </table>
                             <!-- FOOTER TABLE - PAGINATION -->
                             <div class="d-flex justify-content-end mt-3">
-                            <?php echo (!empty($Pagination) ? $Pagination : ''); ?>
-                        </div>
+                                <?php echo (!empty($Pagination) ? $Pagination : ''); ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,7 +95,7 @@
 <script src="<?php echo base_url('assets/theme/' . $ThemePath . '/plugins/toastr/toastr.min.js') ?>"></script>
 
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         <?php echo session()->getFlashdata('master_toast'); ?>
     });
 </script>

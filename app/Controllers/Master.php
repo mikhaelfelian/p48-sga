@@ -2045,7 +2045,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLKary'       => $sql_kary->paginate($jml_limit),
-                'Pagination'    => $sql_kary->pager->links(),
+                'Pagination'    => $sql_kary->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',

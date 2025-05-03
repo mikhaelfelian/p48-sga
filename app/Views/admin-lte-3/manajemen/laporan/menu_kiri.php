@@ -25,4 +25,10 @@
             <p>Data Modal</p>
         </a>
     </li>
+    <li class="nav-item">
+        <a href="<?php echo base_url('laporan/finance/data_untung_rugi.php') ?>" class="nav-link">
+            <i class="nav-icon fas fa-file-invoice-dollar"></i>
+            <p>Untung Rugi</p>
+        </a>
+    </li>
 </ul>

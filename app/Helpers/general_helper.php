@@ -286,6 +286,23 @@ function status_penj($status) {
     return $status;
 }
 
+function status_profit($status) {
+    switch ($status) {
+        default:
+            $status = '<label class="badge badge-warning">RUGI</label>';
+            break;
+        
+        case 'Rugi':
+            $status = '<label class="badge badge-warning">RUGI</label>';
+            break;
+
+        case 'Untung':
+            $status = '<label class="badge badge-success">UNTUNG</label>';
+            break;
+    }
+    return $status;
+}
+
 function status_penj_rab($status) {    
     if(!empty($status)){
         $status = '<label class="badge badge-info">RAB</label>';

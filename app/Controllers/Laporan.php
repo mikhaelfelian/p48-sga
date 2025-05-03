@@ -614,8 +614,8 @@ class Laporan extends BaseController
 
             $Supp       = new \App\Models\mSupplier();
             $sql_supp   = $Supp->asObject()->orderBy('id', 'DESC');
-             // Apply filters if they exist
-             if (!empty($kode)) {
+            // Apply filters if they exist
+            if (!empty($kode)) {
                 $sql_supp->like('kode', $kode);
             }
 

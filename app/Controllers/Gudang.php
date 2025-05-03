@@ -44,16 +44,36 @@ class Gudang extends BaseController {
             $AksesGrup  = $this->ionAuth->groups()->result();
             
             $item       = $this->input->getVar('filter_item');
-            $satb       = $this->input->getVar('filter_satb');
+            $kategori       = $this->input->getVar('filter_kategory');
             $hlmn       = $this->input->getVar('page');
             
             $Model      = new \App\Models\vItem();
+            $ModKategory = new \App\Models\mKategori();
+            $ModMerk = new \App\Models\mMerk();
             $sql_item   = $Model->asObject()->where('status_stok', '1'); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            // Apply filters if they exist
+            if (!empty($kategori)) {
+                $sql_item->where('id_kategori', $kategori);
+            }
+
+            if (!empty($item)) {
+                $merkList = $ModMerk->asObject()->where('merk', $item)->findAll();
+
+                // Ambil hanya nilai ID dari hasil tersebut
+                $merkIDs = array_map(fn($m) => $m->id, $merkList);
+
+                // Jika ada ID yang ditemukan, gunakan whereIn
+                if (!empty($merkIDs)) {
+                    $sql_item->whereIn('id_merk', $merkIDs);
+                }
+            }
+            
             $jml_limit  = $this->Setting->jml_item;
                                     
             $data  = [
                 'SQLItem'       => $sql_item->paginate($jml_limit),
-                'Pagination'    => $Model->pager->links(),
+                'SQLKategori'   => $ModKategory->findAll(),
+                'Pagination'    => $Model->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',

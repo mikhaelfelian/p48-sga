@@ -1,4 +1,4 @@
-<?php 
+<?php
 $request    = \Config\Services::request();
 $url        = new \CodeIgniter\HTTP\URI(current_url(true));
 ?>
@@ -31,7 +31,6 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                         <div class="card-header">
                             <h3 class="card-title">Data Item</h3>
                             <div class="card-tools">
-                                <?php echo (!empty($Pagination) ? $Pagination : '') ?>
                             </div>
                         </div>
                         <div class="card-body">
@@ -46,14 +45,19 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php echo form_open(base_url('gudang/stok/set_item_cari.php')) ?>
+                                    <?php echo form_open(current_url(), ['method' => 'get']); ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php // echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <select name="filter_kategory" class="form-control rounded-0">
+                                                <option value="">- Semua -</option>
+                                                <?php foreach ($SQLKategori as $kat) { ?>
+                                                    <option value="<?php echo $kat['id'] ?>" <?php echo (request()->getVar('filter_kategory') == $kat['id'] ? 'selected' : '') ?>><?php echo strtoupper($kat['kategori']) ?></option>
+                                                <?php } ?>
+                                            </select>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_item', 'name' => 'filter_item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
                                         </th>
                                         <th></th>
                                         <th>
@@ -67,26 +71,30 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                     if (!empty($SQLItem)) {
                                         $no = $Halaman;
                                         foreach ($SQLItem as $item) {
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;"><?php echo strtoupper($item->kategori) ?></td>
                                                 <td style="width: 450px;">
                                                     <i><b><?php echo $item->kode ?></b></i>
-                                                    <br/><?php echo (!empty($item->merk) ? $item->merk.' ' : '').ucwords($item->item) ?>
-                                                    <br/><small><?php echo $item->keterangan ?></small>
+                                                    <br /><?php echo (!empty($item->merk) ? $item->merk . ' ' : '') . ucwords($item->item) ?>
+                                                    <br /><small><?php echo $item->keterangan ?></small>
                                                 </td>
                                                 <td style="width: 50px;"><?php echo format_angka($item->jml, 0) ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('gudang/stok/data_item_det.php?id='.$item->id), '<i class="fa fa-box-open"></i> Lihat', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
+                                                    <?php echo anchor(base_url('gudang/stok/data_item_det.php?id=' . $item->id), '<i class="fa fa-box-open"></i> Lihat', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
                                                 </td>
                                             </tr>
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
                                 </tbody>
                             </table>
+                            <!-- FOOTER TABLE - PAGINATION -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <?php echo (!empty($Pagination) ? $Pagination : ''); ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -101,7 +109,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
 <script src="<?php echo base_url('assets/theme/' . $ThemePath . '/plugins/toastr/toastr.min.js') ?>"></script>
 
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         <?php echo session()->getFlashdata('master_toast'); ?>
     });
 </script>

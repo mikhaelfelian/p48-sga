@@ -1752,7 +1752,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLSupplier'   => $sql_supp->paginate($jml_limit),
-                'Pagination'    => $sql_supp->pager->links(),
+                'Pagination'    => $sql_supp->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',

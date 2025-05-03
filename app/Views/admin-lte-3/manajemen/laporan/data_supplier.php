@@ -10,8 +10,8 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Beranda</a></li>
-                        <li class="breadcrumb-item"><a href="<?php echo base_url('master') ?>">Master Data</a></li>
-                        <li class="breadcrumb-item active">Supplier</li>
+                        <li class="breadcrumb-item"><a href="<?php echo base_url('laporan') ?>">Laporan</a></li>
+                        <li class="breadcrumb-item active">Data Supplier</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -28,6 +28,9 @@
                         <div class="card-header">
                             <h3 class="card-title">Data Supplier</h3>
                             <div class="card-tools">
+                                <a href="<?php echo base_url('laporan/export_supplier?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Export Excel
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -38,20 +41,18 @@
                                         <th>Kode</th>
                                         <th>Nama</th>
                                         <th>Alamat</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php echo form_open(base_url('master/set_supplier_cari.php')) ?>
+                                    <?php echo form_open(current_url(), ['method' => 'get']); ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'kode', 'name' => 'kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan kode ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan kode ...']) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'nama', 'name' => 'nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_nama', 'name' => 'filter_nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
                                         </th>
-                                        <td></td>
                                         <th>
                                             <button class="btn btn-primary btn-flat" style="width: 120px;">
                                                 <i class="fa fa-search"></i> Cari
@@ -63,22 +64,14 @@
                                     if (!empty($SQLSupplier)) {
                                         $no = $Halaman;
                                         foreach ($SQLSupplier as $supplier) {
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 250px;"><?php echo $supplier->kode ?></td>
                                                 <td style="width: 450px;"><?php echo $supplier->nama ?></td>
                                                 <td style="width: 450px;"><?php echo $supplier->alamat ?></td>
-                                                <td style="width: 150px;">
-                                                    <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
-                                                    <?php // echo nbs() ?>
-                                                    <?php echo anchor(base_url('master/data_supplier_tambah.php?id='.$supplier->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
-                                                    &nbsp;
-                                                    <?php echo anchor(base_url('master/set_supplier_hapus.php?id='.$supplier->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $supplier->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
-                                                    <?php // } ?>
-                                                </td>
                                             </tr>
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
@@ -102,7 +95,7 @@
 <script src="<?php echo base_url('assets/theme/' . $ThemePath . '/plugins/toastr/toastr.min.js') ?>"></script>
 
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         <?php echo session()->getFlashdata('master_toast'); ?>
     });
 </script>

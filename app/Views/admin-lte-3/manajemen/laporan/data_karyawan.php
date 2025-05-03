@@ -10,8 +10,8 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Beranda</a></li>
-                        <li class="breadcrumb-item"><a href="<?php echo base_url('master') ?>">Master Data</a></li>
-                        <li class="breadcrumb-item active">Karyawan</li>
+                        <li class="breadcrumb-item"><a href="<?php echo base_url('laporan') ?>">Laporan</a></li>
+                        <li class="breadcrumb-item active">Data Karyawan</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->

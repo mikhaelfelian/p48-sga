@@ -4394,17 +4394,27 @@ class Transaksi extends BaseController {
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
             
-            $kode       = $this->input->getVar('filter_kode');
+            $no_nota       = $this->input->getVar('filter_no_nota');
             $kat        = $this->input->getVar('filter_kat');
+            $status_bayar        = $this->input->getVar('filter_status_bayar');
             $hlmn       = $this->input->getVar('page');
 
             $vtrPenj    = new \App\Models\vtrPenj();
-            $sql_penj   = $vtrPenj->asObject()->where('status', '1')->where('status_bayar', '0')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            $sql_penj   = $vtrPenj->asObject()->where('status', '1')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            
+            if (!empty($no_nota)) {
+                $sql_penj->where('no_nota', $no_nota);
+            }
+
+            if (!empty($status_bayar)) {
+                $sql_penj->where('status_bayar', $status_bayar == 'paid' ? '1' : '0');
+            }
+
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [
                 'SQLPenj'       => $sql_penj->paginate($jml_limit),
-                'Pagination'    => $vtrPenj->pager->links(),
+                'Pagination'    => $vtrPenj->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,

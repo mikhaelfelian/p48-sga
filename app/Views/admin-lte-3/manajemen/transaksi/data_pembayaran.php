@@ -28,7 +28,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Data Penjualan</h3>
                             <div class="card-tools">
-                                <?php echo (!empty($Pagination) ? $Pagination : '') ?>
                             </div>
                         </div>
                         <div class="card-body">
@@ -38,19 +37,27 @@
                                         <th class="text-center">No.</th>
                                         <th>No. Nota</th>
                                         <th>Customer</th>
+                                        <th>Status</th>
                                         <th>Keterangan</th>
-                                        <th></th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php echo form_open(base_url('transaksi/set_trans_cari.php')) ?>
+                                    <?php echo form_open(current_url(), ['method' => 'get']); ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'no_nota', 'name' => 'no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_no_nota', 'name' => 'filter_no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
                                         </th>
                                         <th>
                                             <?php echo form_input(['id' => 'pelanggan', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                        </th>
+                                        <th>
+                                            <select name="filter_status_bayar" class="form-control rounded-0">
+                                                <option value="">- Semua -</option>
+                                                <option value="paid" <?php echo (request()->getVar('filter_status_bayar') == 'paid' ? 'selected' : '') ?>>Terbayar</option>
+                                                <option value="unpaid" <?php echo (request()->getVar('filter_status_bayar') == 'unpaid' ? 'selected' : '') ?>>Belum Bayar</option>
+                                            </select>
                                         </th>
                                         <th></th>
                                         <th>
@@ -64,30 +71,37 @@
                                     if (!empty($SQLPenj)) {
                                         $no = $Halaman;
                                         foreach ($SQLPenj as $det) {
-                                            ?>
+                                    ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo $det->no_nota ?><br/>
-                                                    <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br/>
-                                                    <?php echo status_rab($det->status) ?><br/>
+                                                    <?php echo $det->no_nota ?><br />
+                                                    <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br />
+                                                    <?php echo status_rab($det->status) ?><br />
                                                 </td>
                                                 <td style="width: 450px;">
-                                                    <?php echo $det->p_nama ?><br/>
-                                                    <?php echo $det->p_alamat ?><br/>
+                                                    <?php echo $det->p_nama ?><br />
+                                                    <?php echo $det->p_alamat ?><br />
                                                 </td>
-                                                <td style="width: 50px;"><?php // echo $det->keterangan  ?></td>
+                                                <td style="width: 50px;"><?= status_pembayaran_penj($det->status_bayar) ?></td>
+                                                <td style="width: 50px;"><?php // echo $det->keterangan  
+                                                                            ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('transaksi/data_pembayaran_tambah.php?id='.$det->id), '<i class="fa fa-shopping-cart"></i> Bayar &raquo;', 'class="btn btn-warning btn-flat btn-xs" style="width: 75px;"') ?>                                                   
-                                                    &nbsp;
+                                                    <?php if ($det->status_bayar == 0): ?>
+                                                        <?= anchor(base_url('transaksi/data_pembayaran_tambah.php?id=' . $det->id), '<i class="fa fa-shopping-cart"></i> Bayar &raquo;', 'class="btn btn-warning btn-flat btn-xs" style="width: 75px;"') ?>
+                                                    <?php endif; ?> &nbsp;
                                                 </td>
                                             </tr>
-                                            <?php
+                                    <?php
                                         }
                                     }
                                     ?>
                                 </tbody>
                             </table>
+                            <!-- FOOTER TABLE - PAGINATION -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <?php echo (!empty($Pagination) ? $Pagination : ''); ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +112,7 @@
     <!-- /.content -->
 </div>
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         <?php echo session()->getFlashdata('transaksi_toast'); ?>
     });
 </script>

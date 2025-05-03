@@ -303,6 +303,23 @@ function status_profit($status) {
     return $status;
 }
 
+function status_pembayaran_penj($status){
+    switch ($status) {
+        default:
+            $status = '<label class="badge badge-warning">BELUM BAYAR</label>';
+            break;
+        
+        case 0:
+            $status = '<label class="badge badge-warning">BELUM BAYAR</label>';
+            break;
+
+        case 1:
+            $status = '<label class="badge badge-success">TERBAYAR</label>';
+            break;
+    }
+    return $status;
+}
+
 function status_penj_rab($status) {    
     if(!empty($status)){
         $status = '<label class="badge badge-info">RAB</label>';

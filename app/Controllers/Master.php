@@ -60,7 +60,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLKategori'   => $sql_kat->paginate($jml_limit),
-                'Pagination'    => $Kategori->pager->links(),
+                'Pagination'    => $Kategori->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
@@ -238,7 +238,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLMerk'       => $sql_merk->paginate($jml_limit),
-                'Pagination'    => $sql_merk->pager->links(),
+                'Pagination'    => $sql_merk->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
@@ -428,7 +428,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLSatuan'     => $sql_satuan->paginate($jml_limit),
-                'Pagination'    => $Model->pager->links(),
+                'Pagination'    => $Model->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
@@ -658,7 +658,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLItem'       => $sql_item->paginate($jml_limit),
-                'Pagination'    => $Model->pager->links(),
+                'Pagination'    => $Model->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
@@ -1195,7 +1195,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLTipeFile'   => $sql_tipe->paginate($jml_limit),
-                'Pagination'    => $TipeFile->pager->links(),
+                'Pagination'    => $TipeFile->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
@@ -1350,7 +1350,7 @@ class Master extends BaseController {
                                     
             $data  = [
                 'SQLPelanggan'  => $sql_plgn->paginate($jml_limit),
-                'Pagination'    => $sql_plgn->pager->links(),
+                'Pagination'    => $sql_plgn->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',

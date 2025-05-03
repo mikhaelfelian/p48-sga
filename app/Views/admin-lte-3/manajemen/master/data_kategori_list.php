@@ -28,7 +28,6 @@
                         <div class="card-header">
                             <h3 class="card-title">Data Kategori</h3>
                             <div class="card-tools">
-                                <?php echo (!empty($Pagination) ? $Pagination : '') ?>
                             </div>
                         </div>
                         <div class="card-body">
@@ -82,6 +81,10 @@
                                     ?>
                                 </tbody>
                             </table>
+                            <!-- FOOTER TABLE - PAGINATION -->
+                            <div class="d-flex justify-content-end mt-3">
+                                <?php echo (!empty($Pagination) ? $Pagination : ''); ?>
+                            </div>
                         </div>
                     </div>
                 </div>

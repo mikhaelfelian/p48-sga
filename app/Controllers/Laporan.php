@@ -73,7 +73,7 @@ class Laporan extends BaseController
                 'SQLTipe'       => $sql_tipe,
                 'SQLUsers'      => $this->ionAuth->users('sales')->result(),
                 'SQLProfile'    => $sql_profile,
-                'Pagination'    => $vtrRab->pager->links(),
+                'Pagination'    => $vtrRab->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,

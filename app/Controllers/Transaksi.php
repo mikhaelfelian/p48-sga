@@ -60,7 +60,7 @@ class Transaksi extends BaseController {
             
             $data  = [
                 'SQLPsn'        => $sql_psn->paginate($jml_limit),
-                'Pagination'    => $vtrPsn->pager->links(),
+                'Pagination'    => $vtrPsn->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -485,7 +485,7 @@ class Transaksi extends BaseController {
             $data  = [
                 'SQLRab'        => $sql_rab->paginate($jml_limit),
                 'SQLTipe'       => $sql_tipe,
-                'Pagination'    => $vtrRab->pager->links(),
+                'Pagination'    => $vtrRab->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -2826,7 +2826,7 @@ class Transaksi extends BaseController {
             
             $data  = [
                 'SQLPenj'       => $sql_penj->paginate($jml_limit),
-                'Pagination'    => $vtrPenj->pager->links(),
+                'Pagination'    => $vtrPenj->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,

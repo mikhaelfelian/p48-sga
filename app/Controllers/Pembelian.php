@@ -68,7 +68,7 @@ class Pembelian extends BaseController {
             
             $data  = [
                 'SQLPsn'        => $sql_psn->paginate($jml_limit),
-                'Pagination'    => $vtrPsn->pager->links(),
+                'Pagination'    => $vtrPsn->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -720,7 +720,7 @@ class Pembelian extends BaseController {
             
             $data  = [
                 'SQLBeli'       => $sql_beli->paginate($jml_limit),
-                'Pagination'    => $vtrBeli->pager->links(),
+                'Pagination'    => $vtrBeli->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -1429,7 +1429,7 @@ class Pembelian extends BaseController {
             
             $data  = [
                 'SQLBeli'       => $sql_beli->paginate($jml_limit),
-                'Pagination'    => $vtrBeli->pager->links(),
+                'Pagination'    => $vtrBeli->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,

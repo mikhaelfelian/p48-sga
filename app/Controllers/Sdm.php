@@ -33,7 +33,7 @@ class Sdm extends BaseController
 
             $data = [
                 'SQLKaryawan' => $sql_kary->paginate($jml_limit),
-                'Pagination' => $Karyawan->pager->links(),
+                'Pagination' => $Karyawan->pager->links('default', 'bootstrap_full'),
                 'Halaman' => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif' => 'active',
                 'MenuOpen' => 'menu-open',
@@ -82,7 +82,7 @@ class Sdm extends BaseController
 
             $data = [
                 'SQLKaryawan' => $sql_kary->paginate($jml_limit),
-                'Pagination' => $Karyawan->pager->links(),
+                'Pagination' => $Karyawan->pager->links('default', 'bootstrap_full'),
                 'Halaman' => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'MenuAktif' => 'active',
                 'MenuOpen' => 'menu-open',

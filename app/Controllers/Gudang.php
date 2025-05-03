@@ -247,7 +247,7 @@ class Gudang extends BaseController {
             
             $data  = [
                 'SQLBeli'       => $sql_beli->paginate($jml_limit),
-                'Pagination'    => $vtrBeli->pager->links(),
+                'Pagination'    => $vtrBeli->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -865,7 +865,7 @@ class Gudang extends BaseController {
             
             $data  = [
                 'SQLMutasi'     => $sql_mutasi->paginate($jml_limit),
-                'Pagination'    => $vtrMutasi->pager->links(),
+                'Pagination'    => $vtrMutasi->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
@@ -1504,7 +1504,7 @@ class Gudang extends BaseController {
             
             $data  = [
                 'SQLMutasi'     => $sql_mutasi->paginate($jml_limit),
-                'Pagination'    => $vtrMutasi->pager->links(),
+                'Pagination'    => $vtrMutasi->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,

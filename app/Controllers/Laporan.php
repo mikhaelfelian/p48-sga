@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-
 /**
  * Description of Laporan
  *
@@ -313,6 +312,119 @@ class Laporan extends BaseController
     }
 
     /**
+     * Display sales data modal
+     * 
+     * @author redha
+     * @date 2025-05-03
+     */
+    public function data_modal()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            // Get filter parameters
+            $kode       = $this->input->getVar('filter_kode');
+            $nama       = $this->input->getVar('filter_nama');
+            $sales      = $this->input->getVar('filter_sales');
+            $status     = $this->input->getVar('status');
+            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $hlmn       = $this->input->getVar('page');
+
+            // Initialize models
+            $trPenj = new \App\Models\trPenj();
+            $trTotal = new \App\Models\trPenj();
+            $trBiaya = new \App\Models\trPenj();
+            $Profile = new \App\Models\PengaturanProfile();
+            $sql_profile = $Profile->asObject()->where('status', '1')->find();
+
+            // Build query with filters
+            $sql_penj = $trPenj->asObject()
+                ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as p_nama, tbl_m_pelanggan.alamat as p_alamat')
+                ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
+                ->orderBy('tbl_trans_jual.id', 'DESC');
+
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($kode, $nama, $sales, $status, $tgl_rentang) {
+                if (!empty($kode)) {
+                    $query->groupStart()
+                        ->like('tbl_trans_jual.no_nota', $kode)
+                        ->orLike('tbl_trans_jual.no_kontrak', $kode)
+                        ->orLike('tbl_trans_jual.no_paket', $kode)
+                        ->groupEnd();
+                }
+
+                if (!empty($nama)) {
+                    $query->like('tbl_m_pelanggan.nama', $nama);
+                }
+
+                if (!empty($sales)) {
+                    $query->where('tbl_trans_jual.id_sales', $sales);
+                }
+
+                if (!empty($status)) {
+                    $query->where('tbl_trans_jual.status', $status);
+                }
+
+                // Handle date range filter
+                if (!empty($tgl_rentang)) {
+                    $dates = explode(' - ', $tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tbl_trans_jual.tgl_simpan >=', $start_date)
+                            ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+
+            // Apply filters to the main query
+            $sql_penj = $applyFilters($sql_penj);
+
+            // Calculate total data with applied filters
+            $total_data = $applyFilters($trTotal->asObject())
+                ->select('COUNT(tbl_trans_jual.id) as total_data')
+                ->first();
+
+            // Calculate total biaya with applied filters
+            $total_biaya = $applyFilters($trBiaya->asObject())
+                ->select('SUM(tbl_trans_jual.jml_hpp) as total_biaya')
+                ->first();
+
+            // Set pagination limit
+            $jml_limit = $this->Setting->jml_item;
+
+            $data = [
+                'SQLPenjualan'  => $sql_penj->paginate($jml_limit),
+                'SQLUsers'      => $this->ionAuth->users('sales')->result(),
+                'SQLProfile'    => $sql_profile,
+                'Pagination'    => $trPenj->pager->links('default', 'bootstrap_full'),
+                'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath . '/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
+                'konten'        => $this->ThemePath . '/manajemen/laporan/data_modal',
+                'ionAuth'       => $this->ionAuth,
+                'total_data'    => $total_data->total_data ?? 0,
+                'total_biaya'   => $total_biaya->total_biaya ?? 0,
+            ];
+
+            return view($this->ThemePath . '/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    // EXPORT EXCEL
+
+    /**
      * Export sales data to Excel
      * 
      * @author mike
@@ -392,7 +504,7 @@ class Laporan extends BaseController
                 $sheet->setCellValue('C' . $row, $item->p_nama ?? '-');
                 $sheet->setCellValue('D' . $row, $item->p_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
-                $sheet->setCellValue('F' . $row, status_penj($item->status));
+                $sheet->setCellValue('F' . $row, ($item->status == 1 ? 'Process' : 'Draft'));
 
                 // Safely get sales user name
                 $salesUser = $this->ionAuth->user($item->id_sales)->row();
@@ -503,7 +615,7 @@ class Laporan extends BaseController
                 $sheet->setCellValue('C' . $row, $item->s_nama ?? '-');
                 $sheet->setCellValue('D' . $row, $item->s_alamat ?? '-');
                 $sheet->setCellValue('E' . $row, $item->jml_gtotal);
-                $sheet->setCellValue('F' . $row, status_penj($item->status));
+                $sheet->setCellValue('F' . $row, ($item->status == 1 ? 'Process' : 'Draft'));
 
                 // Safely get user name
                 $user = $this->ionAuth->user($item->id_user)->row();
@@ -536,5 +648,190 @@ class Laporan extends BaseController
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());
         }
+    }
+
+     /**
+     * Export sales data to Excel
+     * 
+     * @author mike
+     * @date 2024-03-13
+     */
+    public function export_modal()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            // Get filter parameters
+            $kode       = $this->request->getVar('filter_kode');
+            $nama       = $this->request->getVar('filter_nama');
+            $sales      = $this->request->getVar('filter_sales');
+            $status     = $this->request->getVar('status');
+            $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
+
+            // Initialize models
+            $trPenj = new \App\Models\trPenj();
+
+            // Build query with filters
+            $sql_penj = $trPenj->asObject()
+                ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as p_nama, tbl_m_pelanggan.alamat as p_alamat')
+                ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
+                ->orderBy('tbl_trans_jual.id', 'DESC');
+
+            // Apply filters if they exist
+            if (!empty($kode)) {
+                $sql_penj->groupStart()
+                    ->like('tbl_trans_jual.no_nota', $kode)
+                    ->orLike('tbl_trans_jual.no_kontrak', $kode)
+                    ->orLike('tbl_trans_jual.no_paket', $kode)
+                    ->groupEnd();
+            }
+
+            if (!empty($nama)) {
+                $sql_penj->like('tbl_m_pelanggan.nama', $nama);
+            }
+
+            if (!empty($sales)) {
+                $sql_penj->where('tbl_trans_jual.id_sales', $sales);
+            }
+
+            if (!empty($status)) {
+                $sql_penj->where('tbl_trans_jual.status', $status);
+            }
+
+            // Handle date range filter
+            if (!empty($tgl_rentang)) {
+                $dates = explode(' - ', $tgl_rentang);
+                if (count($dates) == 2) {
+                    $start_date = tgl_indo_sys($dates[0]);
+                    $end_date = tgl_indo_sys($dates[1]);
+                    $sql_penj->where('tbl_trans_jual.tgl_simpan >=', $start_date)
+                        ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+                }
+            }
+
+            $data = $sql_penj->findAll();
+
+            // Create Excel file
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $sheet->setCellValue('A1', 'No. Nota');
+            $sheet->setCellValue('B1', 'Tanggal');
+            $sheet->setCellValue('C1', 'Customer');
+            $sheet->setCellValue('D1', 'Alamat');
+            $sheet->setCellValue('E1', 'Modal');
+            $sheet->setCellValue('F1', 'Status');
+            $sheet->setCellValue('G1', 'Sales');
+
+            // Fill data
+            $row = 2;
+            foreach ($data as $item) {
+                $sheet->setCellValue('A' . $row, $item->no_nota);
+                $sheet->setCellValue('B' . $row, tgl_indo5($item->tgl_simpan));
+                $sheet->setCellValue('C' . $row, $item->p_nama ?? '-');
+                $sheet->setCellValue('D' . $row, $item->p_alamat ?? '-');
+                $sheet->setCellValue('E' . $row, $item->jml_hpp);
+                $sheet->setCellValue('F' . $row, ($item->status == 1 ? 'Process' : 'Draft'));
+
+                // Safely get sales user name
+                $salesUser = $this->ionAuth->user($item->id_sales)->row();
+                $salesName = $salesUser ? $salesUser->first_name . ' ' . $salesUser->last_name : '-';
+                $sheet->setCellValue('G' . $row, $salesName);
+
+                $row++;
+            }
+
+            // Set column widths
+            $sheet->getColumnDimension('A')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(15);
+            $sheet->getColumnDimension('C')->setWidth(30);
+            $sheet->getColumnDimension('D')->setWidth(40);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(15);
+            $sheet->getColumnDimension('G')->setWidth(20);
+
+            // Create Excel file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $filename = 'Laporan_Modal_' . date('YmdHis') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+            exit;
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+    
+    // EXPORET PDF
+    public function export_pembelian_pdf()
+    {
+        // Get filter parameters
+        $kode        = $this->request->getVar('filter_kode');
+        $nama        = $this->request->getVar('filter_nama');
+        $supplier    = $this->request->getVar('filter_supplier');
+        $status      = $this->request->getVar('status');
+        $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
+
+        // Initialize models
+        $trPembelian = new \App\Models\trPembelian();
+
+        // Build query with filters
+        $sql_pembelian = $trPembelian->asObject()
+            ->select('tbl_trans_beli.*, tbl_m_supplier.nama as s_nama, tbl_m_supplier.alamat as s_alamat')
+            ->join('tbl_m_supplier', 'tbl_m_supplier.id = tbl_trans_beli.id_supplier', 'left')
+            ->orderBy('tbl_trans_beli.id', 'DESC');
+
+        // Apply filters if they exist
+        if (!empty($kode)) {
+            $sql_pembelian->like('tbl_trans_beli.no_nota', $kode);
+        }
+
+        if (!empty($nama)) {
+            $sql_pembelian->like('tbl_m_supplier.nama', $nama);
+        }
+
+        if (!empty($supplier)) {
+            $sql_pembelian->where('tbl_trans_beli.id_supplier', $supplier);
+        }
+
+        if (!empty($status)) {
+            $sql_pembelian->where('tbl_trans_beli.status', $status);
+        }
+
+        // Handle date range filter
+        if (!empty($tgl_rentang)) {
+            $dates = explode(' - ', $tgl_rentang);
+            if (count($dates) == 2) {
+                $start_date = tgl_indo_sys($dates[0]);
+                $end_date = tgl_indo_sys($dates[1]);
+                $sql_pembelian->where('tbl_trans_beli.tgl_simpan >=', $start_date)
+                    ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
+            }
+        }
+
+        $data = $sql_pembelian->findAll();
+        // Load Dompdf
+        $dompdf = new  \Dompdf\Dompdf();
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $dompdf->setOptions($options);
+
+        // Buat HTML untuk laporan PDF
+        $html = view('/manajemen/laporan/pdf/data_pembelian_pdf', [
+            'SQLPembelian' => $data
+        ]);
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Render PDF (secara internal)
+        $dompdf->render();
+
+        // Output file PDF ke browser
+        $dompdf->stream("laporan_pembelian.pdf", array("Attachment" => 0));
     }
 }

@@ -317,6 +317,7 @@ $routes->group('laporan', ['filter' => 'auth'], function($routes) {
     $routes->get('omset/data_rab.php', 'Laporan::data_rab');
     $routes->get('omset/data_penjualan.php', 'Laporan::data_penjualan');
     $routes->get('omset/data_pembelian.php', 'Laporan::data_pembelian');
+    $routes->get('finance/data_modal.php', 'Laporan::data_modal');
 });
 
 $routes->get('pengaturan/hapus_img.php', 'Pengaturan::hapus_img');

@@ -8,13 +8,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Data Pembelian</h1>
+                    <h1 class="m-0">Data Modal</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="#">Beranda</a></li>
                         <li class="breadcrumb-item"><a href="<?php echo base_url('laporan') ?>">Laporan</a></li>
-                        <li class="breadcrumb-item active">Data Pembelian</li>
+                        <li class="breadcrumb-item active">Data Modal</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -39,7 +39,7 @@
                                 <div class="col-md-6">
                                     <div class="form-group <?php echo (!empty($psnGagal['perusahaan']) ? 'text-danger' : '') ?>">
                                         <label class="control-label">Perusahaan*</label>
-                                        <select name="filter_perusahaan" class="form-control rounded-0<?php echo (!empty($psnGagal['perusahaan']) ? ' is-invalid' : '') ?>">
+                                        <select name="filter_perusahaan" class="form-control rounded-0<?php echo (!empty($psnGagal['perusahaan']) ? ' is-invalid' : '') ?>" value="<?php echo request()->getVar('filter_perusahaan') ?>">
                                             <option value="">- Pilih Perusahaan -</option>
                                             <?php foreach ($SQLProfile as $profile) { ?>
                                                 <option value="<?php echo $profile->id ?>" <?php echo (request()->getVar('filter_perusahaan') == $profile->id ? 'selected' : '') ?>><?php echo strtoupper($profile->nama) ?></option>
@@ -73,10 +73,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="control-label">Supplier</label>
-                                        <select name="supplier" class="form-control rounded-0">
+                                        <label class="control-label">Sales</label>
+                                        <select name="filter_sales" class="form-control rounded-0">
                                             <option value="">- Semua -</option>
-                                            <?php foreach ($SQLSupplier as $supplier) { ?>
+                                            <?php foreach ($SQLUsers as $user) { ?>
                                                 <option value="<?php echo $user->id ?>" <?php echo (request()->getVar('filter_sales') == $user->id ? 'selected' : '') ?>><?php echo strtoupper($user->first_name) ?></option>
                                             <?php } ?>
                                         </select>
@@ -101,14 +101,14 @@
                 <div class="col-md-12">
                     <div class="card card-default">
                         <div class="card-header">
-                            <h3 class="card-title">Data Pembelian</h3>
+                            <h3 class="card-title">Data Modal</h3>
                             <div class="card-tools">
-                                <a href="<?php echo base_url('laporan/export_pembelian?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
+                                <a href="<?php echo base_url('laporan/export_modal?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
-                                <a href="<?php echo base_url('laporan/export_pembelian_excel?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
+                                <!-- <a href="<?php echo base_url('laporan/export_penjualan_pdf?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
                                     <i class="fas fa-file-pdf"></i> Export PDF
-                                </a>
+                                </a> -->
                             </div>
                         </div>
                         <div class="card-body">
@@ -116,44 +116,45 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">No.</th>
-                                        <th>Kode</th>
-                                        <th>Supplier</th>
-                                        <th>Total</th>
+                                        <th>No. Nota</th>
+                                        <th>Customer</th>
+                                        <th>Modal</th>
                                         <th>Status</th>
-                                        <th>User</th>
+                                        <th>Sales</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    if (!empty($SQLPembelian)) {
+                                    if (!empty($SQLPenjualan)) {
                                         $no = $Halaman;
-                                        foreach ($SQLPembelian as $det) {
+                                        foreach ($SQLPenjualan as $det) {
                                             $user = $ionAuth->user($det->id_user)->row();
                                     ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('transaksi/pembelian/data_pembelian_det.php?id=' . $det->id), $det->no_nota) ?><br />
+                                                    <?php echo anchor(base_url('transaksi/penjualan/data_penjualan_det.php?id=' . $det->id), $det->no_nota) ?><br />
                                                     <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br />
-                                                    <small><i><?php echo !empty($user) ? strtolower($user->username) : '-' ?></i></small><br />
+                                                    <small><i><?php echo strtolower($user->username) ?></i></small><br />
                                                 </td>
                                                 <td style="width: 450px;">
-                                                    <?php echo $det->supplier ?><br />
-                                                    <?php echo $det->alamat ?><br />
-                                                    <?php if ($det->jml_gtotal > 0) { ?>
-                                                        <small><i><b>Rp. <?php echo format_angka($det->jml_gtotal); ?></b></i></small>
+                                                    <?php echo $det->p_nama ?><br />
+                                                    <?php echo $det->p_alamat ?><br />
+                                                    <?php if ($det->jml_hpp > 0) { ?>
+                                                        <small><i><b>Rp. <?php echo format_angka($det->jml_hpp); ?></b></i></small>
                                                     <?php } ?>
                                                 </td>
                                                 <td class="">
-                                                    Rp. <?php echo format_angka($det->jml_gtotal); ?>
+                                                    Rp. <?php echo format_angka($det->jml_hpp); ?>
                                                 </td>
                                                 <td>
                                                     <?php echo status_penj($det->status) ?>
                                                 </td>
                                                 <td>
                                                     <?php
-                                                    if (!empty($user)) {
-                                                        echo $user->first_name . ' ' . $user->last_name;
+                                                    $sales = $ionAuth->user($det->id_sales)->row();
+                                                    if (!empty($sales)) {
+                                                        echo $sales->first_name . ' ' . $sales->last_name;
                                                     } else {
                                                         echo '<span class="text-muted">-</span>';
                                                     }
@@ -165,7 +166,7 @@
                                     } else {
                                         ?>
                                         <tr>
-                                            <td colspan="6" class="text-center">Tidak ada data pembelian</td>
+                                            <td colspan="6" class="text-center">Tidak ada data penjualan</td>
                                         </tr>
                                     <?php
                                     }
@@ -175,7 +176,7 @@
                                     <tr>
                                         <th colspan="1">Total:</th>
                                         <th> <?php echo number_format($total_data); ?> Data</th>
-                                        <th colspan="1">Total Keseluruhan Biaya :</th>
+                                        <th colspan="1">Total Modal :</th>
                                         <th colspan="3">Rp. <?php echo format_angka($total_biaya); ?></th>
                                     </tr>
                                 </tfoot>

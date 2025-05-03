@@ -1336,7 +1336,16 @@ class Transaksi extends BaseController {
                 ];
                 
                 $Rab->save($data_rab);
-                
+
+                // JIKA HPP ITEM PADA RAB DIUBAH. MAKA UBAH JUGA HPP ITEM MASTER
+                if(!empty($sql_item->id) && ($sql_item->harga_beli != format_angka_db($hpp))){
+                    $updateItem = [
+                        "id" => $sql_item->id,
+                        "harga_beli" => (float)format_angka_db($hpp)
+                    ];
+                    $itemModel = $Item->save($updateItem);
+                }
+
                 # End off transact SQL
                 $this->db->transComplete();
 

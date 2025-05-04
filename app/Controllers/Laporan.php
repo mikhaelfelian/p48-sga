@@ -261,8 +261,10 @@ class Laporan extends BaseController
             // Get filter parameters from request
             $kode = $this->input->getVar('filter_kode');
             $nama = $this->input->getVar('filter_nama');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
             $supplier = $this->input->getVar('filter_supplier');
-            $status = $this->input->getVar('status');
+            $status = $this->input->getVar('filter_status');
+            $tgl = $this->input->getVar('filter_tgl');
             $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
             $hlmn = $this->input->getVar('page');
 
@@ -282,7 +284,7 @@ class Laporan extends BaseController
 
 
             // Function to apply filters dynamically
-            $applyFilters = function ($query) use ($kode, $nama, $supplier, $status, $tgl_rentang) {
+            $applyFilters = function ($query) use ($kode, $nama, $perusahaan, $supplier, $status, $tgl, $tgl_rentang) {
                 if (!empty($kode)) {
                     $query->like('tbl_trans_beli.no_nota', $kode);
                 }
@@ -295,8 +297,18 @@ class Laporan extends BaseController
                     $query->where('tbl_trans_beli.id_supplier', $supplier);
                 }
 
+                if (!empty($perusahaan)) {
+                    $query->where('tbl_trans_beli.id_perusahaan', $perusahaan);
+                }
+
                 if (!empty($status)) {
                     $query->where('tbl_trans_beli.status', $status);
+                }
+
+                // Handle date 
+                if (!empty($tgl)) {
+                    $date = tgl_indo_sys($tgl);
+                    $query->where('tbl_trans_beli.tgl_simpan >=', $date);
                 }
 
                 // Handle date range filter
@@ -817,11 +829,13 @@ class Laporan extends BaseController
     {
         if ($this->ionAuth->loggedIn()) {
             // Get filter parameters
-            $kode        = $this->request->getVar('filter_kode');
-            $nama        = $this->request->getVar('filter_nama');
-            $supplier    = $this->request->getVar('filter_supplier');
-            $status      = $this->request->getVar('status');
-            $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
+            $kode = $this->input->getVar('filter_kode');
+            $nama = $this->input->getVar('filter_nama');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
+            $supplier = $this->input->getVar('filter_supplier');
+            $status = $this->input->getVar('filter_status');
+            $tgl = $this->input->getVar('filter_tgl');
+            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
 
             // Initialize models
             $trPembelian = new \App\Models\trPembelian();
@@ -845,8 +859,18 @@ class Laporan extends BaseController
                 $sql_pembelian->where('tbl_trans_beli.id_supplier', $supplier);
             }
 
+            if (!empty($perusahaan)) {
+                $sql_pembelian->where('tbl_trans_beli.id_perusahaan', $perusahaan);
+            }
+
             if (!empty($status)) {
                 $sql_pembelian->where('tbl_trans_beli.status', $status);
+            }
+
+            // Handle date 
+            if (!empty($tgl)) {
+                $date = tgl_indo_sys($tgl);
+                $sql_pembelian->where('tbl_trans_beli.tgl_simpan >=', $date);
             }
 
             // Handle date range filter
@@ -1419,8 +1443,10 @@ class Laporan extends BaseController
             // Get filter parameters from request
             $kode = $this->input->getVar('filter_kode');
             $nama = $this->input->getVar('filter_nama');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
             $supplier = $this->input->getVar('filter_supplier');
-            $status = $this->input->getVar('status');
+            $status = $this->input->getVar('filter_status');
+            $tgl = $this->input->getVar('filter_tgl');
             $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
 
             $trPembelian = new \App\Models\trPembelian();
@@ -1434,7 +1460,7 @@ class Laporan extends BaseController
 
 
             // Function to apply filters dynamically
-            $applyFilters = function ($query) use ($kode, $nama, $supplier, $status, $tgl_rentang) {
+            $applyFilters = function ($query) use ($kode, $nama, $perusahaan, $supplier, $status, $tgl, $tgl_rentang) {
                 if (!empty($kode)) {
                     $query->like('tbl_trans_beli.no_nota', $kode);
                 }
@@ -1447,9 +1473,20 @@ class Laporan extends BaseController
                     $query->where('tbl_trans_beli.id_supplier', $supplier);
                 }
 
+                if (!empty($perusahaan)) {
+                    $query->where('tbl_trans_beli.id_perusahaan', $perusahaan);
+                }
+
                 if (!empty($status)) {
                     $query->where('tbl_trans_beli.status', $status);
                 }
+
+                // Handle date 
+                if (!empty($tgl)) {
+                    $date = tgl_indo_sys($tgl);
+                    $query->where('tbl_trans_beli.tgl_simpan >=', $date);
+                }
+
 
                 // Handle date range filter
                 if (!empty($tgl_rentang)) {
@@ -1483,6 +1520,22 @@ class Laporan extends BaseController
             # HEADER
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->Cell(0, 0.7, 'DATA PEMBELIAN', 0, 1, 'C');
+
+            if (!empty($tgl)) {
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($tgl), 0, 1, 'C');
+            }
+
+            if (!empty($tgl_rentang)) {
+                $dates = explode(' - ', $tgl_rentang);
+                if (count($dates) == 2) {
+                    $start_date = tgl_indo_sys($dates[0]);
+                    $end_date = tgl_indo_sys($dates[1]);
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($start_date) . ' - ' . tgl_indo5($end_date), 0, 1, 'C');
+                }
+            }
             // Spasi setelah header
             $pdf->Ln(1);
 
@@ -1742,7 +1795,7 @@ class Laporan extends BaseController
 
             if (!empty($filter_tgl)) {
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($filter_tgl), 0, 1, 'L');
+                $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($filter_tgl), 0, 1, 'C');
             }
 
             if (!empty($filter_tgl_rentang)) {
@@ -1752,7 +1805,7 @@ class Laporan extends BaseController
                     $end_date = tgl_indo_sys($dates[1]);
 
                     $pdf->SetFont('Arial', '', 10);
-                    $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($start_date) . ' - ' . tgl_indo5($end_date), 0, 1, 'L');
+                    $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($start_date) . ' - ' . tgl_indo5($end_date), 0, 1, 'C');
                 }
             }
 

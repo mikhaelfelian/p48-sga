@@ -54,7 +54,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -67,7 +67,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -198,6 +198,7 @@
     $(function() {
         // Initialize daterangepicker for date range
         $('#tgl_rentang').daterangepicker({
+            singleDatePicker: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }
@@ -206,11 +207,30 @@
         // Initialize datepicker for single date
         $('#tgl').daterangepicker({
             singleDatePicker: true,
+            singleDatePicker: true,
             showDropdowns: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
+
+        // set value tanggal
+        $('#filter_tgl').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY'));
+        });
+        $('#filter_tgl_rentang').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl_rentang').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
 
         <?php echo session()->getFlashdata('laporan_toast'); ?>
     });

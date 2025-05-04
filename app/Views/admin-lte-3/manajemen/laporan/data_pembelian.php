@@ -54,7 +54,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -67,17 +67,17 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="control-label">Supplier</label>
-                                        <select name="supplier" class="form-control rounded-0">
+                                        <select name="filter_supplier" class="form-control rounded-0">
                                             <option value="">- Semua -</option>
                                             <?php foreach ($SQLSupplier as $supplier) { ?>
-                                                <option value="<?php echo $user->id ?>" <?php echo (request()->getVar('filter_sales') == $user->id ? 'selected' : '') ?>><?php echo strtoupper($user->first_name) ?></option>
+                                                <option value="<?php echo $user->id ?>" <?php echo (request()->getVar('filter_supplier') == $user->id ? 'selected' : '') ?>><?php echo strtoupper($user->first_name) ?></option>
                                             <?php } ?>
                                         </select>
                                     </div>
@@ -196,20 +196,40 @@
 <script type="text/javascript">
     $(function() {
         // Initialize daterangepicker for date range
-        $('#tgl_rentang').daterangepicker({
+        $('#filter_tgl_rentang').daterangepicker({
+            autoUpdateInput: false,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
 
         // Initialize datepicker for single date
-        $('#tgl').daterangepicker({
+        $('#filter_tgl').daterangepicker({
+            autoUpdateInput: false,
             singleDatePicker: true,
             showDropdowns: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
+
+        // set value tanggal
+        $('#filter_tgl').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY'));
+        });
+        $('#filter_tgl_rentang').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl_rentang').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
 
         <?php echo session()->getFlashdata('laporan_toast'); ?>
     });

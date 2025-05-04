@@ -68,7 +68,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'filter_tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0' . (!empty($hasError['pasien']) ? ' is-invalid' : ''), 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => (isset($_GET['tgl']) ? $this->tanggalan->tgl_indo($_GET['tgl']) : ''))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -79,7 +79,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'filter_tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0' . (!empty($hasError['pasien']) ? ' is-invalid' : ''), 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => (isset($_GET['tgl_awal']) ? $this->tanggalan->tgl_indo2($_GET['tgl_awal']) : ''))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -199,14 +199,14 @@
 </div>
 <script type="text/javascript">
     $(function() {
-        $('#tgl_rentang').daterangepicker({
+        $('#filter_tgl_rentang').daterangepicker({
             autoUpdateInput: false,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
 
-        $('#tgl').daterangepicker({
+        $('#filter_tgl').daterangepicker({
             singleDatePicker: true,
             showDropdowns: true,
             autoUpdateInput: false,
@@ -214,6 +214,24 @@
                 format: 'MM/DD/YYYY'
             }
         });
+
+        // set value tanggal
+        $('#filter_tgl').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY'));
+        });
+        $('#filter_tgl_rentang').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl_rentang').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
 
         <?php echo session()->getFlashdata('laporan_toast'); ?>
     });

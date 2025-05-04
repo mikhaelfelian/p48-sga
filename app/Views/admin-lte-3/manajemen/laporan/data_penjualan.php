@@ -197,16 +197,16 @@
 <script type="text/javascript">
     $(function() {
         // Initialize daterangepicker for date range
-        $('#tgl_rentang').daterangepicker({
-            singleDatePicker: true,
+        $('#filter_tgl_rentang').daterangepicker({
+            autoUpdateInput: false,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
 
         // Initialize datepicker for single date
-        $('#tgl').daterangepicker({
-            singleDatePicker: true,
+        $('#filter_tgl').daterangepicker({
+            autoUpdateInput: false,
             singleDatePicker: true,
             showDropdowns: true,
             locale: {

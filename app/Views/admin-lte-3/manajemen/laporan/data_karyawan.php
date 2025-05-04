@@ -31,6 +31,9 @@
                                 <a href="<?php echo base_url('laporan/export_karyawan?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
+                                <a href="<?php echo base_url('laporan/pdf_karyawan?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i> Export PDF
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -51,7 +54,7 @@
                                             <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan kode ...']) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'filer_nama', 'name' => 'filer_nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_nama', 'name' => 'filter_nama', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan nama ...']) ?>
                                         </th>
                                         <th>
                                             <button class="btn btn-primary btn-flat" style="width: 120px;">

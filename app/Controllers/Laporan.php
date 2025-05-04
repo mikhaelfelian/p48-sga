@@ -1297,6 +1297,9 @@ class Laporan extends BaseController
             $sheet->setCellValue('A1', 'Kode');
             $sheet->setCellValue('B1', 'Nama');
             $sheet->setCellValue('C1', 'Alamat');
+            $sheet->setCellValue('D1', 'Gender');
+            $sheet->setCellValue('E1', 'Nik');
+            $sheet->setCellValue('F1', 'No HP');
 
             // Fill data
             $row = 2;
@@ -1304,6 +1307,9 @@ class Laporan extends BaseController
                 $sheet->setCellValue('A' . $row, $item->kode);
                 $sheet->setCellValue('B' . $row, $item->nama ?? '-');
                 $sheet->setCellValue('C' . $row, $item->alamat ?? '-');
+                $sheet->setCellValue('D' . $row, $item->jns_klm == 'L' ? 'Pria' : 'Wanita' ?? '-');
+                $sheet->setCellValue('E' . $row, $item->nik ?? '-');
+                $sheet->setCellValue('F' . $row, $item->no_hp ?? '-');
                 $row++;
             }
 
@@ -1311,6 +1317,9 @@ class Laporan extends BaseController
             $sheet->getColumnDimension('A')->setWidth(20);
             $sheet->getColumnDimension('B')->setWidth(15);
             $sheet->getColumnDimension('C')->setWidth(40);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(15);
 
             // Create Excel file
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
@@ -2295,6 +2304,80 @@ class Laporan extends BaseController
 
             $this->response->setContentType('application/pdf');
             $pdf->Output('data-modal.pdf', 'I');
+        }
+    }
+
+    public function pdf_karyawan()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $nama       = $this->input->getVar('filter_nama');
+            $kode       = $this->input->getVar('filter_kode');
+            $hlmn       = $this->input->getVar('page');
+
+            $Kary       = new \App\Models\mKaryawan();
+            $sql_kary   = $Kary->asObject()->orderBy('id', 'DESC');
+            // Apply filters if they exist
+            if (!empty($kode)) {
+                $sql_kary->like('kode', $kode);
+            }
+
+            if (!empty($nama)) {
+                $sql_kary->like('nama', $nama);
+            }
+            $sql_kary = $sql_kary->findAll();
+
+            $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS', '', 'trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold', '', 'trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic', '', 'trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic', '', 'trebucit.php');
+
+            # HEADER
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 0.7, 'DATA KARYAWAN', 0, 1, 'C');
+
+            // Spasi setelah header
+            $pdf->Ln(1);
+
+            $fill = FALSE;
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
+            $pdf->Cell(2, .5, 'KODE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(4.5, .5, 'NAMA', 'TB', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'ALAMAT', 'TB', 0, 'L', $fill);
+            $pdf->Cell(2, .5, 'GENDER', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'NIK', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'HO HP', 'TB', 0, 'L', $fill);
+            $pdf->Ln();
+
+            $no     = 1;
+            foreach ($sql_kary as $det) {
+                $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
+                $pdf->Cell(2, .5, $det->kode, '', 0, 'L', $fill);
+                $pdf->Cell(4.5, .5, $det->nama, '', 0, 'L', $fill);
+                $pdf->Cell(5, .5, $det->alamat, '', 0, 'L', $fill);
+                $pdf->Cell(2, .5, $det->jns_klm == "L" ? 'Pria' : 'Wanita', '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, $det->nik, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, $det->no_hp, '', 0, 'L', $fill);
+                $pdf->Ln();
+                $no++;
+            }
+            $pdf->Ln();
+            $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
+
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('data-karyawan.pdf', 'I');
         }
     }
 }

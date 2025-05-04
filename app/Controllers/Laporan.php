@@ -738,6 +738,60 @@ class Laporan extends BaseController
         }
     }
 
+    public function data_stock()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $item       = $this->input->getVar('filter_item');
+            $kategori       = $this->input->getVar('filter_kategory');
+            $hlmn       = $this->input->getVar('page');
+
+            $Model      = new \App\Models\vItem();
+            $ModKategory = new \App\Models\mKategori();
+            $ModMerk = new \App\Models\mMerk();
+            $sql_item   = $Model->asObject()->where('status_stok', '1'); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            // Apply filters if they exist
+            if (!empty($kategori)) {
+                $sql_item->where('id_kategori', $kategori);
+            }
+
+            if (!empty($item)) {
+                $sql_item->groupStart()
+                    ->like('merk', $item)
+                    ->orLike('kode', $item)
+                    ->orLike('keterangan', $item)
+                    ->groupEnd();
+            }
+
+            $jml_limit  = $this->Setting->jml_item;
+
+            $data  = [
+                'SQLItem'       => $sql_item->paginate($jml_limit),
+                'SQLKategori'   => $ModKategory->findAll(),
+                'Pagination'    => $Model->pager->links('default', 'bootstrap_full'),
+                'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'MenuAktif'     => 'active',
+                'MenuOpen'      => 'menu-open',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath . '/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
+                'konten'        => $this->ThemePath . '/manajemen/laporan/data_stock',
+            ];
+
+            return view($this->ThemePath . '/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
     // EXPORT EXCEL
 
     /**
@@ -1515,6 +1569,87 @@ class Laporan extends BaseController
             // Create Excel file
             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
             $filename = 'Laporan_RAB_' . date('YmdHis') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+            exit;
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function export_stock()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $item       = $this->input->getVar('filter_item');
+            $kategori       = $this->input->getVar('filter_kategory');
+            $hlmn       = $this->input->getVar('page');
+
+            $Model      = new \App\Models\vItem();
+            $ModKategory = new \App\Models\mKategori();
+            $ModMerk = new \App\Models\mMerk();
+            $sql_item   = $Model->asObject()->where('status_stok', '1'); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            // Apply filters if they exist
+            if (!empty($kategori)) {
+                $sql_item->where('id_kategori', $kategori);
+            }
+
+            if (!empty($item)) {
+                $sql_item->groupStart()
+                    ->like('merk', $item)
+                    ->orLike('kode', $item)
+                    ->orLike('keterangan', $item)
+                    ->groupEnd();
+            }
+            $data = $sql_item->findAll();
+
+
+            // Create Excel file
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $sheet->setCellValue('A1', 'Kode');
+            $sheet->setCellValue('B1', 'Kategori');
+            $sheet->setCellValue('C1', 'Item');
+            $sheet->setCellValue('D1', 'Stok');
+            $sheet->setCellValue('E1', 'Harga Beli');
+            $sheet->setCellValue('F1', 'Harga Jual');
+            $sheet->setCellValue('G1', 'Keterangan');
+
+            // Fill data
+            $row = 2;
+            foreach ($data as $item) {
+                $sheet->setCellValue('A' . $row, $item->kode ?? '-');
+                $sheet->setCellValue('B' . $row, $item->kategori ?? '-');
+                $sheet->setCellValue('C' . $row, $item->item ?? '-');
+                $sheet->setCellValue('D' . $row,  format_angka($item->jml, 0) ?? 0);
+                $sheet->setCellValue('E' . $row, format_angka($item->harga_beli, 0) ?? 0);
+                $sheet->setCellValue('F' . $row, format_angka($item->harga_jual, 0) ?? 0);
+                $sheet->setCellValue('G' . $row, $item->keterangan ?? '-');
+                $row++;
+            }
+
+            // Set column widths
+            $sheet->getColumnDimension('A')->setWidth(30);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(50);
+            $sheet->getColumnDimension('D')->setWidth(10);
+            $sheet->getColumnDimension('E')->setWidth(20);
+            $sheet->getColumnDimension('F')->setWidth(20);
+            $sheet->getColumnDimension('G')->setWidth(60);
+
+            // Create Excel file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $filename = 'Laporan_STOK_' . date('YmdHis') . '.xlsx';
 
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -2432,7 +2567,7 @@ class Laporan extends BaseController
 
             # HEADER
             $pdf->SetFont('Arial', 'B', 14);
-            $pdf->Cell(0, 0.7, 'DATA KARYAWAN', 0, 1, 'C');
+            $pdf->Cell(0, 0.7, 'DATA SUPPLIER', 0, 1, 'C');
 
             // Spasi setelah header
             $pdf->Ln(1);
@@ -2466,6 +2601,84 @@ class Laporan extends BaseController
 
             $this->response->setContentType('application/pdf');
             $pdf->Output('data-supplier.pdf', 'I');
+        }
+    }
+
+    public function pdf_stock()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $item       = $this->input->getVar('filter_item');
+            $kategori       = $this->input->getVar('filter_kategory');
+            $hlmn       = $this->input->getVar('page');
+
+            $Model      = new \App\Models\vItem();
+            $ModKategory = new \App\Models\mKategori();
+            $ModMerk = new \App\Models\mMerk();
+            $sql_item   = $Model->asObject()->where('status_stok', '1'); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            // Apply filters if they exist
+            if (!empty($kategori)) {
+                $sql_item->where('id_kategori', $kategori);
+            }
+
+            if (!empty($item)) {
+                $sql_item->groupStart()
+                    ->like('merk', $item)
+                    ->orLike('kode', $item)
+                    ->orLike('keterangan', $item)
+                    ->groupEnd();
+            }
+            $sql_item = $sql_item->findAll();
+
+            $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS', '', 'trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold', '', 'trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic', '', 'trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic', '', 'trebucit.php');
+
+            # HEADER
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 0.7, 'DATA STOCK', 0, 1, 'C');
+
+            // Spasi setelah header
+            $pdf->Ln(1);
+
+            $fill = FALSE;
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
+            $pdf->Cell(4, .5, 'KODE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(8, .5, 'ITEM', 'TB', 0, 'L', $fill);
+            $pdf->Cell(1.5, .5, 'STOCK', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'H BELI', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'H JUAL', 'TB', 0, 'L', $fill);
+            $pdf->Ln();
+
+            $no     = 1;
+            foreach ($sql_item as $det) {
+                $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
+                $pdf->Cell(4, .5, $det->kode, '', 0, 'L', $fill);
+                $pdf->Cell(8, .5, strlen($det->item) > 40 ? substr($det->item, 0, 38) . '...' : $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(1.5, .5, format_angka($det->jml, 0), '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, format_angka($det->harga_jual, 0), '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, format_angka($det->harga_beli, 0), '', 0, 'L', $fill);
+                $pdf->Ln();
+                $no++;
+            }
+            $pdf->Ln();
+            $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
+
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('data-stock.pdf', 'I');
         }
     }
 }

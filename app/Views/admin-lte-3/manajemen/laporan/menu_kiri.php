@@ -31,6 +31,13 @@
             <p>Untung Rugi</p>
         </a>
     </li>
+    <li class="nav-header">DATA GUDANG</li>
+    <li class="nav-item">
+        <a href="<?php echo base_url('laporan/gudang/data_stock.php') ?>" class="nav-link">
+            <i class="nav-icon fas fa-boxes-stacked"></i>
+            <p>Data Stock</p>
+        </a>
+    </li>
     <li class="nav-header">DATA RESUME</li>
     <li class="nav-item">
         <a href="<?php echo base_url('laporan/resume/data_karyawan.php') ?>" class="nav-link">

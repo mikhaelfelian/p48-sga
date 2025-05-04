@@ -57,15 +57,11 @@ class Gudang extends BaseController {
             }
 
             if (!empty($item)) {
-                $merkList = $ModMerk->asObject()->where('merk', $item)->findAll();
-
-                // Ambil hanya nilai ID dari hasil tersebut
-                $merkIDs = array_map(fn($m) => $m->id, $merkList);
-
-                // Jika ada ID yang ditemukan, gunakan whereIn
-                if (!empty($merkIDs)) {
-                    $sql_item->whereIn('id_merk', $merkIDs);
-                }
+                $sql_item->groupStart()
+                    ->like('merk', $item)
+                    ->orLike('kode', $item)
+                    ->orLike('keterangan', $item)
+                ->groupEnd();
             }
             
             $jml_limit  = $this->Setting->jml_item;

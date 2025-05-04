@@ -201,7 +201,6 @@ class Laporan extends BaseController
                     $query->where('tbl_trans_jual.tgl_simpan >=', $date);
                 }
 
-
                 // Handle date range filter
                 if (!empty($tgl_rentang)) {
                     $dates = explode(' - ', $tgl_rentang);
@@ -519,6 +518,8 @@ class Laporan extends BaseController
             $nama       = $this->input->getVar('filter_nama');
             $sales      = $this->input->getVar('filter_sales');
             $status     = $this->input->getVar('status');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
+            $tgl = $this->input->getVar('filter_tgl');
             $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
             $profit_status = $this->input->getVar('filter_profit');
             $hlmn       = $this->input->getVar('page');
@@ -542,7 +543,7 @@ class Laporan extends BaseController
                 ->orderBy('tbl_trans_jual.id', 'DESC');
 
             // Function to apply filters dynamically
-            $applyFilters = function ($query) use ($kode, $nama, $sales, $status, $profit_status, $tgl_rentang) {
+            $applyFilters = function ($query) use ($kode, $nama, $perusahaan, $sales, $status, $profit_status, $tgl, $tgl_rentang) {
                 if (!empty($kode)) {
                     $query->groupStart()
                         ->like('tbl_trans_jual.no_nota', $kode)
@@ -563,12 +564,22 @@ class Laporan extends BaseController
                     $query->where('tbl_trans_jual.status', $status);
                 }
 
+                if (!empty($perusahaan)) {
+                    $query->where('tbl_trans_jual.id_perusahaan', $perusahaan);
+                }
+
                 if (!empty($profit_status)) {
                     if ($profit_status == 'Untung') {
                         $query->where('tbl_trans_jual.jml_profit >=', 0);
                     } elseif ($profit_status == 'Rugi') {
                         $query->where('tbl_trans_jual.jml_profit <', 0);
                     }
+                }
+
+                // Handle date 
+                if (!empty($tgl)) {
+                    $date = tgl_indo_sys($tgl);
+                    $query->where('tbl_trans_jual.tgl_simpan >=', $date);
                 }
 
                 // Handle date range filter
@@ -1118,9 +1129,11 @@ class Laporan extends BaseController
             // Get filter parameters
             $kode       = $this->request->getVar('filter_kode');
             $nama       = $this->request->getVar('filter_nama');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
             $sales      = $this->request->getVar('filter_sales');
             $status     = $this->request->getVar('status');
             $profit_status = $this->input->getVar('filter_profit');
+            $tgl = $this->input->getVar('filter_tgl');
             $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
 
             // Initialize models
@@ -1162,6 +1175,22 @@ class Laporan extends BaseController
                     $sql_penj->where('tbl_trans_jual.jml_profit >=', 0);
                 } elseif ($profit_status == 'Rugi') {
                     $sql_penj->where('tbl_trans_jual.jml_profit <', 0);
+                }
+            }
+
+            // Handle date 
+            if (!empty($tgl)) {
+                $date = tgl_indo_sys($tgl);
+                $sql_penj->where('tbl_trans_jual.tgl_simpan >=', $date);
+            }
+            // Handle date range filter
+            if (!empty($tgl_rentang)) {
+                $dates = explode(' - ', $tgl_rentang);
+                if (count($dates) == 2) {
+                    $start_date = tgl_indo_sys($dates[0]);
+                    $end_date = tgl_indo_sys($dates[1]);
+                    $sql_penj->where('tbl_trans_jual.tgl_simpan >=', $start_date)
+                        ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
                 }
             }
 
@@ -1868,7 +1897,7 @@ class Laporan extends BaseController
 
             # HEADER
             $pdf->SetFont('Arial', 'B', 14);
-            $pdf->Cell(0, 0.7, 'DATA PENJUALAN', 0, 1, 'C');
+            $pdf->Cell(0, 0.7, 'DATA RAB', 0, 1, 'C');
 
             if (!empty($filter_tgl)) {
                 $pdf->SetFont('Arial', '', 10);
@@ -2021,7 +2050,185 @@ class Laporan extends BaseController
 
             # HEADER
             $pdf->SetFont('Arial', 'B', 14);
-            $pdf->Cell(0, 0.7, 'DATA PENJUALAN', 0, 1, 'C');
+            $pdf->Cell(0, 0.7, 'DATA MODAL', 0, 1, 'C');
+
+            if (!empty($tgl)) {
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($tgl), 0, 1, 'C');
+            }
+
+            if (!empty($tgl_rentang)) {
+                $dates = explode(' - ', $tgl_rentang);
+                if (count($dates) == 2) {
+                    $start_date = tgl_indo_sys($dates[0]);
+                    $end_date = tgl_indo_sys($dates[1]);
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($start_date) . ' - ' . tgl_indo5($end_date), 0, 1, 'C');
+                }
+            }
+
+            // Spasi setelah header
+            $pdf->Ln(1);
+
+            $fill = FALSE;
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
+            $pdf->Cell(3.5, .5, 'KODE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'TANGGAL', 'TB', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'CUSTOMER', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'TOTAL', 'TB', 0, 'L', $fill);
+            $pdf->Cell(1.5, .5, 'STATUS', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3.5, .5, 'SALES', 'TB', 0, 'L', $fill);
+            $pdf->Ln();
+
+            $no     = 1;
+            $subtot = 0;
+            foreach ($sql_penj as $det) {
+                $subtot = $subtot + $det->jml_hpp;
+                $user = $this->ionAuth->user($det->id_user)->row();
+                $user_fullname = '-';
+                if (!empty($user)) {
+                    $user_fullname = $user->first_name . ' ' . $user->last_name;
+                }
+
+                $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
+                $pdf->Cell(3.5, .5, $det->no_nota, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
+                $pdf->Cell(5, .5, $det->p_nama, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, format_angka($det->jml_hpp), '', 0, 'R', $fill);
+                $pdf->Cell(1.5, .5, $det->status == '1' ? 'PROSES' : 'DRAFT', '', 0, 'L', $fill);
+                $pdf->Cell(3.5, .5, $user_fullname, '', 0, 'L', $fill);
+                $pdf->Ln();
+                // $pdf->Cell(0.5, .5, '', '', 0, 'C', $fill);
+                // $pdf->Cell(1.5, .5, '', '', 0, 'L', $fill);
+                // $pdf->Cell(5, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
+                // $pdf->Ln();
+                $no++;
+            }
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(7, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Cell(5, .5, 'SUBTOTAL :', 'T', 0, 'L', $fill);
+            $pdf->Cell(4.5, .5, format_angka($subtot), 'T', 0, 'C', $fill);
+            $pdf->Cell(3.5, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Ln();
+            $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
+
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('data-modal.pdf', 'I');
+        }
+    }
+
+    public function pdf_untung_rugi()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID = $this->ionAuth->user()->row();
+            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup = $this->ionAuth->groups()->result();
+
+            // Get filter parameters from request
+            $kode       = $this->input->getVar('filter_kode');
+            $nama       = $this->input->getVar('filter_nama');
+            $perusahaan = $this->input->getVar('filter_perusahaan');
+            $sales      = $this->input->getVar('filter_sales');
+            $status     = $this->input->getVar('status');
+            $tgl = $this->input->getVar('filter_tgl');
+            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $profit_status = $this->input->getVar('filter_profit');
+
+
+            $trPenj = new \App\Models\trPenj();
+
+
+            // Build query with filters
+            $sql_penj = $trPenj->asObject()
+                ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as p_nama, tbl_m_pelanggan.alamat as p_alamat')
+                ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
+                ->orderBy('tbl_trans_jual.id', 'DESC');
+
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($kode, $nama, $perusahaan, $sales, $status, $profit_status, $tgl, $tgl_rentang) {
+                if (!empty($kode)) {
+                    $query->groupStart()
+                        ->like('tbl_trans_jual.no_nota', $kode)
+                        ->orLike('tbl_trans_jual.no_kontrak', $kode)
+                        ->orLike('tbl_trans_jual.no_paket', $kode)
+                        ->groupEnd();
+                }
+
+                if (!empty($nama)) {
+                    $query->like('tbl_m_pelanggan.nama', $nama);
+                }
+
+                if (!empty($sales)) {
+                    $query->where('tbl_trans_jual.id_sales', $sales);
+                }
+
+                if (!empty($status)) {
+                    $query->where('tbl_trans_jual.status', $status);
+                }
+
+                if (!empty($perusahaan)) {
+                    $query->where('tbl_trans_jual.id_perusahaan', $perusahaan);
+                }
+
+                // Handle date 
+                if (!empty($tgl)) {
+                    $date = tgl_indo_sys($tgl);
+                    $query->where('tbl_trans_jual.tgl_simpan >=', $date);
+                }
+
+                if (!empty($perusahaan)) {
+                    $query->where('tbl_trans_jual.id_perusahaan', $perusahaan);
+                }
+
+                if (!empty($profit_status)) {
+                    if ($profit_status == 'Untung') {
+                        $query->where('tbl_trans_jual.jml_profit >=', 0);
+                    } elseif ($profit_status == 'Rugi') {
+                        $query->where('tbl_trans_jual.jml_profit <', 0);
+                    }
+                }
+
+                // Handle date 
+                if (!empty($tgl)) {
+                    $date = tgl_indo_sys($tgl);
+                    $query->where('tbl_trans_jual.tgl_simpan >=', $date);
+                }
+
+                // Handle date range filter
+                if (!empty($tgl_rentang)) {
+                    $dates = explode(' - ', $tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tbl_trans_jual.tgl_simpan >=', $start_date)
+                            ->where('tbl_trans_jual.tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+
+            // Apply filters to the main query
+            $sql_penj = $applyFilters($sql_penj);
+            $sql_penj = $sql_penj->findAll();
+
+            $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS', '', 'trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold', '', 'trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic', '', 'trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic', '', 'trebucit.php');
+
+            # HEADER
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 0.7, 'DATA UNTUNG RUGI', 0, 1, 'C');
 
             if (!empty($tgl)) {
                 $pdf->SetFont('Arial', '', 10);

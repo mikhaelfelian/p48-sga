@@ -35,7 +35,7 @@
                         </div>
                         <?php echo form_open(current_url(), ['method' => 'get']); ?>
                         <div class="card-body">
-                            <div class="row">
+                        <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group <?php echo (!empty($psnGagal['perusahaan']) ? 'text-danger' : '') ?>">
                                         <label class="control-label">Perusahaan*</label>
@@ -54,7 +54,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl', 'name' => 'filter_tgl', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 ...', 'value' => request()->getVar('filter_tgl'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -67,7 +67,7 @@
                                             <div class="input-group-append">
                                                 <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                                             </div>
-                                            <?php echo form_input(array('id' => 'tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
+                                            <?php echo form_input(array('id' => 'filter_tgl_rentang', 'name' => 'filter_tgl_rentang', 'class' => 'form-control text-middle rounded-0', 'style' => 'vertical-align: middle;', 'placeholder' => '02/15/2022 - 02/15/2022 ...', 'value' => request()->getVar('filter_tgl_rentang'))) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -118,9 +118,9 @@
                                 <a href="<?php echo base_url('laporan/export_untung_rugi?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
-                                <!-- <a href="<?php echo base_url('laporan/export_penjualan_pdf?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
+                                <a href="<?php echo base_url('laporan/pdf_untung_rugi?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
                                     <i class="fas fa-file-pdf"></i> Export PDF
-                                </a> -->
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
@@ -211,19 +211,38 @@
 <script type="text/javascript">
     $(function() {
         // Initialize daterangepicker for date range
-        $('#tgl_rentang').daterangepicker({
+        $('#filter_tgl_rentang').daterangepicker({
+            autoUpdateInput: false,
             locale: {
                 format: 'MM/DD/YYYY'
             }
         });
 
         // Initialize datepicker for single date
-        $('#tgl').daterangepicker({
+        $('#filter_tgl').daterangepicker({
+            autoUpdateInput: false,
             singleDatePicker: true,
             showDropdowns: true,
             locale: {
                 format: 'MM/DD/YYYY'
             }
+        });
+
+        // set value tanggal
+        $('#filter_tgl').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY'));
+        });
+        $('#filter_tgl_rentang').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+        // Kosongkan input saat tombol Cancel diklik
+        $('#filter_tgl_rentang').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
         });
 
         <?php echo session()->getFlashdata('laporan_toast'); ?>

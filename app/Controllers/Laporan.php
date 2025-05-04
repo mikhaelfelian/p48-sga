@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use FPDF;
+
 /**
  * Description of Laporan
  *
@@ -602,7 +604,8 @@ class Laporan extends BaseController
         }
     }
 
-    public function data_supplier(){
+    public function data_supplier()
+    {
         if ($this->ionAuth->loggedIn()) {
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
@@ -624,7 +627,7 @@ class Laporan extends BaseController
             }
 
             $jml_limit  = $this->Setting->jml_item;
-                                    
+
             $data  = [
                 'SQLSupplier'   => $sql_supp->paginate($jml_limit),
                 'Pagination'    => $sql_supp->pager->links('default', 'bootstrap_full'),
@@ -640,8 +643,8 @@ class Laporan extends BaseController
                 'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
                 'konten'        => $this->ThemePath . '/manajemen/laporan/data_supplier',
             ];
-            
-            return view($this->ThemePath.'/index', $data); 
+
+            return view($this->ThemePath . '/index', $data);
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());
@@ -1247,72 +1250,132 @@ class Laporan extends BaseController
     }
 
     // EXPORET PDF
-    public function export_pembelian_pdf()
+    public function pdf_pembelian()
     {
-        // Get filter parameters
-        $kode        = $this->request->getVar('filter_kode');
-        $nama        = $this->request->getVar('filter_nama');
-        $supplier    = $this->request->getVar('filter_supplier');
-        $status      = $this->request->getVar('status');
-        $tgl_rentang = $this->request->getVar('filter_tgl_rentang');
+        if ($this->ionAuth->loggedIn()) {
+            $ID = $this->ionAuth->user()->row();
+            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup = $this->ionAuth->groups()->result();
 
-        // Initialize models
-        $trPembelian = new \App\Models\trPembelian();
+            // Get filter parameters from request
+            $kode = $this->input->getVar('filter_kode');
+            $nama = $this->input->getVar('filter_nama');
+            $supplier = $this->input->getVar('filter_supplier');
+            $status = $this->input->getVar('status');
+            $tgl_rentang = $this->input->getVar('filter_tgl_rentang');
 
-        // Build query with filters
-        $sql_pembelian = $trPembelian->asObject()
-            ->select('tbl_trans_beli.*, tbl_m_supplier.nama as s_nama, tbl_m_supplier.alamat as s_alamat')
-            ->join('tbl_m_supplier', 'tbl_m_supplier.id = tbl_trans_beli.id_supplier', 'left')
-            ->orderBy('tbl_trans_beli.id', 'DESC');
+            $trPembelian = new \App\Models\trPembelian();
 
-        // Apply filters if they exist
-        if (!empty($kode)) {
-            $sql_pembelian->like('tbl_trans_beli.no_nota', $kode);
-        }
 
-        if (!empty($nama)) {
-            $sql_pembelian->like('tbl_m_supplier.nama', $nama);
-        }
+            // Build query with proper joins and field selection
+            $sql_pembelian = $trPembelian->asObject()
+                ->select('tbl_trans_beli.*, tbl_m_supplier.nama as supplier, tbl_m_supplier.alamat')
+                ->join('tbl_m_supplier', 'tbl_m_supplier.id = tbl_trans_beli.id_supplier', 'left')
+                ->orderBy('tbl_trans_beli.id', 'DESC');
 
-        if (!empty($supplier)) {
-            $sql_pembelian->where('tbl_trans_beli.id_supplier', $supplier);
-        }
 
-        if (!empty($status)) {
-            $sql_pembelian->where('tbl_trans_beli.status', $status);
-        }
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($kode, $nama, $supplier, $status, $tgl_rentang) {
+                if (!empty($kode)) {
+                    $query->like('tbl_trans_beli.no_nota', $kode);
+                }
 
-        // Handle date range filter
-        if (!empty($tgl_rentang)) {
-            $dates = explode(' - ', $tgl_rentang);
-            if (count($dates) == 2) {
-                $start_date = tgl_indo_sys($dates[0]);
-                $end_date = tgl_indo_sys($dates[1]);
-                $sql_pembelian->where('tbl_trans_beli.tgl_simpan >=', $start_date)
-                    ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
+                if (!empty($nama)) {
+                    $query->like('tbl_m_supplier.nama', $nama);
+                }
+
+                if (!empty($supplier)) {
+                    $query->where('tbl_trans_beli.id_supplier', $supplier);
+                }
+
+                if (!empty($status)) {
+                    $query->where('tbl_trans_beli.status', $status);
+                }
+
+                // Handle date range filter
+                if (!empty($tgl_rentang)) {
+                    $dates = explode(' - ', $tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tbl_trans_beli.tgl_simpan >=', $start_date)
+                            ->where('tbl_trans_beli.tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+
+            // Apply filters to the main query
+            $sql_pembelian = $applyFilters($sql_pembelian);
+            $sql_pembelian = $sql_pembelian->findAll();
+
+            $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS', '', 'trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold', '', 'trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic', '', 'trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic', '', 'trebucit.php');
+
+            # HEADER
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 0.7, 'DATA PEMBELIAN', 0, 1, 'C');
+            // Spasi setelah header
+            $pdf->Ln(1);
+
+            $fill = FALSE;
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
+            $pdf->Cell(1.5, .5, 'KODE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'SUPPLIER', 'TB', 0, 'L', $fill);
+            $pdf->Cell(6, .5, 'ALAMAT', 'TB', 0, 'L', $fill);
+            $pdf->Cell(2, .5, 'TOTAL', 'TB', 0, 'L', $fill);
+            $pdf->Cell(1.5, .5, 'STATUS', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3.5, .5, 'USER', 'TB', 0, 'L', $fill);
+            $pdf->Ln();
+
+            $no     = 1;
+            $subtot = 0;
+            foreach ($sql_pembelian as $det) {
+                $subtot = $subtot + $det->jml_gtotal;
+                $user = $this->ionAuth->user($det->id_user)->row();
+                $user_fullname = '-';
+                if (!empty($user)) {
+                    $user_fullname = $user->first_name . ' ' . $user->last_name;
+                }
+
+                $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
+                $pdf->Cell(1.5, .5, $det->no_nota, '', 0, 'L', $fill);
+                $pdf->Cell(5, .5, $det->supplier, '', 0, 'L', $fill);
+                $pdf->Cell(6, .5, $det->alamat, '', 0, 'L', $fill);
+                $pdf->Cell(2, .5, format_angka($det->jml_gtotal), '', 0, 'R', $fill);
+                $pdf->Cell(1.5, .5, $det->status == '1' ? 'PROSES' : 'DRAFT', '', 0, 'L', $fill);
+                $pdf->Cell(3.5, .5, $user_fullname, '', 0, 'L', $fill);
+                $pdf->Ln();
+                // $pdf->Cell(0.5, .5, '', '', 0, 'C', $fill);
+                // $pdf->Cell(1.5, .5, '', '', 0, 'L', $fill);
+                // $pdf->Cell(5, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
+                // $pdf->Ln();
+                $no++;
             }
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(7, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Cell(6, .5, 'SUBTOTAL :', 'T', 0, 'L', $fill);
+            $pdf->Cell(3.5, .5, format_angka($subtot), 'T', 0, 'L', $fill);
+            $pdf->Cell(3.5, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Ln();
+            $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
+
+
+
+
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('data-pembelian.pdf', 'I');
         }
-
-        $data = $sql_pembelian->findAll();
-        // Load Dompdf
-        $dompdf = new  \Dompdf\Dompdf();
-        $options = new \Dompdf\Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $dompdf->setOptions($options);
-
-        // Buat HTML untuk laporan PDF
-        $html = view('/manajemen/laporan/pdf/data_pembelian_pdf', [
-            'SQLPembelian' => $data
-        ]);
-
-        // Load HTML ke Dompdf
-        $dompdf->loadHtml($html);
-
-        // Render PDF (secara internal)
-        $dompdf->render();
-
-        // Output file PDF ke browser
-        $dompdf->stream("laporan_pembelian.pdf", array("Attachment" => 0));
     }
 }

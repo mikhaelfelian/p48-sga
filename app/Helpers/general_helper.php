@@ -232,6 +232,43 @@ function status_rab($status) {
     return $status;
 }
 
+function export_status_rab($status) {
+    switch ($status) {
+        default:
+            $status = 'DRAFT';
+            break;
+        
+        case '0':
+            $status = 'DRAFT';
+            break;
+
+        case '1':
+            $status = 'PROSES';
+            break;
+
+        case '2':
+            $status = 'ACC';
+            break;
+
+        case '3':
+            $status = 'TOLAK';
+            break;
+
+        case '4':
+            $status = 'MENANG';
+            break;
+
+        case '5':
+            $status = 'KALAH';
+            break;
+
+        case '6':
+            $status = 'POSTING';
+            break;
+    }
+    return $status;
+}
+
 function status_rab_text($status) {
     switch ($status) {
         default:

@@ -44,11 +44,13 @@ class Laporan extends BaseController
             $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup = $this->ionAuth->groups()->result();
 
-            $kode = $this->input->getVar('filter_kode');
-            $nama = $this->input->getVar('filter_nama');
-            $tipe = $this->input->getVar('filter_tipe');
-            $status = $this->input->getVar('status');
-            $hlmn = $this->input->getVar('page');
+            $filter_perusahaan = $this->input->getVar('filter_perusahaan');
+            $filter_tipe = $this->input->getVar('filter_tipe');
+            $filter_tgl = $this->input->getVar('filter_tgl');
+            $filter_tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $filter_status = $this->input->getVar('filter_status');
+            $filter_sales = $this->input->getVar('filter_sales');
+
 
             $Tipe = new \App\Models\mTipe();
             $vtrRab = new \App\Models\vtrRab();
@@ -58,11 +60,48 @@ class Laporan extends BaseController
                 ->find();
 
             $sql_rab = $vtrRab->asObject()
-                ->orderBy('id', 'DESC')
-                ->like('no_rab', (!empty($kode) ? $kode : ''))
-                ->like('p_nama', (!empty($nama) ? $nama : ''))
-                ->like('id_tipe', (!empty($tipe) ? $tipe : ''), (!empty($tipe) ? 'none' : ''))
-                ->like('status', (!empty($status) ? $status : ''), (!empty($status) ? 'none' : ''));
+                ->orderBy('id', 'DESC');
+
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($filter_perusahaan, $filter_tipe, $filter_tgl, $filter_tgl_rentang, $filter_status, $filter_sales) {
+
+                if (!empty($filter_perusahaan)) {
+                    $query->where('id_perusahaan', $filter_perusahaan);
+                }
+
+                if (!empty($filter_tipe)) {
+                    $query->where('id_tipe', $filter_tipe);
+                }
+
+                if ($filter_status !== null && $filter_status != "") {
+                    $query->where('status', $filter_status);
+                }
+
+                if (!empty($filter_sales)) {
+                    $query->where('id_sales', $filter_sales);
+                }
+
+                // Handle date 
+                if (!empty($filter_tgl)) {
+                    $date = tgl_indo_sys($filter_tgl);
+                    $query->where('tgl_simpan >=', $date);
+                }
+
+                // Handle date range filter
+                if (!empty($filter_tgl_rentang)) {
+                    $dates = explode(' - ', $filter_tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tgl_simpan >=', $start_date)
+                            ->where('tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+            // Apply filters to the main query
+            $sql_rab = $applyFilters($sql_rab);
+
 
             $sql_tipe = $Tipe->asObject()
                 ->where('status', '1')
@@ -1249,6 +1288,126 @@ class Laporan extends BaseController
         }
     }
 
+    public function export_rab()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID = $this->ionAuth->user()->row();
+            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup = $this->ionAuth->groups()->result();
+
+            $filter_perusahaan = $this->input->getVar('filter_perusahaan');
+            $filter_tipe = $this->input->getVar('filter_tipe');
+            $filter_tgl = $this->input->getVar('filter_tgl');
+            $filter_tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $filter_status = $this->input->getVar('filter_status');
+            $filter_sales = $this->input->getVar('filter_sales');
+
+            $Tipe = new \App\Models\mTipe();
+            $vtrRab = new \App\Models\vtrRab();
+            $Profile = new \App\Models\PengaturanProfile();
+            $sql_profile = $Profile->asObject()
+                ->where('status', '1')
+                ->find();
+
+            $sql_rab = $vtrRab->asObject()
+                ->orderBy('id', 'DESC');
+
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($filter_perusahaan, $filter_tipe, $filter_tgl, $filter_tgl_rentang, $filter_status, $filter_sales) {
+
+                if (!empty($filter_perusahaan)) {
+                    $query->where('id_perusahaan', $filter_perusahaan);
+                }
+
+                if (!empty($filter_tipe)) {
+                    $query->where('id_tipe', $filter_tipe);
+                }
+
+                if ($filter_status !== null && $filter_status != "") {
+                    $query->where('status', $filter_status);
+                }
+
+                if (!empty($filter_sales)) {
+                    $query->where('id_sales', $filter_sales);
+                }
+
+                // Handle date 
+                if (!empty($filter_tgl)) {
+                    $date = tgl_indo_sys($filter_tgl);
+                    $query->where('tgl_simpan >=', $date);
+                }
+
+                // Handle date range filter
+                if (!empty($filter_tgl_rentang)) {
+                    $dates = explode(' - ', $filter_tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tgl_simpan >=', $start_date)
+                            ->where('tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+            // Apply filters to the main query
+            $sql_rab = $applyFilters($sql_rab);
+            $data = $sql_rab->findAll();
+
+
+            // Create Excel file
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            // Set headers
+            $sheet->setCellValue('A1', 'Kode');
+            $sheet->setCellValue('B1', 'Tanggal');
+            $sheet->setCellValue('C1', 'Tipe');
+            $sheet->setCellValue('D1', 'Customer');
+            $sheet->setCellValue('E1', 'Alamat');
+            $sheet->setCellValue('F1', 'Nominal');
+            $sheet->setCellValue('G1', 'Status');
+            $sheet->setCellValue('H1', 'Perusahaan');
+
+            // Fill data
+            $row = 2;
+            foreach ($data as $item) {
+                $sheet->setCellValue('A' . $row, $item->no_rab ?? '-');
+                $sheet->setCellValue('B' . $row, tgl_indo5($item->tgl_simpan) ?? '-');
+                $sheet->setCellValue('C' . $row, $item->tipe ?? '-');
+                $sheet->setCellValue('D' . $row, $item->p_nama ?? '-');
+                $sheet->setCellValue('E' . $row, $item->p_alamat ?? '-');
+                $sheet->setCellValue('F' . $row, format_angka($item->jml_gtotal) ?? '-');
+                $sheet->setCellValue('G' . $row,  export_status_rab($item->status) ?? '-');
+                $sheet->setCellValue('H' . $row,  $item->c_nama ?? '-');
+                $row++;
+            }
+
+            // Set column widths
+            $sheet->getColumnDimension('A')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(20);
+            $sheet->getColumnDimension('C')->setWidth(10);
+            $sheet->getColumnDimension('D')->setWidth(40);
+            $sheet->getColumnDimension('E')->setWidth(40);
+            $sheet->getColumnDimension('F')->setWidth(30);
+            $sheet->getColumnDimension('G')->setWidth(10);
+            $sheet->getColumnDimension('H')->setWidth(20);
+
+            // Create Excel file
+            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+            $filename = 'Laporan_RAB_' . date('YmdHis') . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+            exit;
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
     // EXPORET PDF
     public function pdf_pembelian()
     {
@@ -1497,6 +1656,145 @@ class Laporan extends BaseController
             $pdf->Cell(5, .5, 'SUBTOTAL :', 'T', 0, 'L', $fill);
             $pdf->Cell(4.5, .5, format_angka($subtot), 'T', 0, 'C', $fill);
             $pdf->Cell(3.5, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Ln();
+            $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
+
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('data-pembelian.pdf', 'I');
+        }
+    }
+
+    public function pdf_rab()
+    {
+        if ($this->ionAuth->loggedIn()) {
+            $ID = $this->ionAuth->user()->row();
+            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup = $this->ionAuth->groups()->result();
+
+            // Get filter parameters from request
+            $filter_perusahaan = $this->input->getVar('filter_perusahaan');
+            $filter_tipe = $this->input->getVar('filter_tipe');
+            $filter_tgl = $this->input->getVar('filter_tgl');
+            $filter_tgl_rentang = $this->input->getVar('filter_tgl_rentang');
+            $filter_status = $this->input->getVar('filter_status');
+            $filter_sales = $this->input->getVar('filter_sales');
+
+            $vtrRab = new \App\Models\vtrRab();
+            $sql_rab = $vtrRab->asObject()
+                ->orderBy('id', 'DESC');
+
+            // Function to apply filters dynamically
+            $applyFilters = function ($query) use ($filter_perusahaan, $filter_tipe, $filter_tgl, $filter_tgl_rentang, $filter_status, $filter_sales) {
+
+                if (!empty($filter_perusahaan)) {
+                    $query->where('id_perusahaan', $filter_perusahaan);
+                }
+
+                if (!empty($filter_tipe)) {
+                    $query->where('id_tipe', $filter_tipe);
+                }
+
+                if ($filter_status !== null && $filter_status != "") {
+                    $query->where('status', $filter_status);
+                }
+
+                if (!empty($filter_sales)) {
+                    $query->where('id_sales', $filter_sales);
+                }
+
+                // Handle date 
+                if (!empty($filter_tgl)) {
+                    $date = tgl_indo_sys($filter_tgl);
+                    $query->where('tgl_simpan >=', $date);
+                }
+
+                // Handle date range filter
+                if (!empty($filter_tgl_rentang)) {
+                    $dates = explode(' - ', $filter_tgl_rentang);
+                    if (count($dates) == 2) {
+                        $start_date = tgl_indo_sys($dates[0]);
+                        $end_date = tgl_indo_sys($dates[1]);
+                        $query->where('tgl_simpan >=', $start_date)
+                            ->where('tgl_simpan <=', $end_date);
+                    }
+                }
+                return $query;
+            };
+            // Apply filters to the main query
+            $sql_rab = $applyFilters($sql_rab);
+            $sql_rab = $sql_rab->findAll();
+
+            $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS', '', 'trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold', '', 'trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic', '', 'trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic', '', 'trebucit.php');
+
+            # HEADER
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->Cell(0, 0.7, 'DATA PENJUALAN', 0, 1, 'C');
+
+            if (!empty($filter_tgl)) {
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($filter_tgl), 0, 1, 'L');
+            }
+
+            if (!empty($filter_tgl_rentang)) {
+                $dates = explode(' - ', $filter_tgl_rentang);
+                if (count($dates) == 2) {
+                    $start_date = tgl_indo_sys($dates[0]);
+                    $end_date = tgl_indo_sys($dates[1]);
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->Cell(0, 0.7, 'Per Tgl.: ' . tgl_indo5($start_date) . ' - ' . tgl_indo5($end_date), 0, 1, 'L');
+                }
+            }
+
+            // Spasi setelah header
+            $pdf->Ln(1);
+
+            $fill = FALSE;
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
+            $pdf->Cell(3.5, .5, 'KODE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'TANGGAL', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'TIPE', 'TB', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'CUSTOMER', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'NOMINAL', 'TB', 0, 'L', $fill);
+            $pdf->Cell(2, .5, 'STATUS', 'TB', 0, 'L', $fill);
+            $pdf->Ln();
+
+            $no     = 1;
+            $subtot = 0;
+            foreach ($sql_rab as $det) {
+                $subtot = $subtot + $det->jml_gtotal;
+
+                $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
+                $pdf->Cell(3.5, .5, $det->no_rab, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, $det->tipe, '', 0, 'L', $fill);
+                $pdf->Cell(5, .5, $det->p_nama, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, format_angka($det->jml_gtotal), '', 0, 'R', $fill);
+                $pdf->Cell(2, .5,  export_status_rab($det->status), '', 0, 'L', $fill);
+                $pdf->Ln();
+                // $pdf->Cell(0.5, .5, '', '', 0, 'C', $fill);
+                // $pdf->Cell(1.5, .5, '', '', 0, 'L', $fill);
+                // $pdf->Cell(5, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
+                // $pdf->Ln();
+                $no++;
+            }
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(10, .5, '', 'T', 0, 'R', $fill);
+            $pdf->Cell(4, .5, 'SUBTOTAL :', 'T', 0, 'L', $fill);
+            $pdf->Cell(4, .5, format_angka($subtot), 'T', 0, 'R', $fill);
+            $pdf->Cell(2, .5, '', 'T', 0, 'R', $fill);
             $pdf->Ln();
             $pdf->Cell(20, .5, '', 'T', 0, '', $fill);
 

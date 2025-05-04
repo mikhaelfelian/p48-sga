@@ -29,7 +29,7 @@
             <tr>
                 <td class="text-left text-bold" colspan="4"><i>ITEM</i></td>
             </tr>
-            <?php foreach ($SQLRabDet[0]->data as $det) { ?>
+            <?php foreach ($SQLRabDet as $det) { ?>
                 <tr>
                     <td class="text-left" style="width: 250px;">
                         <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>

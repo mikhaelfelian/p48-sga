@@ -31,6 +31,9 @@
                                 <a href="<?php echo base_url('laporan/export_supplier?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
                                     <i class="fas fa-file-excel"></i> Export Excel
                                 </a>
+                                <a href="<?php echo base_url('laporan/pdf_supplier?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i> Export PDF
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">

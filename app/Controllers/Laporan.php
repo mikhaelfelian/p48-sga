@@ -2161,9 +2161,14 @@ class Laporan extends BaseController
 
             // Build query with filters
             $sql_penj = $trPenj->asObject()
-                ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as p_nama, tbl_m_pelanggan.alamat as p_alamat')
+                ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as p_nama, tbl_m_pelanggan.alamat as p_alamat,
+                (CASE 
+                    WHEN tbl_trans_jual.jml_profit >= 0 THEN "Untung" 
+                    ELSE "Rugi" 
+                END) AS profit_status')
                 ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
                 ->orderBy('tbl_trans_jual.id', 'DESC');
+
 
             // Function to apply filters dynamically
             $applyFilters = function ($query) use ($kode, $nama, $perusahaan, $sales, $status, $profit_status, $tgl, $tgl_rentang) {
@@ -2282,7 +2287,7 @@ class Laporan extends BaseController
             $no     = 1;
             $subtot = 0;
             foreach ($sql_penj as $det) {
-                $subtot = $subtot + $det->jml_hpp;
+                $subtot = $subtot + $det->jml_profit;
                 $user = $this->ionAuth->user($det->id_user)->row();
                 $user_fullname = '-';
                 if (!empty($user)) {
@@ -2293,8 +2298,8 @@ class Laporan extends BaseController
                 $pdf->Cell(3.5, .5, $det->no_nota, '', 0, 'L', $fill);
                 $pdf->Cell(3, .5, tgl_indo5($det->tgl_simpan), '', 0, 'L', $fill);
                 $pdf->Cell(5, .5, $det->p_nama, '', 0, 'L', $fill);
-                $pdf->Cell(3, .5, format_angka($det->jml_hpp), '', 0, 'R', $fill);
-                $pdf->Cell(1.5, .5, $det->status == '1' ? 'PROSES' : 'DRAFT', '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, format_angka($det->jml_profit), '', 0, 'R', $fill);
+                $pdf->Cell(1.5, .5, $det->profit_status, '', 0, 'L', $fill);
                 $pdf->Cell(3.5, .5, $user_fullname, '', 0, 'L', $fill);
                 $pdf->Ln();
                 // $pdf->Cell(0.5, .5, '', '', 0, 'C', $fill);

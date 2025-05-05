@@ -58,7 +58,7 @@
                                             <option value="3">Stok Keluar</option>
                                         </select>
                                     </div>
-                                    <div id="2" class="divTipe">
+                                    <!-- <div id="2" class="divTipe">
                                         <div class="form-group <?php echo (!empty($psnGagal['gudang']) ? 'text-danger' : '') ?>">
                                             <label class="control-label">Gd Asal*</label>
                                             <select id="gd_asal" name="gd_asal" class="form-control rounded-0<?php echo (!empty($psnGagal['tipe']) ? ' is-invalid' : '') ?>">
@@ -68,8 +68,21 @@
                                                 <?php } ?>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div id="3" class="divTipe">
+                                        <div class="form-group <?php echo (!empty($psnGagal['pelanggan']) ? 'text-danger' : '') ?>">
+                                            <label class="control-label">Kepada*</label>
+                                            <?php echo form_input(['id' => 'pelanggan', 'name' => 'pelanggan', 'class' => 'form-control rounded-0 text-middle' . (!empty($psnGagal['pelanggan']) ? ' is-invalid' : ''), 'style' => 'vertical-align: middle;', 'placeholder' => 'Isikan Pelanggan ...', 'value' => '']) ?>
+                                        </div>
+                                        <div class="form-group <?php echo (!empty($psnGagal['perusahaan']) ? 'text-danger' : '') ?>">
+                                            <label class="control-label">Perusahaan*</label>
+                                            <select name="perusahaan" class="form-control rounded-0<?php echo (!empty($psnGagal['perusahaan']) ? ' is-invalid' : '') ?>">
+                                                <option value="">- Pilih -</option>
+                                                <?php foreach ($SQLProfile as $profile) { ?>
+                                                    <option value="<?php echo $profile->id ?>"><?php echo strtoupper($profile->nama) ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                    </div> -->
+                                    <div id="masuk-keluar" class="divTipe">
                                         <div class="form-group <?php echo (!empty($psnGagal['gudang']) ? 'text-danger' : '') ?>">
                                             <label class="control-label">Gd Asal*</label>
                                             <select id="gd_asal" name="gd_asal" class="form-control rounded-0<?php echo (!empty($psnGagal['tipe']) ? ' is-invalid' : '') ?>">
@@ -304,8 +317,9 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#2").hide().find('input').prop('disabled', true);
-        $("#3").hide().find('input').prop('disabled', true);
+        $("#masuk-keluar").hide().find('input').prop('disabled', true);
+        // $("#2").hide().find('input').prop('disabled', true);
+        // $("#3").hide().find('input').prop('disabled', true);
 
         $("input[id=pagu],input[id=hps]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
         $("#tgl").datepicker({
@@ -318,7 +332,7 @@
         $('#pelanggan').autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: "<?php echo base_url('public/json_pelanggan.php') ?>",
+                    url: "<?php echo base_url('/json_pelanggan.php') ?>",
                     dataType: "json",
                     data: {
                         term: request.term
@@ -352,8 +366,13 @@
         $('#tipe_mutasi').on('change', function () {
             var tipe_mts = $(this).val();
 
-            $("div.divTipe").hide();
-            $("#" + tipe_mts).show().find('input').prop('disabled', false);
+            // $("div.divTipe").hide();
+            // $("#" + tipe_mts).show().find('input').prop('disabled', false);
+            if(['2','3'].includes(tipe_mts)){
+                $("#masuk-keluar").show().find('input').prop('disabled', false)
+            }else {
+                $("#masuk-keluar").hide().find('input').prop('disabled', true)
+            }
         });
 
 <?php if (!empty($SQLMutasi)) { ?>

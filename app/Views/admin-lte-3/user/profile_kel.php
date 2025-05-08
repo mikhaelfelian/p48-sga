@@ -432,9 +432,11 @@
                                                     <a href="<?= base_url('profile/sdm/data_keluarga_edit/'.$row->id) ?>" class="btn btn-sm btn-warning rounded-0">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    <?php if(!hakAdminM()) : ?>
                                                     <a href="<?= base_url('profile/sdm/data_keluarga_hapus/'.$row->id) ?>" class="btn btn-sm btn-danger rounded-0" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

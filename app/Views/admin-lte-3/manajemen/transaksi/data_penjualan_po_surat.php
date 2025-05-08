@@ -97,7 +97,9 @@
                                     <?php if ($det->id_user == $Pengguna->id) { ?>
                                         <?php // if ($det->status_fkt == 0) { ?>
                                             <?php if (empty($SQLRab->id)) { ?>
+                                                <?php if(!hakAdminM()) : ?>
                                                 <a href="<?php echo base_url('transaksi/hapus_po.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_po=' . $det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->no_po; ?>] ?')"><i class="fa fa-trash"></i></a>
+                                                <?php endif; ?>
                                             <?php } ?>
                                             <a href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_po=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
                                         <?php // } ?>

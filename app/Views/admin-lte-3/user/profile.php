@@ -31,11 +31,13 @@
                                     style="width: 100px; height: 100px;">
                                 <?php if (!empty($Pengguna->file_name)): ?>
                                     <div class="mt-2">
+                                        <?php if(!hakAdminM()) : ?>
                                         <a href="<?php echo base_url('profile/hapus_foto/' . $Pengguna->id) ?>"
                                             class="btn btn-danger btn-sm"
                                             onclick="return confirm('Apakah Anda yakin ingin menghapus foto profil?')">
                                             <i class="fas fa-trash"></i> Hapus Foto
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                             </div>

@@ -116,8 +116,10 @@
                                             <tr>
                                                 <td class="text-center">
                                                     <?php if (isset($_GET['status'])) { ?>
+                                                        <?php if(!hakAdminM()) : ?>
                                                         <a href="<?php echo base_url('transaksi/cart_hapus_file.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->file_name; ?>] ?')"><i class="fa fa-trash"></i></a>
-        <?php } ?>
+                                                        <?php endif; ?>
+                                                        <?php } ?>
                                                 </td>
                                                 <td class="text-center"><?php echo $no; ?></td>
                                                 <td class="text-left">

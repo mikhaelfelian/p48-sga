@@ -177,7 +177,9 @@
                                                         <td style="width: 150px;"><?php echo strtoupper($item->no_hp) ?></td>
                                                         <td style="width: 150px;"><?php echo strtoupper($item->jabatan) ?></td>
                                                         <td style="width: 150px;">
+                                                            <?php if(!hakAdminM()) : ?>
                                                             <?php echo anchor(base_url('master/set_pelanggan_hapus_cp.php?id=' . $item->id.'&id_plgn='.$request->getVar('id')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . (!empty($item->nama) ? $item->nama . ' ' : '') . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
+                                                            <?php endif; ?>
                                                         </td>
                                                     </tr>
                                                     <?php

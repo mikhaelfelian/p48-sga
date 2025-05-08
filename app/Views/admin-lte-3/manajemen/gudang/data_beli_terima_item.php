@@ -193,7 +193,9 @@
                                                 <?php foreach ($SQLItemStokHist as $det) { ?>
                                                     <tr>
                                                         <td class="text-center" style="width: 65px;">
+                                                            <?php if(!hakAdminM()) : ?>
                                                             <a href="<?php echo base_url('gudang/penerimaan/cart_hapus.php?id=' . $det->id . '&id_beli=' . $request->getVar('id') . '&id_item=' . $request->getVar('id_item') . '&id_item_det=' . $request->getVar('id_item_det')) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
+                                                            <?php endif; ?>
                                                         </td>
                                                         <td class="text-center" style="width: 50px;"><?php echo $no ?></td>
                                                         <td class="text-left" style="width: 150px;"><?php echo tgl_indo2($det->tgl_masuk) ?></td>

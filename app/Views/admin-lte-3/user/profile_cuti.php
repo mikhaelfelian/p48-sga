@@ -248,11 +248,13 @@
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
+                                                        <?php if(!hakAdminM()) : ?>
                                                         <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
                                                             class="btn btn-sm btn-danger rounded-0 mb-1"
                                                             onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
                                                             <i class="fas fa-trash"></i>
                                                         </a>
+                                                        <?php endif; ?>
                                                         <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
                                                             class="btn btn-sm btn-primary rounded-0 mb-1">
                                                             <i class="fas fa-edit"></i>
@@ -301,11 +303,13 @@
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
                                                         <?php if ($cuti->status == 0): ?>
+                                                            <?php if(!hakAdminM()) : ?>
                                                             <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
                                                                 class="btn btn-sm btn-danger rounded-0 mb-1"
                                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
+                                                            <?php endif; ?>
                                                             <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
                                                                 class="btn btn-sm btn-primary rounded-0 mb-1">
                                                                 <i class="fas fa-edit"></i>

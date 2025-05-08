@@ -82,8 +82,11 @@
                                                         <tr>
                                                             <td class="text-right" style="width: 50px;">
                                                                 <?php 
+                                                                    
                                                                     if($SQLPsn->status == 0){
-                                                                        echo anchor(base_url('transaksi/pesanan/cart_hapus.php?id='.$cart->id_pesanan.'&id_item='.$cart->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm rounded-0" onclick="return confirm(\'Hapus [' . $cart->pesanan . '] ?\')"');
+                                                                        if(!hakAdminM()){
+                                                                            echo anchor(base_url('transaksi/pesanan/cart_hapus.php?id='.$cart->id_pesanan.'&id_item='.$cart->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm rounded-0" onclick="return confirm(\'Hapus [' . $cart->pesanan . '] ?\')"');
+                                                                        }
                                                                     }
                                                                 ?>
                                                             </td>

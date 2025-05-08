@@ -106,9 +106,11 @@
                                                     <img src="<?php echo base_url((!empty($Pengaturan->logo) ? 'public/file/app/' . $Pengaturan->logo : 'assets/theme/admin-lte-3/dist/img/AdminLTELogo.png')); ?>" alt="<?php echo $Pengaturan->judul . ' Logo'; ?>" class="brand-image img-circle elevation-0" style="width: 160px; height: 65px; background-color: #fff;">
                                                     <?php if (!empty($Pengaturan->logo)) : ?>
                                                     <br/><br/>
-                                                    <a href="<?= base_url('pengaturan/hapus_img.php?type=logo'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus logo ini?');">
-                                                        <i class="fas fa-trash"></i> Hapus Logo
-                                                    </a>
+                                                        <?php if(!hakAdminM()) : ?>
+                                                        <a href="<?= base_url('pengaturan/hapus_img.php?type=logo'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus logo ini?');">
+                                                            <i class="fas fa-trash"></i> Hapus Logo
+                                                        </a>
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -122,9 +124,11 @@
                                                     <img src="<?php echo base_url((!empty($Pengaturan->logo_header) ? 'public/file/app/' . $Pengaturan->logo_header : 'assets/theme/admin-lte-3/dist/img/AdminLTELogo.png')); ?>" alt="<?php echo $Pengaturan->judul . ' Logo'; ?>" class="brand-image img-circle elevation-0" style="width: 33px; height: 33px; background-color: #fff;">
                                                     <?php if (!empty($Pengaturan->logo_header)) : ?>
                                                     <br/><br/>
-                                                    <a href="<?= base_url('pengaturan/hapus_img.php?type=logo_header'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus logo header ini?');">
-                                                        <i class="fas fa-trash"></i> Hapus Logo Header
-                                                    </a>
+                                                        <?php if(!hakAdminM()) : ?>
+                                                        <a href="<?= base_url('pengaturan/hapus_img.php?type=logo_header'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus logo header ini?');">
+                                                            <i class="fas fa-trash"></i> Hapus Logo Header
+                                                        </a>
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -138,9 +142,11 @@
                                                     <img src="<?php echo base_url((!empty($Pengaturan->favicon) ? 'public/file/app/' . $Pengaturan->favicon : 'assets/theme/admin-lte-3/dist/img/AdminLTELogo.png')); ?>" alt="Favicon <?php echo $Pengaturan->judul . ' Logo'; ?>" class="brand-image img-circle elevation-0" style="width: 33px; height: 33px; background-color: #fff;">
                                                     <?php if (!empty($Pengaturan->favicon)) : ?>
                                                     <br/><br/>
-                                                    <a href="<?= base_url('pengaturan/hapus_img.php?type=favicon'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus favicon ini?');">
-                                                        <i class="fas fa-trash"></i> Hapus Favicon
-                                                    </a>
+                                                        <?php if(!hakAdminM()) : ?>
+                                                        <a href="<?= base_url('pengaturan/hapus_img.php?type=favicon'); ?>" class="btn btn-danger btn-sm" onclick="return confirm('Apakah anda yakin ingin menghapus favicon ini?');">
+                                                            <i class="fas fa-trash"></i> Hapus Favicon
+                                                        </a>
+                                                        <?php endif; ?>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>

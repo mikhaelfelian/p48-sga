@@ -121,7 +121,9 @@
                                 <?php if (isset($_GET['status'])) { ?>
                                     <?php if ($SQLRab->status == 4) { ?>
                                         <?php if ($det->id_user == $Pengguna->id) { ?>
+                                            <?php if(!hakAdminM()) : ?>
                                             <a href="<?php echo base_url('transaksi/rab/cart_hapus_po.php?act='.$request->getVar('act').'&id=' . $request->getVar('id') . '&status=' . $request->getVar('status').'&id_po=' . $request->getVar('id_po') . '&id_item=' . $det->id.'&id_item_det=' . $request->getVar('id_item_det')) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus ?')"><i class="fa fa-trash"></i></a>
+                                            <?php endif; ?>
                                             <!--<a href="<?php // echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_po=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>-->
                                         <?php } ?>
                                     <?php } ?>

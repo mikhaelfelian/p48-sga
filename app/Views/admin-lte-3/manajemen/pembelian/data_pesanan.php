@@ -75,7 +75,9 @@ model('trPO');
                                             <tr>
                                                 <td style="width: 25px;" class="text-center">
                                                     <?php if ($det->status_fkt == 0) { ?>
+                                                        <?php if(!hakAdminM()) : ?>
                                                         <?php echo anchor(base_url('pembelian/pesanan/hapus.php?id=' . $det->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm" onclick="return confirm(\'Hapus [' . $det->no_po . '] ?\')"') ?>
+                                                        <?php endif;?>
                                                     <?php } ?>
                                                 </td>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>

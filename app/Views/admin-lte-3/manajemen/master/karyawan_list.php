@@ -74,7 +74,9 @@
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/karyawan_tambah.php?id='.$karyawan->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
                                                     &nbsp;
+                                                    <?php if(!hakAdminM()) : ?>
                                                     <?php echo anchor(base_url('master/karyawan_set_hapus.php?id='.$karyawan->id_user.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $karyawan->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
+                                                    <?php endif; ?>
                                                     <?php // } ?>
                                                 </td>
                                             </tr>

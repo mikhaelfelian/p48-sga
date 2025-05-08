@@ -71,7 +71,9 @@
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_kategori_tambah.php?id='.$kategori->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
                                                     &nbsp;
+                                                    <?php if(!hakAdminM()) : ?>
                                                     <?php echo anchor(base_url('master/data_kategori_hapus.php?id='.$kategori->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $kategori->kategori . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
+                                                    <?php endif ?>
                                                     <?php // } ?>
                                                 </td>
                                             </tr>

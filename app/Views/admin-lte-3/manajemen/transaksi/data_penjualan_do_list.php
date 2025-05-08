@@ -23,7 +23,9 @@
                 <?php foreach ($SQLMutasi as $det) { ?>
                     <tr>
                         <td class="text-center" style="width: 100px;">
+                            <?php if(!hakAdminM()) : ?>
                             <a href="<?php echo base_url('transaksi/hapus_do.php?id=' . $det->id . '&status=' . $request->getVar('status') . '&id_penj=' . $request->getVar('id') . '&route=transaksi/data_penjualan_aksi.php') ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->no_mutasi; ?>] ?')"><i class="fa fa-trash"></i></a>
+                            <?php endif; ?>
                             <a href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_do=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
                         </td>
                         <td class="text-center" style="width: 50px;"><?php echo $no; ?></td>

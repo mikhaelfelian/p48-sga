@@ -25,18 +25,22 @@
 
 <?php if (hakSA() == TRUE or hakOwner() == TRUE) { ?>
     <?php if ($SQLRab->status == 0) { ?>
+        <?php if(!hakAdminM()) : ?>
         <a class="btn btn-app bg-danger" href="<?php echo base_url('transaksi/rab/hapus.php?id=' . $request->getVar('id')) ?>"
             onclick="return confirm('Hapus [<?php echo $SQLPlgnRw->nama ?>] ?')">
             <i class="fas fa-trash"></i> Hapus
         </a>
+        <?php endif; ?>
     <?php } ?>
 <?php } else { ?>
     <?php if ($SQLRab->status == '0') { ?>
         <?php if ($SQLRab->id_user == $Pengguna->id) { ?>
+            <?php if(!hakAdminM()) : ?>
             <a class="btn btn-app bg-danger" href="<?php echo base_url('transaksi/rab/hapus.php?id=' . $request->getVar('id')) ?>"
                 onclick="return confirm('Hapus [<?php echo $SQLPlgnRw->nama ?>] ?')">
                 <i class="fas fa-trash"></i> Hapus
             </a>
+            <?php endif; ?>
         <?php } ?>
     <?php } ?>
 <?php } ?>

@@ -23,6 +23,7 @@
             break;
 
         case 'owner':
+        case 'adminm':
             ?>
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="<?php echo base_url('master') ?>" class="nav-link">Master</a>

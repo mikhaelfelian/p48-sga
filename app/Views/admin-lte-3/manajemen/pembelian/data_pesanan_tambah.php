@@ -206,7 +206,9 @@
                                                     <?php foreach ($SQLPsnDet as $det) { ?>
                                                         <tr>
                                                             <td class="text-right" style="width: 50px;">
+                                                                <?php if(!hakAdminM()) : ?>
                                                                 <?php echo anchor(base_url('pembelian/pesanan/cart_hapus.php?id=' . $request->getVar('id') . '&id_item=' . $det->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm rounded-0" onclick="return confirm(\'Hapus [' . $det->item . '] ?\')"') ?>
+                                                                <?php endif; ?>
                                                             </td>
                                                             <td class="text-center" style="width: 100px;"><?php echo $no; ?></td>
                                                             <td class="text-left" style="width: 350px;"><?php echo $det->item; ?></td>

@@ -78,12 +78,16 @@
                                                     <?php
                                                     if (hakSA() == TRUE OR hakOwner() == TRUE) {
                                                         if ($det->status == '0') {
+                                                             if(!hakAdminM()){
                                                             echo anchor(base_url('transaksi/rab/hapus.php?id=' . $det->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm" onclick="return confirm(\'Hapus [' . $det->no_rab . '] ?\')"');
+                                                            }
                                                         }
                                                     } else {
                                                         if ($det->status == '0') {
                                                             if ($det->id_user == $Pengguna->id) {
+                                                                if(!hakAdminM()){
                                                                 echo anchor(base_url('transaksi/rab/hapus.php?id=' . $det->id), '<i class="fas fa-trash"></i>', 'class="btn btn-danger btn-sm" onclick="return confirm(\'Hapus [' . $det->no_rab . '] ?\')"');
+                                                                }
                                                             }
                                                         }
                                                     }

@@ -78,7 +78,9 @@
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('pengaturan/perusahaan_tambah.php?id=' . $profile->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
                                                     &nbsp;
-                                                    <?php echo anchor(base_url('pengaturan/perusahaan_set_hapus.php?id=' . $profile->id . (isset($_GET['page']) ? '&page=' . $request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $profile->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
+                                                        <?php if(!hakAdminM()) : ?>
+                                                        <?php echo anchor(base_url('pengaturan/perusahaan_set_hapus.php?id=' . $profile->id . (isset($_GET['page']) ? '&page=' . $request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $profile->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
+                                                        <?php endif; ?>
                                                     <?php // } ?>
                                                 </td>
                                             </tr>

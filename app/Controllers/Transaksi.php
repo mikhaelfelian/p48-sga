@@ -2622,7 +2622,7 @@ class Transaksi extends BaseController {
             $pdf->MultiCell(7, .5, $sql_rab->p_alamat, '', 'L', $fill);
             $pdf->Ln();
             
-            $pdf->MultiCell(19, .5, 'Sehubungan dengan adanya kebutuhan barang pada '.$sql_rab->p_nama.', maka dengan ini kami '.strtoupper($sql_profile->nama).' Perusahaan pengadaan barang dan jasa bermaksud untuk mengajukan penawaran harga untuk pekerjaan tersebut. Adapun rincian barang dan harga sebagai berikut :', '', 'L', $fill);
+            $pdf->MultiCell(19, .5, 'Berdasarkan permintaan penawaran yang Bapak/Ibu sampaikan kepada kami, bersama ini kami sampaikan surat penawaran dengan rincian sebagai berikut :', '', 'L', $fill);
             $pdf->Ln();
             # ------------------------ END PEMBUKAAN -------------------------------------
             
@@ -2683,26 +2683,27 @@ class Transaksi extends BaseController {
             
             # --------------------- KETERANGAN ---------------
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
-            $pdf->Cell(19, .5, 'Keterangan', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->SetFont('TrebuchetMS', '', 9);
-            $pdf->Cell(19, .5, '- Penawaran berlaku 7 hari setelah penawaran ini dibuat.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Harga sudah termasuk PPN, PPh.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Fasilitas Free Ongkir hanya berlaku untuk daerah Jawa Tengah & DIY saja.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Harga dapat berubah sewaktu-waktu dan bersifat tidak mengikat.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Kondisi stok barang tidak mengikat apabila belum deal dengan user terkait pembelanjaan.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Fasilitas Instalasi dan Training.', '', 0, 'L', $fill);
-            $pdf->Ln();
-            $pdf->Cell(19, .5, '- Untuk material instalasi menyesuaikan stock opname dilapangan.', '', 0, 'L', $fill);
+            $pdf->Cell(19, .5, 'Harga sudah termasuk PPN', '', 0, 'L', $fill);
+            // $pdf->Cell(19, .5, 'Keterangan', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->SetFont('TrebuchetMS', '', 9);
+            // $pdf->Cell(19, .5, '- Penawaran berlaku 7 hari setelah penawaran ini dibuat.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Harga sudah termasuk PPN, PPh.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Fasilitas Free Ongkir hanya berlaku untuk daerah Jawa Tengah & DIY saja.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Harga dapat berubah sewaktu-waktu dan bersifat tidak mengikat.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Kondisi stok barang tidak mengikat apabila belum deal dengan user terkait pembelanjaan.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Fasilitas Instalasi dan Training.', '', 0, 'L', $fill);
+            // $pdf->Ln();
+            // $pdf->Cell(19, .5, '- Untuk material instalasi menyesuaikan stock opname dilapangan.', '', 0, 'L', $fill);
             $pdf->Ln(1);
             
             # ------------------ TTD -------------------------------------------
-            $pdf->Cell(19, .5, 'Demikian surat penawaran ini kami buat, atas pehatiannya kami ucapkan terima kasih.', '', 0, 'L', $fill);
+            $pdf->Cell(19, .5, 'Demikian penawaran ini kami sampaikan, atas perhatiannya kami sampaikan terimakasih.', '', 0, 'L', $fill);
             $pdf->Ln(1);
             
             $pdf->Cell(14, .5, '', '', 0, 'L', $fill);

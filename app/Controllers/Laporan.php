@@ -20,16 +20,16 @@ class Laporan extends BaseController
             $AksesGrup = $this->ionAuth->groups()->result();
 
             $data = [
-                'AksesGrup' => $AksesGrup,
-                'Pengguna' => $ID,
-                'PenggunaGrup' => $IDGrup,
-                'Pengaturan' => $this->Setting,
-                'ThemePath' => $this->ThemePath,
-                'menu_atas' => $this->ThemePath . '/layout/menu_atas',
-                'menu_kiri' => $this->ThemePath . '/manajemen/laporan/menu_kiri',
-                'konten' => $this->ThemePath . '/manajemen/laporan/konten',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath . '/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath . '/manajemen/laporan/menu_kiri',
+                'konten'        => $this->ThemePath . '/manajemen/laporan/konten',
             ];
-
+            
             return view($this->ThemePath . '/index', $data);
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
@@ -40,25 +40,29 @@ class Laporan extends BaseController
     public function data_rab()
     {
         if ($this->ionAuth->loggedIn()) {
-            $ID = $this->ionAuth->user()->row();
-            $IDGrup = $this->ionAuth->getUsersGroups($ID->id)->getRow();
-            $AksesGrup = $this->ionAuth->groups()->result();
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
 
-            $filter_perusahaan = $this->input->getVar('filter_perusahaan');
-            $filter_tipe = $this->input->getVar('filter_tipe');
-            $filter_tgl = $this->input->getVar('filter_tgl');
-            $filter_tgl_rentang = $this->input->getVar('filter_tgl_rentang');
-            $filter_status = $this->input->getVar('filter_status');
-            $filter_sales = $this->input->getVar('filter_sales');
+            // Get filter parameters
+            $filter_perusahaan  = $this->request->getVar('filter_perusahaan');
+            $filter_tipe        = $this->request->getVar('filter_tipe');
+            $filter_tgl         = $this->request->getVar('filter_tgl');
+            $filter_tgl_rentang = $this->request->getVar('filter_tgl_rentang');
+            $filter_status      = $this->request->getVar('filter_status');
+            $filter_sales       = $this->request->getVar('filter_sales');
 
-
+            // Initialize models
             $Tipe = new \App\Models\mTipe();
             $vtrRab = new \App\Models\vtrRab();
             $Profile = new \App\Models\PengaturanProfile();
+            
+            // Get active profile
             $sql_profile = $Profile->asObject()
                 ->where('status', '1')
                 ->find();
 
+            // Initialize RAB query
             $sql_rab = $vtrRab->asObject()
                 ->orderBy('id', 'DESC');
 

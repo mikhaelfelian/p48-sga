@@ -47,4 +47,4 @@ jobs:
               }' \
           https://api.github.com/repos/${{ github.repository }}/issues/1)
 
-        echo "API response from assignee assignment: $assign_response"
+        echo "API response from assignee assignment: $assign_response" 

@@ -31,7 +31,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Form Item box -->
-                    <?php echo form_open_multipart(base_url('transaksi/cart_upload.php'), 'autocomplete="off"') ?>
+                    <?php echo form_open_multipart(base_url('transaksi/cart_upload.php'), 'autocomplete="off" method="post" enctype="multipart/form-data"') ?>
                     <?php echo form_hidden('id_penjualan', (!empty($SQLPenj) ? $SQLPenj->id : '')) ?>
                     <?php echo form_hidden('status', $request->getVar('status')) ?>
 
@@ -65,13 +65,21 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
+                                    <!-- <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
                                         <label for="label" class="col-sm-4 col-form-label">Unggah Berkas*</label>
                                         <div class="col-sm-8">
                                             <div class="dropzone" id="myDropzone"></div>
                                             <small class="form-text text-muted">* File yang diijinkan: jpg | png | pdf | jpeg (Maks. 5MB)</small>
                                         </div>
+                                    </div> -->
+                                    <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
+                                        <label for="label" class="col-sm-4 col-form-label">Unggah Berkas*</label>
+                                        <div class="col-sm-8">
+                                            <input type="file" name="fupload" class="form-control-file<?php echo (!empty($psnGagal['fupload']) ? ' is-invalid' : '') ?>" accept=".jpg,.jpeg,.png,.pdf" required>
+                                            <small class="form-text text-muted">* File yang diijinkan: jpg | png | pdf | jpeg (Maks. 5MB)</small>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>  
                         </div>
@@ -232,32 +240,32 @@
             }
         });
         // Initialize Dropzone
-        Dropzone.autoDiscover = false;
-        var myDropzone = new Dropzone("#myDropzone", {
-            url: "<?php echo base_url('transaksi/penjualan/upload_file') ?>",
-            paramName: "fupload",
-            maxFilesize: 5, // MB
-            acceptedFiles: ".jpg,.jpeg,.png,.pdf",
-            addRemoveLinks: true,
-            dictDefaultMessage: "Seret dan lepas file di sini atau klik untuk mengunggah",
-            dictRemoveFile: "Hapus file",
-            dictFileTooBig: "File terlalu besar ({{filesize}}MB). Maksimal ukuran file: {{maxFilesize}}MB.",
-            dictInvalidFileType: "Tipe file tidak diizinkan. Hanya jpg, jpeg, png, dan pdf yang diizinkan.",
-            init: function() {
-                this.on("success", function(file, response) {
-                    if (response.success) {
-                        toastr.success(response.message);
-                    } else {
-                        toastr.error(response.message);
-                        this.removeFile(file);
-                    }
-                });
-                this.on("error", function(file, message) {
-                    toastr.error(message);
-                    this.removeFile(file);
-                });
-            }
-        });
+        // Dropzone.autoDiscover = false;
+        // var myDropzone = new Dropzone("#myDropzone", {
+        //     url: "<?php echo base_url('transaksi/penjualan/upload_file') ?>",
+        //     paramName: "fupload",
+        //     maxFilesize: 5, // MB
+        //     acceptedFiles: ".jpg,.jpeg,.png,.pdf",
+        //     addRemoveLinks: true,
+        //     dictDefaultMessage: "Seret dan lepas file di sini atau klik untuk mengunggah",
+        //     dictRemoveFile: "Hapus file",
+        //     dictFileTooBig: "File terlalu besar ({{filesize}}MB). Maksimal ukuran file: {{maxFilesize}}MB.",
+        //     dictInvalidFileType: "Tipe file tidak diizinkan. Hanya jpg, jpeg, png, dan pdf yang diizinkan.",
+        //     init: function() {
+        //         this.on("success", function(file, response) {
+        //             if (response.success) {
+        //                 toastr.success(response.message);
+        //             } else {
+        //                 toastr.error(response.message);
+        //                 this.removeFile(file);
+        //             }
+        //         });
+        //         this.on("error", function(file, message) {
+        //             toastr.error(message);
+        //             this.removeFile(file);
+        //         });
+        //     }
+        // });
         <?php echo session()->getFlashdata('transaksi_toast'); ?>
     });
 </script>

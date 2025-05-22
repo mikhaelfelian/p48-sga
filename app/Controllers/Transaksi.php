@@ -3340,7 +3340,8 @@ class Transaksi extends BaseController {
                 # Muat library untuk unggah file
                 # $path untuk mengatur lokasi unggah file
                 $path       = FCPATH . 'file/sale/'.strtolower($sql_penj->id);
-                $filename   = 'so_' . strtolower(alnum($judul)) . '.' . $fupl->getClientExtension();
+                $unique = uniqid();
+                $filename = 'so_' . strtolower(alnum($judul)) . '_' . $unique . '.' . $fupl->getClientExtension();
 
                 if(!file_exists($path)){
                     mkdir($path, 0777);

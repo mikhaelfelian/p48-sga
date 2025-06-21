@@ -2207,7 +2207,8 @@ class Transaksi extends BaseController {
                 $Profile        = new \App\Models\PengaturanProfile();
 
                 $sql_rab        = $Rab->asObject()->where('id', $IDRab)->first();
-                $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
+                // $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
+                $sql_rab_det = $RabDet->asObject()->select('tbl_trans_rab_det.*, tbl_m_item.item as item_name, tbl_m_item.keterangan as deskripsi')->join('tbl_m_item', 'tbl_m_item.id = tbl_trans_rab_det.id_item', 'left')->where('tbl_trans_rab_det.id_rab', $IDRab)->where('tbl_trans_rab_det.status', '1')->find();
                 $sql_rab_det2   = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '1')->find();
                 $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
                 $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('id_rab', $IDRab)->where('status', '1')->first();             
@@ -2327,7 +2328,8 @@ class Transaksi extends BaseController {
             # ------------------------ ISI -----------------------------------------------
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
             $pdf->Cell(1, .5, 'NO', 'TB', 0, 'C', $fill);
-            $pdf->Cell(10, .5, 'DESKRIPSI', 'TB', 0, 'C', $fill);
+            $pdf->Cell(3, .5, 'ITEM', 'TB', 0, 'L', $fill);
+            $pdf->Cell(7, .5, 'DESKRIPSI', 'TB', 0, 'L', $fill);
             $pdf->Cell(1, .5, 'JML', 'TB', 0, 'C', $fill);
             $pdf->Cell(2, .5, 'SATUAN', 'TB', 0, 'L', $fill);
             $pdf->Cell(2.5, .5, 'HARGA', 'TB', 0, 'R', $fill);
@@ -2353,7 +2355,8 @@ class Transaksi extends BaseController {
                 $subtot = $subtot + $det->subtotal;
                 
                 $pdf->Cell(1, .5, $no.'.', '', 0, 'C', $fill);
-                $pdf->Cell(10, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(7, .5, $det->deskripsi, '', 0, 'L', $fill);
                 $pdf->Cell(1, .5, (int)$det->jml, '', 0, 'C', $fill);
                 $pdf->Cell(2, .5, $det->satuan, '', 0, 'L', $fill);
                 $pdf->Cell(2.5, .5, format_angka($det->harga), '', 0, 'R', $fill);
@@ -2517,7 +2520,8 @@ class Transaksi extends BaseController {
                 $Profile        = new \App\Models\PengaturanProfile();
 
                 $sql_rab        = $Rab->asObject()->where('id', $IDRab)->first();
-                $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
+                // $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
+                $sql_rab_det = $RabDet->asObject()->select('tbl_trans_rab_det.*, tbl_m_item.item as item_name, tbl_m_item.keterangan as deskripsi')->join('tbl_m_item', 'tbl_m_item.id = tbl_trans_rab_det.id_item', 'left')->where('tbl_trans_rab_det.id_rab', $IDRab)->where('tbl_trans_rab_det.status', '1')->find();
                 $sql_rab_det2   = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '1')->find();
                 $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('id_rab', $IDRab)->where('status', '1')->first();             
                 $sql_rab_sum_bi = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->first();  
@@ -2629,7 +2633,8 @@ class Transaksi extends BaseController {
             # ------------------------ ISI -----------------------------------------------
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
             $pdf->Cell(1, .5, 'NO', 'TB', 0, 'C', $fill);
-            $pdf->Cell(10, .5, 'DESKRIPSI', 'TB', 0, 'C', $fill);
+            $pdf->Cell(3, .5, 'ITEM', 'TB', 0, 'L', $fill);
+            $pdf->Cell(7, .5, 'DESKRIPSI', 'TB', 0, 'L', $fill);
             $pdf->Cell(1, .5, 'JML', 'TB', 0, 'C', $fill);
             $pdf->Cell(2, .5, 'SATUAN', 'TB', 0, 'L', $fill);
             $pdf->Cell(2.5, .5, 'HARGA', 'TB', 0, 'R', $fill);
@@ -2643,7 +2648,8 @@ class Transaksi extends BaseController {
                 $subtot = $subtot + $det->subtotal;
                 
                 $pdf->Cell(1, .5, $no.'.', '', 0, 'C', $fill);
-                $pdf->Cell(10, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(7, .5, $det->deskripsi, '', 0, 'L', $fill);
                 $pdf->Cell(1, .5, (int)$det->jml, '', 0, 'C', $fill);
                 $pdf->Cell(2, .5, $det->satuan, '', 0, 'L', $fill);
                 $pdf->Cell(2.5, .5, format_angka($det->harga), '', 0, 'R', $fill);

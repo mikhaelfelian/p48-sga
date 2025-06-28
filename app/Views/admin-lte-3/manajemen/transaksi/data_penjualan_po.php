@@ -39,7 +39,7 @@
                                     break;
                             }
                         }else{
-                            echo view($ThemePath.'/manajemen/transaksi/data_penjualan_po_surat');
+                            echo view(name: $ThemePath.'/manajemen/transaksi/data_penjualan_po_surat');
                         }
                     ?>
                     <!-- /.card -->
@@ -66,7 +66,7 @@
         $('#supplier').autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: "<?php echo base_url('public/json_supplier.php') ?>",
+                    url: "<?php echo base_url('/json_supplier.php') ?>",
                     dataType: "json",
                     data: {
                         term: request.term

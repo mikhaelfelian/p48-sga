@@ -127,7 +127,7 @@
         $('#pelanggan').autocomplete({
             source: function (request, response) {
                 $.ajax({
-                    url: "<?php echo base_url('public/json_pelanggan.php') ?>",
+                    url: "<?php echo base_url('/json_pelanggan.php') ?>",
                     dataType: "json",
                     data: {
                         term: request.term

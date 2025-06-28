@@ -34,9 +34,11 @@
                                     <?php if(!hakAdminM()) : ?>
                                     <a href="<?php echo base_url('transaksi/rab/cart_hapus.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
                                     <?php endif; ?>
-                                    <a href="<?php echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id_item . '&id_item_det=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
-                                <?php } ?>
+                                    <!-- BIASA DI EDIT STATUS APA AJA -->
+                                    <!-- <a href="<?php echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id_item . '&id_item_det=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a> -->
+                                    <?php } ?>
                             <?php } ?>
+                            <a href="<?php echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id_item . '&id_item_det=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
                         <?php } ?>
                     </td>
                     <td class="text-left" style="width: 250px;">                        

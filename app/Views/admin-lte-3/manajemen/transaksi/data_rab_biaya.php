@@ -27,7 +27,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-8">
-                    <?php if ($SQLRab->status == 0) { ?>
+                    <?php if ($SQLRab->status == 0 || (isset($_GET['id_item']) && isset($_GET['id_item_det']))) { ?>
                         <!-- Form Item box -->
                         <?php echo form_open(base_url('transaksi/rab/cart_simpan.php'), 'autocomplete="off"') ?>
                         <?php echo form_hidden('id_rab', (!empty($SQLRab) ? $SQLRab->id : '')) ?>

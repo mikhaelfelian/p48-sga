@@ -118,6 +118,23 @@
                                 </select>
                             </div>
                             <div class="form-group">
+                                <label for="keterangan">Keterangan Pembayaran</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fas fa-comment-dots"></i></span>
+                                    </div>
+                                    <?php echo form_textarea([
+                                        'id' => 'keterangan',
+                                        'name' => 'keterangan',
+                                        'class' => 'form-control pull-right rounded-0',
+                                        'placeholder' => 'Tulis keterangan pembayaran di sini...',
+                                        'rows' => 3,
+                                        'value' => (!empty($SQLPenj) ? $SQLPenj->keterangan : '')
+                                    ]); ?>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
                                 <label for="inputEmail3">GRAND TOTAL</label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-append">

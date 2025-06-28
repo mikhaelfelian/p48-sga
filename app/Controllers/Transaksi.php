@@ -4543,6 +4543,7 @@ class Transaksi extends BaseController {
             $tgl_bayar  = $this->input->getVar('tgl_bayar');
             $jml_bayar  = $this->input->getVar('jml_bayar');
             $metode     = $this->input->getVar('metode');
+            $keterangan     = $this->input->getVar('keterangan');
             $rute       = $this->input->getVar('route');
             $fupl       = $this->request->getFile('fupload');
 
@@ -4581,6 +4582,12 @@ class Transaksi extends BaseController {
                     'rules'     => 'required',
                     'errors'    => [
                         'required'      => 'Metode Bayar tidak boleh kosong',
+                    ]
+                ],
+                'keterangan'  => [
+                    'rules'     => 'required',
+                    'errors'    => [
+                        'required'      => 'Keterangan Bayar tidak boleh kosong',
                     ]
                 ],
                 'fupload' => [
@@ -4672,6 +4679,7 @@ class Transaksi extends BaseController {
                     'no_nota' => $sql_penj->no_nota,
                     'nominal' => (float)$jml_bayar,
                     'file'     => 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
+                    'keterangan' => $keterangan
                 ];
                 $resultPenjPlat = $PenjPlat->save($dataPlatform);
                 if (!$resultPenjPlat) {

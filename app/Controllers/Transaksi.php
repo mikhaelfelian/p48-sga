@@ -4642,7 +4642,10 @@ class Transaksi extends BaseController {
                     'status_bayar'  => $status_bayar,
                 ];
                 
-                $Penj->save($data);
+                $resultPenj = $Penj->save($data);
+                if (!$resultPenj) {
+                    dd('Gagal menyimpan PenjPlat:', $PenjPlat->errors());
+                }
                 $last_id = $id;
                 
                 // IMG HANDLING
@@ -4671,9 +4674,9 @@ class Transaksi extends BaseController {
                     'file'     => 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
                 ];
                 $resultPenjPlat = $PenjPlat->save($dataPlatform);
-                // if (!$resultPenjPlat) {
-                    //     dd('Gagal menyimpan PenjPlat:', $PenjPlat->errors());
-                // }
+                if (!$resultPenjPlat) {
+                    dd('Gagal menyimpan PenjPlat:', $PenjPlat->errors());
+                }
                 # End off transact SQL
                 $this->db->transComplete();
                 

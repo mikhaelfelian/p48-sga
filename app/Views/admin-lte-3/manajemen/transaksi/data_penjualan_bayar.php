@@ -129,7 +129,6 @@
                                         'class' => 'form-control pull-right rounded-0',
                                         'placeholder' => 'Tulis keterangan pembayaran di sini...',
                                         'rows' => 3,
-                                        'value' => (!empty($SQLPenj) ? $SQLPenj->keterangan : '')
                                     ]); ?>
                                 </div>
                             </div>

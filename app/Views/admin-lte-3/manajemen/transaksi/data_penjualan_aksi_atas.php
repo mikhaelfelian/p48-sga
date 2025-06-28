@@ -17,7 +17,7 @@
         <i class="fas fa-file-invoice"></i> PO
     </a>
 <?php } ?>
-<?php if ($SQLPenj->status > 0) { ?>
+<!-- <?php if ($SQLPenj->status > 0) { ?>
     <?php if (hakOwner() == TRUE or hakGudang() == TRUE) { ?>
         <a class="btn btn-app bg-info"
             href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=4') ?>">
@@ -30,5 +30,19 @@
             <i class="fas fa-file-upload"></i> Unggah
         </a>
     <?php } ?>
+<?php } ?> -->
+
+<!-- bisa dilihat status apapun -->
+<?php if (hakOwner() == TRUE or hakGudang() == TRUE) { ?>
+    <a class="btn btn-app bg-info"
+        href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=4') ?>">
+        <i class="fas fa-truck-fast"></i> Pengiriman
+    </a>
+<?php } ?>
+<?php if (hakOwner() == TRUE or hakAdmin() == TRUE OR hakTeknisi() == TRUE) { ?>
+    <a class="btn btn-app bg-info"
+        href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=5') ?>">
+        <i class="fas fa-file-upload"></i> Unggah
+    </a>
 <?php } ?>
 <hr />

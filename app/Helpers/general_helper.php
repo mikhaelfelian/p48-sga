@@ -493,6 +493,10 @@ function status_bayar($status) {
         case '1':
             $status = '<label class="badge badge-success">Lunas</label>';
             break;
+            
+        case '2':
+            $status = '<label class="badge badge-info">Belum Lunas</label>';
+            break;
     }
     return $status;
 }

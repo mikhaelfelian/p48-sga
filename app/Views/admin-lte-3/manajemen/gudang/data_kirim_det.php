@@ -185,7 +185,7 @@
             $('#item').autocomplete({
                 source: function (request, response) {
                     $.ajax({
-                        url: "<?php echo base_url('public/json_item.php') ?>",
+                        url: "<?php echo base_url('/json_item.php') ?>",
                         dataType: "json",
                         data: {
                             term: request.term

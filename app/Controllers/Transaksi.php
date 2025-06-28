@@ -4544,6 +4544,7 @@ class Transaksi extends BaseController {
             $jml_bayar  = $this->input->getVar('jml_bayar');
             $metode     = $this->input->getVar('metode');
             $rute       = $this->input->getVar('route');
+            $fupl       = $this->request->getFile('fupload');
 
             $Profile    = new \App\Models\PengaturanProfile();
             $Plgn       = new \App\Models\mPelanggan();
@@ -4553,6 +4554,8 @@ class Transaksi extends BaseController {
             $Penj       = new \App\Models\trPenj();
             $PenjDet    = new \App\Models\trPenjDet();
             $PenjPO     = new \App\Models\trPenjPO();
+            $PenjPlat   = new \App\Models\trPenjPlat();
+            $Platform   = new \App\Models\mPlatform();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -4580,6 +4583,14 @@ class Transaksi extends BaseController {
                         'required'      => 'Metode Bayar tidak boleh kosong',
                     ]
                 ],
+                'fupload' => [
+                    'rules'     => 'uploaded[fupload]|mime_in[fupload,application/pdf,image/png,image/jpg,image/jpeg]|ext_in[fupload,pdf,jpg,png,jpeg]|max_size[fupload,8192]',
+                    'errors'    => [
+                        'mime_in'   => 'Berkas harus berupa gambar / pdf',
+                        'ext_in'    => 'Berkas harus berupa *.jpg, *.jpeg, *.png, *.pdf',
+                        'max_size'  => 'Berkas harus berukuran maksimal 8MB',
+                    ]
+                ]
             ];
 
             # Simpan config validasi
@@ -4592,6 +4603,7 @@ class Transaksi extends BaseController {
                     'tgl_bayar'     => $validasi->getError('tgl_bayar'),
                     'metode'        => $validasi->getError('metode'),
                     'jml_bayar'     => $validasi->getError('jml_bayar'),
+                    'fupload'       => $validasi->getError('fupload'),
                 ];
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
@@ -4601,13 +4613,21 @@ class Transaksi extends BaseController {
                 $sql_penj           = $Penj->asObject()->where('id', $id)->first();
                 $sql_penj_det       = $PenjDet->asObject()->where('id_penjualan', $sql_penj->id)->find();
                 $sql_rab            = $Rab->asObject()->where('id', $sql_penj->id_rab)->first();
+                $sql_platform       = $Platform->asObject()->where('id', $metode)->first();
                 $jml_bayar          = format_angka_db($jml_bayar);
                 
-                if($jml_bayar >= $sql_penj->jml_gtotal){
-                    $status_bayar = '1';
-                }else{
-                    $status_bayar = '0';
-                }               
+                // if($jml_bayar >= $sql_penj->jml_gtotal){
+                //     $status_bayar = '1';
+                // }else{
+                //     $status_bayar = '0';
+                // }               
+
+                $totalBayar = $jml_bayar + $sql_penj->jml_bayar;
+                if($totalBayar >= $sql_penj->jml_gtotal){
+                    $status_bayar = '1'; //LUNAS
+                }else {
+                    $status_bayar = '2'; //BELUM LUNAS
+                }
                 
                 # Start Transact SQL
                 $this->db->transBegin();
@@ -4615,15 +4635,45 @@ class Transaksi extends BaseController {
                 # Masukkan data pembayaran
                 $data = [
                     'id'            => $id,
-                    'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
-                    'jml_total'     => (float)$jml_bayar,
-                    'metode_bayar'  => $metode,
+                    // 'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
+                    'jml_bayar'     => (float)$totalBayar,
+                    'jml_kurang' => (float)$sql_penj->jml_gtotal - $totalBayar,
+                    // 'metode_bayar'  => $metode,
                     'status_bayar'  => $status_bayar,
                 ];
-
+                
                 $Penj->save($data);
                 $last_id = $id;
                 
+                // IMG HANDLING
+                $path       = FCPATH . 'file/sale/paid/'.strtolower($sql_penj->id);
+                $unique = uniqid();
+                $filename = 'so_' . strtolower(string: alnum($sql_platform->platform)) . '_' . $unique . '.' . $fupl->getClientExtension();
+
+                if(!file_exists($path)){
+                    mkdir($path, 0777, true);
+                }
+                
+                # Jika valid lanjut upload file
+                if ($fupl->isValid() && !$fupl->hasMoved()) {
+                    $fupl->move($path, $filename, true);
+                }
+                
+                // DETAIL PEMBAYARAN
+                $dataPlatform = [
+                    'id_penjualan' => $id,
+                    'id_platform' => $metode,
+                    'tgl_simpan'     => tgl_indo_sys2_time($tgl_bayar),
+                    'platform' => $sql_platform->platform,
+                    'keterangan' => $sql_platform->keterangan,
+                    'no_nota' => $sql_penj->no_nota,
+                    'nominal' => (float)$jml_bayar,
+                    'file'     => 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
+                ];
+                $resultPenjPlat = $PenjPlat->save($dataPlatform);
+                // if (!$resultPenjPlat) {
+                    //     dd('Gagal menyimpan PenjPlat:', $PenjPlat->errors());
+                // }
                 # End off transact SQL
                 $this->db->transComplete();
                 
@@ -4639,7 +4689,7 @@ class Transaksi extends BaseController {
                     $this->session->setFlashdata('transaksi_toast', 'toastr.success("Transaksi berhasil dibayar !!");');
                 }
 
-                return redirect()->to(base_url('transaksi/data_pembayaran.php'));
+                return redirect()->to(base_url(relativePath: 'transaksi/data_pembayaran.php'));
             }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');

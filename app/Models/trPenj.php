@@ -14,7 +14,7 @@ class trPenj extends Model {
         'id_user','id_sales','id_pelanggan','id_perusahaan','id_platform',
         'id_tipe','id_rab','id_platform','kode_fp','no_nota','no_kontrak','no_paket','tgl_bayar',
         'tgl_masuk','tgl_keluar','platform','jml_hps','jml_pagu','jml_total','jml_biaya','ppn',
-        'jml_ppn','pph','jml_pph','jml_gtotal','jml_hpp','jml_hpp_ppn','jml_profit','status','status_ppn','status_hps','keterangan',
+        'jml_ppn','pph','jml_pph','jml_gtotal', 'jml_bayar', 'jml_kurang','jml_hpp','jml_hpp_ppn','jml_profit','status','status_ppn','status_hps','keterangan',
         'metode_bayar','status','status_nota','status_ppn','status_hps','status_bayar'
         ];
     

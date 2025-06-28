@@ -115,6 +115,16 @@ function tgl_indo_sys2($tglan) {
     return $tgle;
 }
 
+function tgl_indo_sys2_time($tglan) {
+    $tgl = explode('/', $tglan);
+    $tanggal = $tgl[0];
+    $bulan = $tgl[1];
+    $tahun = $tgl[2];
+    $jam_sekarang = date('H:i:s');
+    $tgle = (!empty($tglan) ? $tahun . '-' . $bulan . '-' . $tanggal : '') .' '. $jam_sekarang;
+    return $tgle;
+}
+
 function wkt_indo($tglan) {
     $str_tgl = $tglan;
     $dta_tgl = ($str_tgl != '0000-00-00' ? $str_tgl : '');

@@ -353,6 +353,10 @@ function status_pembayaran_penj($status){
         case 1:
             $status = '<label class="badge badge-success">TERBAYAR</label>';
             break;
+
+        case 2:
+            $status = '<label class="badge badge-info">BELUM LUNAS</label>';
+            break;
     }
     return $status;
 }

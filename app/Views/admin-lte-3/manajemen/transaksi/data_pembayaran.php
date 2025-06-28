@@ -87,7 +87,8 @@
                                                 <td style="width: 50px;"><?php // echo $det->keterangan  
                                                                             ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php if ($det->status_bayar == 0): ?>
+                                                    <!--  jika status belum dibayar -->
+                                                    <?php if ($det->status_bayar != 1): ?> 
                                                         <?= anchor(base_url('transaksi/data_pembayaran_tambah.php?id=' . $det->id), '<i class="fa fa-shopping-cart"></i> Bayar &raquo;', 'class="btn btn-warning btn-flat btn-xs" style="width: 75px;"') ?>
                                                     <?php endif; ?> &nbsp;
                                                 </td>

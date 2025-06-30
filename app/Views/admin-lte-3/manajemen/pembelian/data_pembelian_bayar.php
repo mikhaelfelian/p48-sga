@@ -98,7 +98,7 @@
                     <!-- /.card -->
                 </div>
                 <div class="col-lg-4">
-                    <?php echo form_open(base_url('pembelian/faktur/set_trans_bayar.php'), 'autocomplete="off"') ?>
+                    <?php echo form_open_multipart(base_url('pembelian/faktur/set_trans_bayar.php'), 'autocomplete="off"') ?>
                     <?php echo form_hidden('id', $SQLBeli->id); ?>
                     
                     <div class="card">
@@ -136,6 +136,24 @@
                                     <?php echo form_input(['id' => 'jml_gtotal', 'name' => 'jml_gtotal', 'class' => 'form-control pull-right rounded-0', 'placeholder' => 'Harga ...', 'value' => (!empty($SQLBeli) ? $SQLBeli->jml_gtotal : 0), 'readonly' => 'TRUE']) ?>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="inputEmail3">TERBAYAR</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Rp. </span>
+                                    </div>
+                                    <?php echo form_input(['id' => 'jml_bayar', 'name' => 'jml_bayar', 'class' => 'form-control pull-right rounded-0', 'placeholder' => 'Dibayar ...', 'value' => (!empty($SQLBeli) ? $SQLBeli->jml_bayar : 0), 'readonly' => 'TRUE']) ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEmail3">KEKURANGAN</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Rp. </span>
+                                    </div>
+                                    <?php echo form_input(['id' => 'jml_kurang', 'name' => 'jml_kurang', 'class' => 'form-control pull-right rounded-0', 'placeholder' => 'Kurang ...', 'value' => (!empty($SQLBeli) ? ($SQLBeli->jml_gtotal - $SQLBeli->jml_bayar) : 0), 'readonly' => 'TRUE']) ?>
+                                </div>
+                            </div>
                             <div class="form-group<?php echo (!empty($psnGagal['jml_bayar']) ? ' text-danger' : '') ?>">
                                 <label for="inputEmail3">PEMBAYARAN</label>
                                 <div class="input-group mb-3">
@@ -143,6 +161,13 @@
                                         <span class="input-group-text">Rp. </span>
                                     </div>
                                     <?php echo form_input(['id' => 'jml_bayar', 'name' => 'jml_bayar', 'class' => 'form-control pull-right rounded-0'.(!empty($psnGagal['jml_bayar']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah pembayaran ...']) ?>
+                                </div>
+                            </div>
+                            <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
+                                <label for="label">Unggah Bukti Bayar*</label>
+                                <div class="input-group mb-3">
+                                    <input type="file" name="fupload" class="form-control-file<?php echo (!empty($psnGagal['fupload']) ? ' is-invalid' : '') ?>" accept=".jpg,.jpeg,.png,.pdf">
+                                    <small class="form-text text-muted">* File yang diijinkan: jpg | png | pdf | jpeg (Maks. 5MB)</small>
                                 </div>
                             </div>
                         </div>
@@ -162,7 +187,7 @@
 <!-- Page script -->
 <script type="text/javascript">
     $(function () {
-        $("input[id=jml_gtotal],input[id=jml_bayar]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
+        $("input[id=jml_gtotal],input[id=jml_bayar],input[id=jml_kurang]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
         
         $("#tgl_bayar").datepicker({
             dateFormat: 'dd/mm/yy',

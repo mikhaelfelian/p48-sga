@@ -1123,6 +1123,7 @@ class Pembelian extends BaseController {
             $metode     = $this->input->getVar('metode');
             $rute       = $this->input->getVar('route');
             $keterangan = $this->input->getVar('keterangan');
+            $fupl       = $this->request->getFile('fupload');
 
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
@@ -1155,6 +1156,14 @@ class Pembelian extends BaseController {
                         'required'      => 'Metode Bayar tidak boleh kosong',
                     ]
                 ],
+                // 'fupload' => [
+                //     'rules'     => 'uploaded[fupload]|mime_in[fupload,application/pdf,image/png,image/jpg,image/jpeg]|ext_in[fupload,pdf,jpg,png,jpeg]|max_size[fupload,8192]',
+                //     'errors'    => [
+                //         'mime_in'   => 'Berkas harus berupa gambar / pdf',
+                //         'ext_in'    => 'Berkas harus berupa *.jpg, *.jpeg, *.png, *.pdf',
+                //         'max_size'  => 'Berkas harus berukuran maksimal 8MB',
+                //     ]
+                // ]
             ];
 
             # Simpan config validasi
@@ -1167,6 +1176,7 @@ class Pembelian extends BaseController {
                     'tgl_bayar'     => $validasi->getError('tgl_bayar'),
                     'metode'        => $validasi->getError('metode'),
                     'jml_bayar'     => $validasi->getError('jml_bayar'),
+                    'fupload'       => $validasi->getError('fupload'),
                 ];
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
@@ -1176,23 +1186,33 @@ class Pembelian extends BaseController {
                 $sql_beli      = $Beli->asObject()->where('id', $id)->first();
                 $sql_beli_det  = $BeliDet->asObject()->where('id_pembelian', $sql_beli->id)->find();
                 $jml_bayar     = format_angka_db($jml_bayar);
-
+                $sql_plat = $Platform->asObject()->where('id', $metode)->first();
+                
                 // # Start Transact SQL
                 // $this->db->transStart();
                 
                 try {              
-                    if($jml_bayar >= $sql_beli->jml_gtotal){
-                        $status_bayar = '1';
-                    }else{
-                        $status_bayar = '0';
+                    // if($jml_bayar >= $sql_beli->jml_gtotal){
+                    //     $status_bayar = '1';
+                    // }else{
+                    //     $status_bayar = '0';
+                    // }
+                    $totalBayar = $jml_bayar + $sql_beli->jml_bayar;
+                    if($totalBayar >= $sql_beli->jml_gtotal){
+                        $status_bayar = '1'; //LUNAS
+                    }else {
+                        $status_bayar = '2'; //BELUM LUNAS
                     }
                     
+                    # Start Transact SQL
+                    $this->db->transBegin();
                     # Masukkan data pembayaran
                     $data = [
                         'id'            => $id,
-                        'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
-                        'jml_bayar'     => (float)$jml_bayar,
-                        'metode_bayar'  => $metode,
+                        // 'tgl_bayar'     => tgl_indo_sys($tgl_bayar),
+                        'jml_bayar'     => (float)$totalBayar,
+                        'jml_kurang' => (float)$sql_beli->jml_gtotal - $totalBayar,
+                        // 'metode_bayar'  => $metode,
                         'status_bayar'  => $status_bayar,
                     ];
 
@@ -1201,20 +1221,33 @@ class Pembelian extends BaseController {
                         throw new \Exception('Gagal menyimpan data pembayaran ke database');
                     }
 
-                    $sql_plat = $Platform->asObject()->where('id', $metode)->first();
+                    // IMG HANDLING
+                    $path       = FCPATH . 'file/buy/paid/'.strtolower($sql_beli->id);
+                    $unique = uniqid();
+                    $filename = 'so_' . strtolower(string: alnum($sql_plat->platform)) . '_' . $unique . '.' . $fupl->getClientExtension();
+                    if(!file_exists($path)){
+                        mkdir($path, 0777, true);
+                    }
+
+                    # Jika valid lanjut upload file
+                    if ($fupl->isValid() && !$fupl->hasMoved()) {
+                        $fupl->move($path, $filename, true);
+                    }
 
                     # Masukkan data platform pembayaran
                     $data_plat = [
                         'id_pembelian'  => $id,
                         'id_platform'   => (int)$metode,
+                        'tgl_simpan'     => tgl_indo_sys2_time($tgl_bayar),
                         'platform'      => $sql_plat->platform,
-                        'keterangan'    => $sql_plat->platform.' '.$keterangan,
+                        'no_nota' => $sql_beli->no_nota,
                         'nominal'       => (float)$jml_bayar,
-                        'tgl_simpan'    => date('Y-m-d H:i:s')
+                        'file'     => 'file/buy/paid/'.strtolower($sql_beli->id).'/'.$filename,
+                        'keterangan'    => $keterangan,
                     ];
-
                     $result_plat = $BeliPlat->save($data_plat);
                     if (!$result_plat) {
+                    dd('Gagal menyimpan PenjPlat:', $result_plat->errors());
                         throw new \Exception('Gagal menyimpan data platform pembayaran ke database');
                     }
                     
@@ -1424,7 +1457,7 @@ class Pembelian extends BaseController {
             $AksesGrup  = $this->ionAuth->groups()->result();
             
             $vtrBeli    = new \App\Models\vtrPembelian();
-            $sql_beli   = $vtrBeli->asObject()->where('status', '1')->where('status_bayar', '0')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            $sql_beli   = $vtrBeli->asObject()->where('status', '1')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [

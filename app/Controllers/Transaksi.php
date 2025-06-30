@@ -4590,14 +4590,14 @@ class Transaksi extends BaseController {
                         'required'      => 'Keterangan Bayar tidak boleh kosong',
                     ]
                 ],
-                'fupload' => [
-                    'rules'     => 'uploaded[fupload]|mime_in[fupload,application/pdf,image/png,image/jpg,image/jpeg]|ext_in[fupload,pdf,jpg,png,jpeg]|max_size[fupload,8192]',
-                    'errors'    => [
-                        'mime_in'   => 'Berkas harus berupa gambar / pdf',
-                        'ext_in'    => 'Berkas harus berupa *.jpg, *.jpeg, *.png, *.pdf',
-                        'max_size'  => 'Berkas harus berukuran maksimal 8MB',
-                    ]
-                ]
+                // 'fupload' => [
+                //     'rules'     => 'uploaded[fupload]|mime_in[fupload,application/pdf,image/png,image/jpg,image/jpeg]|ext_in[fupload,pdf,jpg,png,jpeg]|max_size[fupload,8192]',
+                //     'errors'    => [
+                //         'mime_in'   => 'Berkas harus berupa gambar / pdf',
+                //         'ext_in'    => 'Berkas harus berupa *.jpg, *.jpeg, *.png, *.pdf',
+                //         'max_size'  => 'Berkas harus berukuran maksimal 8MB',
+                //     ]
+                // ]
             ];
 
             # Simpan config validasi
@@ -4675,7 +4675,6 @@ class Transaksi extends BaseController {
                     'id_platform' => $metode,
                     'tgl_simpan'     => tgl_indo_sys2_time($tgl_bayar),
                     'platform' => $sql_platform->platform,
-                    'keterangan' => $sql_platform->keterangan,
                     'no_nota' => $sql_penj->no_nota,
                     'nominal' => (float)$jml_bayar,
                     'file'     => 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,

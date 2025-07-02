@@ -17,7 +17,7 @@ class mSupplier extends Model {
     protected $table                = 'tbl_m_supplier';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['kode','nama', 'npwp', 'alamat', 'kota', 'provinsi', 'no_telp', 'no_hp', 'cp', 'status'];
+    protected $allowedFields        = ['kode','nama', 'npwp', 'rekening', 'alamat', 'kota', 'provinsi', 'no_telp', 'no_hp', 'cp', 'status'];
     
     # Tanggal
     protected $useTimestamps        = true;

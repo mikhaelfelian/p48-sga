@@ -52,7 +52,7 @@
                             </div>
                             <div class="form-group <?php echo (!empty($psnGagal['npwp']) ? 'has-error' : '') ?>">
                                 <label class="control-label">NPWP</label>
-                                <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan nomor telepon pelanggan ...', 'value' => (!empty($SQLPelanggan->npwp) ? $SQLPelanggan->npwp : '')]) ?>
+                                <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan npwp pelanggan ...', 'value' => (!empty($SQLPelanggan->npwp) ? $SQLPelanggan->npwp : '')]) ?>
                             </div>
                             <div class="form-group <?php echo (!empty($psnGagal['alamat']) ? 'has-error' : '') ?>">
                                 <label class="control-label">Alamat*</label>

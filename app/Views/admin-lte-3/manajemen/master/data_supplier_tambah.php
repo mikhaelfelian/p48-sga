@@ -56,7 +56,11 @@
                             </div>
                             <div class="form-group <?php echo (!empty($psnGagal['npwp']) ? 'has-error' : '') ?>">
                                 <label class="control-label">NPWP</label>
-                                <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan nomor telepon pelanggan ...', 'value' => (!empty($SQLSupplier->npwp) ? $SQLSupplier->npwp : '')]) ?>
+                                <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan NPWP supplier ...', 'value' => (!empty($SQLSupplier->npwp) ? $SQLSupplier->npwp : '')]) ?>
+                            </div>
+                            <div class="form-group <?php echo (!empty($psnGagal['rekening']) ? 'has-error' : '') ?>">
+                                <label class="control-label">Rekening [BANK - No Rekening]</label>
+                                <?php echo form_input(['id' => 'rekening', 'name' => 'rekening', 'class' => 'form-control rounded-0' . (!empty($psnGagal['rekening']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Rekening Supplier ...', 'value' => (!empty($SQLSupplier->rekening) ? $SQLSupplier->rekening : '')]) ?>
                             </div>
                             <div class="form-group <?php echo (!empty($psnGagal['alamat']) ? 'has-error' : '') ?>">
                                 <label class="control-label">Alamat*</label>

@@ -65,6 +65,12 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="form-group row<?php echo (!empty($psnGagal['no_dokumen']) ? ' text-danger' : '') ?>">
+                                        <label for="label" class="col-sm-4 col-form-label">Nomor Dokumen</label>
+                                        <div class="col-sm-8">
+                                            <?php echo form_input(['id' => 'no_dokumen', 'name' => 'no_dokumen', 'class' => 'form-control rounded-0' . (!empty($psnGagal['no_dokumen']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Nomor Dokumen ...']) ?>
+                                        </div>
+                                    </div>
                                     <!-- <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
                                         <label for="label" class="col-sm-4 col-form-label">Unggah Berkas*</label>
                                         <div class="col-sm-8">
@@ -136,7 +142,8 @@
                                     <tr>
                                         <th class="text-center"></th>
                                         <th class="text-center">No</th>
-                                        <th class="text-left">Juduk</th>
+                                        <th class="text-left">Judul</th>
+                                        <th class="text-left">No Dokumen</th>
                                         <th class="text-center">Berkas</th>
                                     </tr>                                    
                                 </thead>
@@ -160,24 +167,27 @@
                                                 <td class="text-center"><?php echo $no; ?></td>
                                                 <td class="text-left">
                                                     <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>
-        <?php echo $det->judul; ?><br/>
+                                                    <?php echo $det->judul; ?><br/>
                                                     <small><i><?php echo $det->keterangan; ?></i></small>
                                                 </td>
+                                                <td class="text-left">
+                                                    <small><?= $det->no_dokumen; ?></small>
+                                                </td>
                                                 <td class="text-center text-middle">
-        <?php if ($is_image == 'image') { ?>
+                                                    <?php if ($is_image == 'image') { ?>
                                                         <a href="<?php echo $detname ?>" data-toggle="lightbox" data-title="<?php echo strtolower($det->judul) ?>">
                                                             <i class="fas fa-paperclip"></i> <?php echo $det->judul ?>
                                                         </a>
-        <?php } else { ?>
+                                                    <?php } else { ?>
                                                         <a href="<?php echo $detname ?>" target="_blank">
                                                             <i class="fas fa-paperclip"></i> <?php echo $det->judul ?>
                                                         </a>
-        <?php } ?>
+                                                    <?php } ?>
                                                 </td>
                                             </tr>  
                                             <?php $no++; ?>
                                         <?php } ?>
-<?php } ?>
+                                    <?php } ?>
                                 </tbody>
                             </table>
                         </div>

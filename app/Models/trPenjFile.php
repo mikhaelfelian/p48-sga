@@ -11,7 +11,7 @@ class trPenjFile extends Model {
     protected $table                = 'tbl_trans_jual_file';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_penjualan','id_user','id_berkas','judul','keterangan','file_name','file_ext','file_type','tipe'];
+    protected $allowedFields        = ['id_penjualan','id_user','id_berkas','judul', 'no_dokumen','keterangan','file_name','file_ext','file_type','tipe'];
     
     # Tanggal
     protected $useTimestamps        = true;

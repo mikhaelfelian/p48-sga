@@ -3281,6 +3281,7 @@ class Transaksi extends BaseController {
 
             $idpenj     = $this->input->getVar('id_penjualan');
             $judul      = $this->input->getVar('judul');
+            $no_dokumen      = $this->input->getVar('no_dokumen');
             $ket        = $this->input->getVar('keterangan');
             $tipe       = $this->input->getVar('tipe');
             $fupl       = $this->request->getFile('fupload');
@@ -3363,6 +3364,7 @@ class Transaksi extends BaseController {
                     'id_user'       => $ID->id,
                     'id_berkas'     => $tipe,
                     'judul'         => $judul,
+                    'no_dokumen'         => $no_dokumen,
                     'keterangan'    => $ket,
                     'file_name'     => 'file/sale/'.strtolower($sql_penj->id).'/'.$filename,
                     'file_ext'      => $fupl->getClientExtension(),

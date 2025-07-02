@@ -1821,6 +1821,7 @@ class Master extends BaseController {
             $nama   = $this->input->getVar('nama');
             $tlp    = $this->input->getVar('no_telp');
             $hp     = $this->input->getVar('no_hp');
+            $npwp     = $this->input->getVar('npwp');
             $almt   = $this->input->getVar('alamat');
             $kota   = $this->input->getVar('kota');
             $prov   = $this->input->getVar('provinsi');
@@ -1882,6 +1883,7 @@ class Master extends BaseController {
                     'nama'      => $nama,
                     'no_telp'   => $tlp,
                     'no_hp'     => $hp,
+                    'npwp'      => $npwp,
                     'alamat'    => $almt,
                     'provinsi'  => strtoupper($prov),
                     'kota'      => strtoupper($kota),
@@ -1912,6 +1914,7 @@ class Master extends BaseController {
             $nama   = $this->input->getVar('nama');
             $tlp    = $this->input->getVar('no_telp');
             $hp     = $this->input->getVar('no_hp');
+            $npwp     = $this->input->getVar('npwp');
             $almt   = $this->input->getVar('alamat');
             $kota   = $this->input->getVar('kota');
             $prov   = $this->input->getVar('provinsi');
@@ -1979,6 +1982,7 @@ class Master extends BaseController {
                     'nama'      => $nama,
                     'no_telp'   => $tlp,
                     'no_hp'     => $hp,
+                    'npwp'      => $npwp,
                     'alamat'    => $almt,
                     'provinsi'  => strtoupper($prov),
                     'kota'      => strtoupper($kota),

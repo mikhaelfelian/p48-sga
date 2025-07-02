@@ -54,6 +54,10 @@
                                 <label class="control-label">No. HP</label>
                                 <?php echo form_input(['id' => 'no_hp', 'name' => 'no_hp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['no_hp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan nomor hp supplier ...', 'value' => (!empty($SQLSupplier->no_hp) ? $SQLSupplier->no_hp : '')]) ?>
                             </div>
+                            <div class="form-group <?php echo (!empty($psnGagal['npwp']) ? 'has-error' : '') ?>">
+                                <label class="control-label">NPWP</label>
+                                <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan nomor telepon pelanggan ...', 'value' => (!empty($SQLSupplier->npwp) ? $SQLSupplier->npwp : '')]) ?>
+                            </div>
                             <div class="form-group <?php echo (!empty($psnGagal['alamat']) ? 'has-error' : '') ?>">
                                 <label class="control-label">Alamat*</label>
                                 <?php echo form_textarea(['id' => 'alamat', 'name' => 'alamat', 'class' => 'form-control rounded-0' . (!empty($psnGagal['alamat']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan alamat supplier ...', 'value' => (!empty($SQLSupplier->alamat) ? $SQLSupplier->alamat : '')]) ?>

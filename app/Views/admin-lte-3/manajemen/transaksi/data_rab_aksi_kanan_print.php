@@ -88,14 +88,14 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             Internal
                         </button>                            
                     </div>                        
                     <?php if ($SQLRab->status > 1) { ?>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                            <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                                 <i class="fa-solid fa-print"></i><br/>
                                 PDF
                             </button>                          
@@ -175,13 +175,13 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             Internal
                         </button>                            
                     </div>
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             PDF
                         </button>                            
@@ -213,13 +213,13 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             Internal
                         </button>
                     </div>
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             PDF
                         </button>
@@ -268,7 +268,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             PDF
                         </button>
@@ -296,7 +296,7 @@
                             Set ke DRAFT
                         </button>
                         <br/>
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             PDF
                         </button>
@@ -310,13 +310,13 @@
                 ?>
                 <div class="row">
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             Internal
                         </button>                            
                     </div>
                     <div class="col-md-3">
-                        <button type="button" class="btn btn-app bg-info" onclick="window.location.href = '<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>'">
+                        <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab_pen.php?id=' . $request->getVar('id')) ?>', '_blank')">
                             <i class="fa-solid fa-print"></i><br/>
                             PDF
                         </button>                            

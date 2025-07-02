@@ -123,7 +123,10 @@
                                     </div>
                                 </div>                                
                                 <div class="col-md-5">
-                                    
+                                    <div class="form-group <?php echo (!empty($psnGagal['rekening']) ? 'has-error' : '') ?>">
+                                        <label class="control-label">Rekening [BANK - No Rekening]</label>
+                                        <?php echo form_input(['id' => 'rekening', 'name' => 'rekening', 'class' => 'form-control rounded-0' . (!empty($psnGagal['rekening']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Rekening Karyawan ...', 'value' => (!empty($SQLKary->rekening) ? $SQLKary->rekening : '')]) ?>
+                                    </div>
                                 </div>                                
                             </div>
                             <div class="row">

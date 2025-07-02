@@ -2131,6 +2131,7 @@ class Master extends BaseController {
             $jns_klm    = $this->input->getVar('jns_klm');
             $pers       = $this->input->getVar('perusahaan');
             $hp         = $this->input->getVar('no_hp');
+            $rekening   = $this->input->getVar('rekening');
             $almt       = $this->input->getVar('alamat');
             $almt2      = $this->input->getVar('alamat_dom');
             $tmp_lhr    = $this->input->getVar('tmp_lahir');
@@ -2248,6 +2249,7 @@ class Master extends BaseController {
                     'nama_blk'      => $nama2,
                     'jns_klm'       => $jns_klm,
                     'no_hp'         => $hp,
+                    'rekening'      => $rekening,
                     'alamat'        => $almt,
                     'alamat_dom'    => $almt2,
                     'tmp_lahir'     => $tmp_lhr,
@@ -2286,6 +2288,7 @@ class Master extends BaseController {
             $jns_klm    = $this->input->getVar('jns_klm');
             $pers       = $this->input->getVar('perusahaan');
             $hp         = $this->input->getVar('no_hp');
+            $rekening   = $this->input->getVar('rekening');
             $almt       = $this->input->getVar('alamat');
             $almt2      = $this->input->getVar('alamat_dom');
             $tmp_lhr    = $this->input->getVar('tmp_lahir');
@@ -2410,6 +2413,7 @@ class Master extends BaseController {
                     'nama_blk'      => $nama2,
                     'jns_klm'       => $jns_klm,
                     'no_hp'         => $hp,
+                    'rekening'      => $rekening,
                     'alamat'        => $almt,
                     'alamat_dom'    => $almt2,
                     'tmp_lahir'     => $tmp_lhr,

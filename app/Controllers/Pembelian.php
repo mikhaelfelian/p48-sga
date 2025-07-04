@@ -884,6 +884,7 @@ class Pembelian extends BaseController {
             $PODet      = new \App\Models\trPODet();
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
+            $Pengaturan = new \App\Models\pengaturan();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -935,6 +936,12 @@ class Pembelian extends BaseController {
                         $po_no_nota = $sql_po->no_po;
                     }
                 }
+
+                $ppn = 0;
+                if($status_ppn == 2){
+                    $setting = $Pengaturan->asObject()->first();
+                    $ppn = $setting->jml_ppn;
+                }
                 
                 $data = [
                     'id'            => $id,
@@ -948,6 +955,7 @@ class Pembelian extends BaseController {
                     'no_po'         => $po_no_nota,
                     'supplier'      => $sql_supp->nama,
                     'status'        => '0',
+                    'ppn'           => $ppn,
                     'status_ppn'    => $status_ppn,
                 ];
 
@@ -1300,6 +1308,7 @@ class Pembelian extends BaseController {
             $Satuan     = new \App\Models\mSatuan();
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
+            $Pengaturan = new \App\Models\Pengaturan();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -1361,6 +1370,15 @@ class Pembelian extends BaseController {
                 $disk3      = $disk2 - (($diskon3 / 100) * $disk2);
                 $diskon     = ($hrg - $disk3) * (float)$jml;
                 $subtotal   = ($disk3 * (float)$jml) - (float)$potongan;
+
+                // SET PPN
+                $ppn = 0;
+                $setting = $Pengaturan->asObject()->first();
+                $dataBeli = $Beli->asObject()->where('id', $idbeli)->first();
+                if($dataBeli->status_ppn == 2){
+                    $ppn = ($subtotal * $setting->jml_ppn) / 100;
+                    $subtotal = $ppn + $subtotal;
+                }
                                 
                 $data = [
                     'id'                => $idbelidet,
@@ -1379,18 +1397,21 @@ class Pembelian extends BaseController {
                     'disk3'             => (float)$diskon3,
                     'diskon'            => (float)$diskon,
                     'potongan'          => (float)$potongan,
+                    'ppn'               => (float)$ppn,
+                    'status_ppn'        => $dataBeli->status_ppn,
                     'subtotal'          => (float)$subtotal,
                 ];
 
                 $BeliDet->save($data);
                 $last_id = $BeliDet->insertID();
                 
-                $sql_det = $BeliDet->asObject()->select('SUM(diskon) AS diskon, SUM(potongan) AS potongan, SUM(subtotal) AS subtotal')->where('id_pembelian', $idbeli)->first();
+                $sql_det = $BeliDet->asObject()->select('SUM(diskon) AS diskon, SUM(potongan) AS potongan, SUM(subtotal) AS subtotal, SUM(ppn) AS ppn')->where('id_pembelian', $idbeli)->first();
                 
                 $data_beli = [
                     'id'            => $idbeli,
                     'jml_diskon'    => $sql_det->diskon,
                     'jml_potongan'  => $sql_det->potongan,
+                    'jml_ppn'       => $sql_det->ppn,
                     'jml_gtotal'    => $sql_det->subtotal,
                 ];
                 
@@ -1428,11 +1449,12 @@ class Pembelian extends BaseController {
                 
                 $BeliDet->where('id', $IDItm)->delete();
                 
-                $sql_sum = $BeliDet->asObject()->select('SUM(diskon) AS diskon, SUM(potongan) AS potongan, SUM(subtotal) AS subtotal')->where('id_pembelian', $IDBeli)->first();
+                $sql_sum = $BeliDet->asObject()->select('SUM(diskon) AS diskon, SUM(potongan) AS potongan, SUM(subtotal) AS subtotal, SUM(ppn) as ppn')->where('id_pembelian', $IDBeli)->first();
                 
                 $data_beli = [
                     'id'            => $IDBeli,
                     'jml_diskon'    => (!empty($sql_sum->diskon) ? $sql_sum->diskon : 0),
+                    'jml_ppn'       => (!empty($sql_sum->ppn) ? $sql_sum->ppn : 0),
                     'jml_potongan'  => (!empty($sql_sum->potongan) ? $sql_sum->potongan : 0),
                     'jml_gtotal'    => (!empty($sql_sum->subtotal) ? $sql_sum->subtotal : 0),
                 ];

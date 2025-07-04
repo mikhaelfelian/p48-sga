@@ -280,6 +280,7 @@
                                                     <th class="text-right">Harga</th>
                                                     <th class="text-right">Diskon</th>
                                                     <th class="text-right">Potongan</th>
+                                                    <th class="text-right">PPN</th>
                                                     <th class="text-right">Subtotal</th>
                                                     <th class="text-right"></th>
                                                 </tr>
@@ -314,6 +315,9 @@
                                                                 <?php echo format_angka($det->potongan); ?>
                                                             </td>
                                                             <td class="text-right" style="width: 200px;">
+                                                                <?php echo format_angka($det->ppn); ?>
+                                                            </td>
+                                                            <td class="text-right" style="width: 200px;">
                                                                 <?php echo format_angka($det->subtotal); ?>
                                                             </td>
                                                             <td class="text-left" style="width: 70px;">
@@ -323,11 +327,13 @@
                                                         <?php $no++; ?>
                                                     <?php } ?>
                                                     <tr>
+                                                        <th class="text-right"></th>
                                                         <th class="text-right" colspan="7">Total</th>
                                                         <th class="text-right"><?php echo format_angka($subtotal); ?></th>
                                                         <th class="text-right"></th>
                                                     </tr>
                                                     <tr>
+                                                        <th class="text-right"></th>
                                                         <th class="text-right" colspan="7">Discount</th>
                                                         <th class="text-right">
                                                             <?php echo form_input(['name' => 'discount', 'class' => 'form-control rounded-0 text-right', 'placeholder' => '0']); ?>
@@ -336,7 +342,7 @@
                                                     </tr>
                                                 <?php } else { ?>
                                                     <tr>
-                                                        <th class="text-center" colspan="8">Tidak Ada Data</th>
+                                                        <th class="text-center" colspan="9">Tidak Ada Data</th>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>

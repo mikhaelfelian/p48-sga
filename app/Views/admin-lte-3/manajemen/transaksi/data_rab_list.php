@@ -12,7 +12,7 @@
             <th class="text-right">Subtotal</th>
             <?php if (isset($_GET['status'])) { ?>
                 <?php if ($_GET['status'] != '2') { ?>
-                    <th class="text-right">Profit</th>
+                    <!-- <th class="text-right">Profit</th> -->
                     <th class="text-right">HPP</th>
                     <th class="text-right">PPN dari HPP</th>
                     <th class="text-right">Total</th>
@@ -58,7 +58,7 @@
                     <?php if (isset($_GET['status'])) { ?>
                         <?php if ($_GET['status'] != '2') { ?>
                             <?php // if ($det->status_ppn == '1') { ?>
-                                <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->profit); ?></td>
+                                <!-- <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->profit); ?></td> -->
                                 <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->harga_hpp); ?></td>
                                 <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->harga_hpp_ppn); ?></td>
                                 <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->harga_hpp_tot); ?></td>
@@ -117,11 +117,11 @@
                     <th class="text-right"><?php echo format_angka($SQLRab->jml_hpp_ppn); ?></th>
                     <th colspan="4"></th>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <th colspan="4" class="text-right">Laba</th>
                     <th class="text-right"><?php echo format_angka($SQLRab->jml_profit); ?></th>
                     <th colspan="4"></th>
-                </tr>
+                </tr> -->
         <?php } ?>
     <?php } ?>
 <?php } ?>

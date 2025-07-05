@@ -33,59 +33,52 @@
             # Jika di terima maka bisa lanjut ke set Menang / Kalah
             case '1':
                 ?>
-                <div class="row">
-                    <?php if ($SQLRab->id_user == $Pengguna->id) { ?>
-                        <div class="col-md-3">
-                            <?php echo form_open(base_url('transaksi/rab/set_trans_proses.php'), 'autocomplete="off"') ?>
-                            <?php echo form_hidden('id', $SQLRab->id); ?>
-                            <?php echo form_hidden('jml_gtotal', 0); ?>
-                            <?php echo form_hidden('user', $Pengguna->id); ?>
-                            <?php echo form_hidden('pesan', 'toastr.warning("Transaksi dikembalikan ke draft !!");'); ?>
-                            <?php echo form_hidden('status', '0'); ?>
-                            <?php echo form_hidden('route', 'transaksi/rab/data_rab.php'); ?>
-
-                            <button type="submit" class="btn btn-app bg-danger" onclick="return confirm('Batalkan ?')">
-                                <i class="fa-solid fa-arrows-rotate"></i><br/>
-                                Batal Proses
-                            </button>
-                            <?php echo form_close(); ?>
+                <?php echo form_open(base_url('transaksi/rab/set_trans_proses.php'), 'autocomplete="off"') ?>
+                <?php echo form_hidden('id', $SQLRab->id); ?>
+                <?php echo form_hidden('jml_gtotal', 0); ?>
+                <?php echo form_hidden('user', $Pengguna->id); ?>
+                <?php echo form_hidden('route', 'transaksi/rab/data_rab.php'); ?>
+                    <div class="row my-3">
+                        <div class="col-sm-12">
+                            <textarea name="keterangan" cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di tolak..."></textarea>
                         </div>
-                    <?php } ?>
-                    <div class="col-md-3">
-                        <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
-                            <?php echo form_open(base_url('transaksi/rab/set_trans_proses.php'), 'autocomplete="off"') ?>
-                            <?php echo form_hidden('id', $SQLRab->id); ?>
-                            <?php echo form_hidden('jml_gtotal', 0); ?>
-                            <?php echo form_hidden('user', $Pengguna->id); ?>
-                            <?php echo form_hidden('pesan', 'toastr.success("Transaksi sudah di ACC !!");'); ?>
-                            <?php echo form_hidden('status', '2'); ?>
-                            <?php echo form_hidden('route', 'transaksi/rab/data_rab.php'); ?>
-
-                            <button type="submit" class="btn btn-app bg-success">
-                                <i class="fa-solid fa-check"></i><br/>
-                                Terima
-                            </button>
-                            <?php echo form_close(); ?>
-                        <?php } ?>
                     </div>
-                    <div class="col-md-3">
-                        <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
-                            <?php echo form_open(base_url('transaksi/rab/set_trans_proses.php'), 'autocomplete="off"') ?>
-                            <?php echo form_hidden('id', $SQLRab->id); ?>
-                            <?php echo form_hidden('jml_gtotal', 0); ?>
-                            <?php echo form_hidden('user', $Pengguna->id); ?>
-                            <?php echo form_hidden('pesan', 'toastr.error("Transaksi sudah tolak !!");'); ?>
-                            <?php echo form_hidden('status', '3'); ?>
-                            <?php echo form_hidden('route', 'transaksi/rab/data_rab.php'); ?>
+                    <div class="row">
+                        <?php if ($SQLRab->id_user == $Pengguna->id) { ?>
+                            <div class="col-md-3">
+                                <?php echo form_hidden('pesan', 'toastr.warning("Transaksi dikembalikan ke draft !!");'); ?>
+                                <?php echo form_hidden('status', '0'); ?>
 
-                            <button type="submit" class="btn btn-app bg-warning" onclick="return confirm('Tolak ?')">
-                                <i class="fa-solid fa-remove"></i><br/>
-                                Tolak
-                            </button>
-                            <?php echo form_close(); ?>
+                                <button type="submit" class="btn btn-app bg-danger" onclick="return confirm('Batalkan ?')">
+                                    <i class="fa-solid fa-arrows-rotate"></i><br/>
+                                    Batal Proses
+                                </button>
+                            </div>
                         <?php } ?>
+                        <div class="col-md-3">
+                            <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
+                                <?php echo form_hidden('pesan', 'toastr.success("Transaksi sudah di ACC !!");'); ?>
+                                <?php echo form_hidden('status', '2'); ?>
+
+                                <button type="submit" class="btn btn-app bg-success">
+                                    <i class="fa-solid fa-check"></i><br/>
+                                    Terima
+                                </button>
+                            <?php } ?>
+                        </div>
+                        <div class="col-md-3">
+                            <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
+                                <?php echo form_hidden('pesan', 'toastr.error("Transaksi sudah tolak !!");'); ?>
+                                <?php echo form_hidden('status', '3'); ?>
+
+                                <button type="submit" class="btn btn-app bg-warning" onclick="return confirm('Tolak ?')">
+                                    <i class="fa-solid fa-remove"></i><br/>
+                                    Tolak
+                                </button>
+                            <?php } ?>
+                        </div>
                     </div>
-                </div>
+                <?php echo form_close(); ?>
                 <div class="row">
                     <div class="col-md-3">
                         <button type="button" class="btn btn-app bg-info" onclick="window.open('<?php echo base_url('transaksi/rab/pdf_rab.php?id=' . $request->getVar('id') . '&status=1') ?>', '_blank')">
@@ -194,6 +187,14 @@
             # Sales tidak bisa ngapa2in
             case '3':
                 ?>
+                <div class="row my-3">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label>Alasan Ditolak</label>
+                            <textarea name="keterangan" readonly cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di tolak..."><?= $SQLRab->keterangan; ?></textarea>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-3">
                         <?php echo form_open(base_url('transaksi/rab/set_trans_proses.php'), 'autocomplete="off"') ?>

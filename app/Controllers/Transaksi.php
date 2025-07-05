@@ -1667,6 +1667,7 @@ class Transaksi extends BaseController {
             $jml_gtotal = $this->input->getVar('jml_gtotal');
             $psn        = $this->input->getVar('pesan');
             $rute       = $this->input->getVar('route');
+            $keterangan = $this->input->getVar('keterangan');
 
             $Plgn       = new \App\Models\mPelanggan();
             $Rab        = new \App\Models\trRab();
@@ -1718,15 +1719,21 @@ class Transaksi extends BaseController {
                 # Start Transact SQL
                 $this->db->transBegin();
                 
+                // SET KETERANGAN HANYA DIISI KETIKA DI TOLAK
+                if($status != '3') {
+                    $keterangan = null;
+                }
+                
                 # Cek id dan perubahan data status nya dan hitung ulang total
                 $data = [
                     'id'            => $id,
                     'status'        => $status,
+                    'keterangan'    => $keterangan
                 ];
 
                 $Rab->save($data);
                 $last_id = $id;
-                
+
                 # Jika status = 2 atau ACC Pimpinan, maka buat nomor penawarannya secara otomatis
                 if($status == '2'){
                     # Cek dulu sudah ada surat yang masuk belum, jika sudah hapus dulu. Terapkan 1 RAB 1 nomor surat

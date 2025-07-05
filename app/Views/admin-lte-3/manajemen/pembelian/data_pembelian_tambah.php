@@ -167,7 +167,7 @@
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">Rp.</span>
                                                             </div>
-                                                            <?php echo form_input(['id' => 'harga', 'name' => 'harga', 'class' => 'form-control rounded-0 pull-right' . (!empty($psnGagal['harga']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Harga Beli ...', 'value' => (!empty($SQLBeliDetRw) ? $SQLBeliDetRw->harga : '0')]) ?>
+                                                            <?php echo form_input(['id' => 'harga', 'name' => 'harga', 'class' => 'form-control rounded-0 pull-right' . (!empty($psnGagal['harga']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Harga Beli ...', 'value' => (!empty($SQLBeliDetRw) ? $SQLBeliDetRw->harga : ((!empty($SQLItem->kode) ? $SQLItem->harga_beli : '0')))]) ?> <!-- jika bukan edit, isi harganya dengan harga master item -->
                                                         </div>
                                                     </div>
                                                 </div>

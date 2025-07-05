@@ -878,6 +878,7 @@ class Pembelian extends BaseController {
             $tgl_klr    = $this->input->getVar('tgl_keluar');
             $ket        = $this->input->getVar('keterangan');
             $status_ppn = $this->input->getVar('status_ppn');
+            $fupl       = $this->request->getFile('fupload');
             
             $Supp       = new \App\Models\mSupplier();
             $PO         = new \App\Models\trPO();
@@ -906,6 +907,14 @@ class Pembelian extends BaseController {
                         'required' => 'No Faktur tidak boleh kosong',
                     ]
                 ],
+                // 'fupload' => [
+                //     'rules'     => 'uploaded[fupload]|mime_in[fupload,application/pdf,image/png,image/jpg,image/jpeg]|ext_in[fupload,pdf,jpg,png,jpeg]|max_size[fupload,20480]',
+                //     'errors'    => [
+                //         'mime_in'   => 'Berkas harus berupa gambar / pdf',
+                //         'ext_in'    => 'Berkas harus berupa *.jpg, *.jpeg, *.png, *.pdf',
+                //         'max_size'  => 'Berkas harus berukuran maksimal 2MB',
+                //     ]
+                // ]
             ];
 
             # Simpan config validasi
@@ -917,6 +926,7 @@ class Pembelian extends BaseController {
                     'supplier'  => $validasi->getError('id_supplier'),
                     'tgl_masuk' => $validasi->getError('tgl_masuk'),
                     'no_nota'   => $validasi->getError('no_nota'),
+                    // 'fupload'       => $validasi->getError('fupload'),
                 ];
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
@@ -942,6 +952,21 @@ class Pembelian extends BaseController {
                     $setting = $Pengaturan->asObject()->first();
                     $ppn = $setting->jml_ppn;
                 }
+
+                # Muat library untuk unggah file
+                # $path untuk mengatur lokasi unggah file
+                $path       = FCPATH . 'file/pembelian/';
+                $unique = uniqid();
+                $filename = 'so_' . strtolower(alnum($no_nota)) . '_' . $unique . '.' . $fupl->getClientExtension();
+
+                if(!file_exists($path)){
+                    mkdir($path, 0777);
+                }
+                
+                # Jika valid lanjut upload file
+                if ($fupl->isValid() && !$fupl->hasMoved()) {
+                    $fupl->move($path, $filename, true);
+                }
                 
                 $data = [
                     'id'            => $id,
@@ -956,8 +981,15 @@ class Pembelian extends BaseController {
                     'supplier'      => $sql_supp->nama,
                     'status'        => '0',
                     'ppn'           => $ppn,
-                    'status_ppn'    => $status_ppn,
+                    'status_ppn'    => $status_ppn
                 ];
+                
+                // Hanya tambahkan jika ada file yang diupload
+                if ($fupl && $fupl->getClientExtension()) {
+                    $data['file_name'] = 'file/pembelian/' . $filename;
+                    $data['file_ext']  = $fupl->getClientExtension();
+                    $data['file_type'] = $fupl->getClientMimeType();
+                }
 
                 # Simpan ke tabel pembelian
                 $Beli->save($data);

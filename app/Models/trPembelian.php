@@ -17,7 +17,7 @@ class trPembelian extends Model {
     protected $table                = 'tbl_trans_beli';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_supplier','id_user','id_penerima','id_perusahaan','id_po','tgl_bayar','tgl_masuk','tgl_keluar','no_nota','no_po','supplier','jml_total','disk1','disk2','disk3','jml_potongan','jml_retur','jml_diskon','jml_biaya','jml_subtotal','jml_dpp','ppn','jml_ppn','jml_gtotal','jml_bayar','jml_kembali','jml_kurang','status','status_bayar','status_nota','status_ppn','status_retur','status_penerimaan','metode_bayar','status_hps'];
+    protected $allowedFields        = ['id_supplier','id_user','id_penerima','id_perusahaan','id_po','tgl_bayar','tgl_masuk','tgl_keluar','no_nota','no_po','supplier','jml_total','disk1','disk2','disk3','jml_potongan','jml_retur','jml_diskon','jml_biaya','jml_subtotal','jml_dpp','ppn','jml_ppn','jml_gtotal','jml_bayar','jml_kembali','jml_kurang','status','status_bayar','status_nota','status_ppn','status_retur','status_penerimaan','metode_bayar','status_hps', 'file_name','file_ext','file_type',];
     
     # Tanggal
     protected $useTimestamps        = true;

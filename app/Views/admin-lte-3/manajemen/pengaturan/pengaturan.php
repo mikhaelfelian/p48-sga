@@ -86,13 +86,19 @@
                                         <div class="col-md-4">
                                             <div class="form-group <?php echo (!empty($psnGagal['jml_item']) ? 'has-error' : '') ?>">
                                                 <label class="control-label">Jml Item</label>
-                                                <?php echo form_input(['id' => 'jml_item', 'name' => 'jml_item', 'class' => 'form-control rounded-0' . (!empty($psnGagal['jml_item']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan kode karyawan ...', 'value' => (!empty($Pengaturan->jml_item) ? $Pengaturan->jml_item : '')]) ?>
+                                                <?php echo form_input(['id' => 'jml_item', 'name' => 'jml_item', 'class' => 'form-control rounded-0' . (!empty($psnGagal['jml_item']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah item ...', 'value' => (!empty($Pengaturan->jml_item) ? $Pengaturan->jml_item : '')]) ?>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group <?php echo (!empty($psnGagal['jml_ppn']) ? 'has-error' : '') ?>">
                                                 <label class="control-label">Jml Ppn</label>
-                                                <?php echo form_input(['id' => 'jml_ppn', 'name' => 'jml_ppn', 'class' => 'form-control rounded-0' . (!empty($psnGagal['jml_ppn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan kode karyawan ...', 'value' => (!empty($Pengaturan->jml_ppn) ? $Pengaturan->jml_ppn : '')]) ?>
+                                                <?php echo form_input(['id' => 'jml_ppn', 'name' => 'jml_ppn', 'class' => 'form-control rounded-0' . (!empty($psnGagal['jml_ppn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah ppn ...', 'value' => (!empty($Pengaturan->jml_ppn) ? $Pengaturan->jml_ppn : '')]) ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group <?php echo (!empty($psnGagal['pph']) ? 'has-error' : '') ?>">
+                                                <label class="control-label">Jml PPH</label>
+                                                <?php echo form_input(['id' => 'pph', 'name' => 'pph', 'class' => 'form-control rounded-0' . (!empty($psnGagal['pph']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah pph ...', 'value' => (!empty($Pengaturan->pph) ? $Pengaturan->pph : '')]) ?>
                                             </div>
                                         </div>
                                     </div>

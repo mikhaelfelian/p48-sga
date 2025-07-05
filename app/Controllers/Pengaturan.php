@@ -84,6 +84,7 @@ class Pengaturan extends BaseController {
             $kd_supp    = $this->input->getVar('kode_supp');
             $jml_item   = $this->input->getVar('jml_item');
             $jml_ppn    = $this->input->getVar('jml_ppn');
+            $pph    = $this->input->getVar('pph');
             $no_tlp     = $this->input->getVar('no_tlp');
             $berkas_logo= $this->request->getFile('fupload_logo');
             $berkas_hdr = $this->request->getFile('fupload_logo_hdr');
@@ -196,6 +197,7 @@ class Pengaturan extends BaseController {
                     'kode_kary'     => $kd_kary,
                     'jml_item'      => $jml_item,
                     'jml_ppn'       => $jml_ppn,
+                    'pph'           => $pph,
                     'favicon'       => (!empty($berkas_fav->getClientExtension()) ? $flname_fav : $sql_cek->favicon),
                     'logo'          => (!empty($berkas_logo->getClientExtension()) ? $flname_logo : $sql_cek->logo),
                     'logo_header'   => (!empty($berkas_hdr->getClientExtension()) ? $flname_hdr : $sql_cek->logo_header),

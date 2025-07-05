@@ -3974,7 +3974,12 @@ class Transaksi extends BaseController {
                 $lk         = $netto - $sql_penj_sum->harga_hpp_tot;
                 $biaya      = $lk - $sql_penj_sum_bi->subtotal;
                 $lb         = $biaya + $sql_penj_sum->harga_hpp_ppn;
-                $biaya2     = ($sql_penj_sum_bi->subtotal / $gtotal) * 100;
+                // $biaya2     = ($sql_penj_sum_bi->subtotal / $gtotal) * 100;
+                if ($gtotal > 0) {
+                    $biaya2 = ($sql_penj_sum_bi->subtotal / $gtotal) * 100;
+                } else {
+                    $biaya2 = 0; // atau null, tergantung logika kamu
+                }
                 
                 # Start Transact SQL
                 $this->db->transBegin();

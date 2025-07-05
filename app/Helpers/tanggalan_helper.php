@@ -22,6 +22,9 @@ function tgl_indo3($tglan) {
         $tgln       = (!empty($dta_tgl) ? date('Y-m-d', strtotime($dta_tgl)) : '');
 
         $tgl        = explode('-', $tgln);
+        if (count($tgl) < 3) {
+            return ''; // atau bisa return tgl aslinya
+        }
         $tanggal    = $tgl[2];
         $bulan      = bulan_ke($tgl[1]);
         $tahun      = $tgl[0];

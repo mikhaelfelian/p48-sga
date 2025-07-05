@@ -75,7 +75,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <button type="button" class="btn btn-danger btn-flat" onclick="window.location.href = '<?php echo base_url('pembelian/pesanan/set_pesanan_batal.php?id=') ?>'"><i class="fa fa-remove"></i> Batal</button>
+                                            <button type="button" class="btn btn-danger btn-flat" onclick="window.location.href = '<?php echo base_url('/pembelian/pesanan/data_pesanan.php') ?>'"><i class="fa fa-remove"></i> Batal</button>
                                         </div>
                                         <div class="col-md-6 text-right">
                                             <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-shopping-cart"></i> Set Pesanan</button>

@@ -100,7 +100,7 @@
 
                                 </div>
                                 <div class="col-lg-6 text-right">
-                                    <button type="reset" class="btn btn-danger btn-flat"><i class="fa fa-remove"></i> Batal</button>
+                                    <button type="reset" class="btn btn-danger btn-flat" onclick="window.location.href='<?php echo base_url('/transaksi/data_penjualan.php') ?>'"><i class="fa fa-remove"></i> Batal</button>
                                     <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Simpan</button>
                                 </div>
                             </div>                            

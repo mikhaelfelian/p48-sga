@@ -106,7 +106,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <button type="button" class="btn btn-danger btn-flat"
-                                                onclick="window.location.href = '<?php echo base_url('pembelian/pesanan/set_pesanan_batal.php?id=') ?>'"><i
+                                                onclick="window.location.href = '<?php echo base_url('/pembelian/faktur/data_pembelian.php') ?>'"><i
                                                     class="fa fa-remove"></i> Batal</button>
                                         </div>
                                         <div class="col-md-6 text-right">
@@ -342,7 +342,7 @@
                                                     </tr>
                                                 <?php } else { ?>
                                                     <tr>
-                                                        <th class="text-center" colspan="9">Tidak Ada Data</th>
+                                                        <th class="text-center" colspan="10">Tidak Ada Data</th>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>

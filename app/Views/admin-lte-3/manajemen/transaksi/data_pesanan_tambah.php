@@ -208,7 +208,7 @@
                                                     </tr>
                                                 <?php } else { ?>
                                                     <tr>
-                                                        <th class="text-center" colspan="8">Tidak Ada Data</th>
+                                                        <th class="text-center" colspan="">Tidak Ada Data</th>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>

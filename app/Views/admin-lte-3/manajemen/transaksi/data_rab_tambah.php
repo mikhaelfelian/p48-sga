@@ -124,7 +124,7 @@
 
                                 </div>
                                 <div class="col-lg-6 text-right">
-                                    <button type="reset" class="btn btn-danger btn-flat"><i class="fa fa-remove"></i> Batal</button>
+                                    <button type="reset" class="btn btn-danger btn-flat" onclick="window.location.href='<?php echo base_url('/transaksi/rab/data_rab.php')?>'"><i class="fa fa-remove"></i> Batal</button>
                                     <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Buat RAB</button>
                                 </div>
                             </div>                            

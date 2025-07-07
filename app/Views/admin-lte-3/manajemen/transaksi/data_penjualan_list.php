@@ -34,6 +34,7 @@
                     <td class="text-left">
                         <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>
                         <?php echo $det->item; ?><br/>
+                        <strong>SN : <?php echo $det->item_sn; ?></strong><br/>
                         <small><i><?php echo $det->keterangan; ?></i></small>
                     </td>
                     <td class="text-center text-middle"><?php echo (int) $det->jml; ?></td>

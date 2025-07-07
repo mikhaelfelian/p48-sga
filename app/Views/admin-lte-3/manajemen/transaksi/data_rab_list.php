@@ -45,6 +45,7 @@
                         <?php echo status_ppn($det->status_ppn).br() ?>
                         <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>
                         <?php echo $det->item; ?><br/>
+                        <strong>SN : <?= $det->item_sn; ?></strong><br/>
                         <small><i><?php echo $det->keterangan; ?></i></small><br/>
                         <?php if($det->status == '2'){ ?>
                             <small><?php echo status_biaya($det->status_biaya) ?></small>

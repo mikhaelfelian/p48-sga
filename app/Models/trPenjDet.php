@@ -20,7 +20,7 @@ class trPenjDet extends Model {
     protected $allowedFields        = [
         'id_penjualan','id_item','id_item_kat',
         'id_item_sat','tgl_masuk','no_nota',
-        'kode','item','item_link','satuan','keterangan','harga','harga_dpp','harga_ppn','harga_pph','disk1','disk2','disk3','jml','jml_satuan','diskon','potongan','subtotal',
+        'kode','item','item_link','item_sn','satuan','keterangan','harga','harga_dpp','harga_ppn','harga_pph','disk1','disk2','disk3','jml','jml_satuan','diskon','potongan','subtotal',
         'profit','harga_hpp','harga_hpp_ppn','harga_hpp_tot','status_ppn','status_biaya','status_hrg','status_brg','status'
         ];
     

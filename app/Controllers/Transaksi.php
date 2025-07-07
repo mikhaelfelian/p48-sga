@@ -1158,6 +1158,7 @@ class Transaksi extends BaseController {
             $iditem     = $this->input->getVar('id_item');
             $item       = $this->input->getVar('item');
             $item_link  = $this->input->getVar('item_link');
+            $item_sn  = $this->input->getVar('item_sn');
             $jml        = $this->input->getVar('jml');
             $harga      = $this->input->getVar('harga');
             $hpp        = $this->input->getVar('hpp');
@@ -1270,6 +1271,7 @@ class Transaksi extends BaseController {
                     'kode'          => (!empty($sql_item->kode) ? $sql_item->kode : ''),
                     'item'          => $item,
                     'item_link'     => $item_link,
+                    'item_sn'       => $item_sn,
                     'jml'           => (float)$jml,
                     'jml_satuan'    => (!empty($sql_sat->jml) ? (int)$sql_sat->jml : 1),
                     'satuan'        => (!empty($sql_sat->satuanBesar) ? $sql_sat->satuanBesar : ''),
@@ -3408,6 +3410,8 @@ class Transaksi extends BaseController {
             $idpenjdet  = $this->input->getVar('id_penj_det');
             $iditem     = $this->input->getVar('id_item');
             $item       = $this->input->getVar('item');
+            $item_link  = $this->input->getVar('item_link');
+            $item_sn    = $this->input->getVar('item_sn');
             $jml        = $this->input->getVar('jml');
             $harga      = $this->input->getVar('harga');
             $hpp        = $this->input->getVar('hpp');
@@ -3514,6 +3518,8 @@ class Transaksi extends BaseController {
                     'tgl_masuk'     => $sql_penj->tgl_masuk,
                     'kode'          => (!empty($sql_item->kode) ? $sql_item->kode : ''),
                     'item'          => $item,
+                    'item_link'     => $item_link,
+                    'item_sn'        => $item_sn,
                     'jml'           => (float)$jml,
                     'jml_satuan'    => (!empty($sql_sat->jml) ? (int)$sql_sat->jml : 0),
                     'satuan'        => (!empty($sql_sat->satuanBesar) ? strtoupper($sql_sat->satuanBesar) : ''),

@@ -127,6 +127,12 @@
                                                             <small>* <i>Isikan link produk yang tayang e-Kat, dll</i></small>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group row<?php echo (!empty($psnGagal['item_sn']) ? ' text-danger' : '') ?>">
+                                                        <label class="col-sm-3 col-form-label">SN Item</label>
+                                                        <div class="col-sm-9">
+                                                            <?php echo form_input(['id' => 'item_sn', 'name' => 'item_sn', 'class' => 'form-control rounded-0 pull-right' . (!empty($psnGagal['item_sn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN Item ...', 'value'=>(!empty($SQLRabDetRw->item_sn) ? $SQLRabDetRw->item_sn : '')]) ?>
+                                                        </div>
+                                                    </div>
                                                 <?php } ?>
                                             </div>
                                         </div>

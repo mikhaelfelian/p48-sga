@@ -19,7 +19,7 @@ class trRabDet extends Model {
     protected $useAutoIncrement     = true;
     protected $allowedFields        = [
         'id_rab','id_user','id_item','id_item_kat','id_satuan','tgl_masuk',
-        'kode','item','item_link','jml','jml_satuan','jml_po','satuan','harga','harga_dpp','harga_ppn','harga_pph','subtotal',
+        'kode','item','item_link','item_sn','jml','jml_satuan','jml_po','satuan','harga','harga_dpp','harga_ppn','harga_pph','subtotal',
         'profit','harga_hpp','harga_hpp_dpp','harga_hpp_ppn','harga_hpp_tot','keterangan',
         'status_ppn','status','status_biaya'
         ];

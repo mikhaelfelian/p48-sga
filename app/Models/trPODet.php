@@ -17,7 +17,7 @@ class trPODet extends Model {
     protected $table                = 'tbl_trans_beli_po_det';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_user','id_pembelian','id_item','id_satuan','id_rab_det','kode','item','jml','jml_satuan','satuan','harga','harga_ppn','subtotal','keterangan','keterangan_itm','status','status_ppn'];
+    protected $allowedFields        = ['id_user','id_pembelian','id_item','id_satuan','id_rab_det','kode','item','item_sn', 'jml','jml_satuan','satuan','harga','harga_ppn','subtotal','keterangan','keterangan_itm','status','status_ppn'];
     
     # Tanggal
     protected $useTimestamps        = true;

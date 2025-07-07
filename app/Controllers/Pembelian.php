@@ -393,6 +393,7 @@ class Pembelian extends BaseController {
             $idpsn      = $this->input->getVar('id_pesanan');
             $iditem     = $this->input->getVar('id_item');
             $item       = $this->input->getVar('item');
+            $item_sn       = $this->input->getVar('item_sn');
             $jml        = $this->input->getVar('jml');
             $satuan     = $this->input->getVar('satuan');
             $harga      = $this->input->getVar('harga');
@@ -458,6 +459,7 @@ class Pembelian extends BaseController {
                     'id_item'           => $sql_item->id,
                     'kode'              => $sql_item->kode,
                     'item'              => $item,
+                    'item_sn'              => $item_sn,
                     'jml'               => (int)$jml,
                     'jml_satuan'        => (int)$sql_sat->jml,
                     'satuan'            => $sql_sat->satuanBesar,

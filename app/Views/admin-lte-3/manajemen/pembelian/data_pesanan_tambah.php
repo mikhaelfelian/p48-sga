@@ -120,6 +120,12 @@
                                                         <?php } ?>
                                                     </select>
                                                 </div>
+                                                <div class="col-sm-4">
+                                                    <div class="form-group<?php echo (!empty($psnGagal['item_sn']) ? ' text-danger' : '') ?>">
+                                                        <label for="item_sn" class="control-label">SN</label>
+                                                        <?php echo form_input(['id' => 'item_sn', 'name' => 'item_sn', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['item_sn']) ? ' is-invalid' : ''), 'placeholder' => 'SN Item ...']) ?>
+                                                    </div>
+                                                </div>
                                             </div>
                                         <?php } ?>
                                         <div class="row">
@@ -211,7 +217,10 @@
                                                                 <?php endif; ?>
                                                             </td>
                                                             <td class="text-center" style="width: 100px;"><?php echo $no; ?></td>
-                                                            <td class="text-left" style="width: 350px;"><?php echo $det->item; ?></td>
+                                                            <td class="text-left" style="width: 350px;">
+                                                                <?php echo $det->item; ?><br/>
+                                                                <strong>SN : <?= $det->item_sn;?></strong>
+                                                            </td>
                                                             <td class="text-center" style="width: 150px;"><?php echo $det->jml . ' ' . $det->satuan ?></td>
                                                             <td class="text-right" style="width: 200px;"><?php echo $det->keterangan_itm; ?></td>
                                                         </tr>

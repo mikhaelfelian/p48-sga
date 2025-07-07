@@ -40,6 +40,10 @@
                                 <label class="control-label">Item</label>
                                 <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control rounded-0', 'placeholder' => 'Isikan nama item / produk ...', 'value' => (!empty($SQLItem->item) ? $SQLItem->item : ''), 'readonly' => TRUE]) ?>
                             </div>
+                            <div class="form-group">
+                                <label class="control-label">HPP / Harga Beli</label>
+                                <?php echo form_input(['id' => 'harga_beli', 'name' => 'harga_beli', 'class' => 'form-control rounded-0', 'placeholder' => 'Isikan Harga Beli / HPP ...', 'value' => (!empty($SQLItem->harga_beli) ? 'Rp. '. format_angka($SQLItem->harga_beli) : ''), 'readonly' => TRUE]) ?>
+                            </div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">

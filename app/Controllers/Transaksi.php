@@ -669,10 +669,12 @@ class Transaksi extends BaseController {
                             
             $ItemData       = $RabDet->itemData($IDRab);
             $sql_rab_det    = json_decode($ItemData);
+            $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
 
             $data  = [
                 'SQLRab'            => $sql_rab,
                 'SQLRabDet'         => $sql_rab_det,
+                'SQLRabDetBi'       => $sql_rab_det_bi,
                 'SQLRabDetRw'       => $sql_rab_det_rw,
                 'SQLRabDetSum'      => $sql_rab_sum,
                 'SQLRabDetSumBi'    => $sql_rab_sum_bi,

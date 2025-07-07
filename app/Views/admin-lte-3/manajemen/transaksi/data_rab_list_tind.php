@@ -30,20 +30,38 @@
                 <td class="text-left text-bold" colspan="4"><i>ITEM</i></td>
             </tr>
             <?php foreach ($SQLRabDet as $det) { ?>
-                <tr>
-                    <td class="text-left" style="width: 250px;">
-                        <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>
-                        <?php echo $det->item . br(); ?>
-                        <?php if (!empty($det->keterangan)) { ?>
-                            <small><i><?php echo $det->keterangan; ?></i></small><br/> 
-                        <?php } ?>
-                        <?php echo status_ppn($det->status_ppn) ?>
-                    </td>
-                    <td class="text-center text-middle" style="width: 70px;"><?php echo (int) $det->jml; ?></td>
-                    <td class="text-right text-middle" style="width: 100px;"><?php echo format_angka($det->harga); ?></td>
-                    <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->subtotal); ?></td>
-                </tr>
-                <?php $no++; ?>
+                <?php if (isset($det->tipe)&& $det->tipe == 'ITEM') { ?>
+                    <?php foreach ($det->data as $det) { ?>
+                        <tr>
+                            <td class="text-left" style="width: 250px;">
+                                <?php echo $det->item . br(); ?>
+                                <?php if (!empty($det->keterangan)) { ?>
+                                    <small><i><?php echo $det->keterangan; ?></i></small><br/> 
+                                <?php } ?>
+                                <?php echo status_ppn($det->status_ppn); ?>
+                            </td>
+                            <td class="text-center text-middle" style="width: 70px;"><?php echo (int) $det->jml; ?></td>
+                            <td class="text-right text-middle" style="width: 100px;"><?php echo format_angka($det->harga); ?></td>
+                            <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->subtotal); ?></td>
+                        </tr>
+                        <?php $no++; ?>
+                    <?php } ?>
+                <?php } else {?>
+                    <tr>
+                        <td class="text-left" style="width: 250px;">
+                            <small><?php echo tgl_indo5($det->tgl_simpan); ?></small><br/>
+                            <?php echo $det->item . br(); ?>
+                            <?php if (!empty($det->keterangan)) { ?>
+                                <small><i><?php echo $det->keterangan; ?></i></small><br/> 
+                            <?php } ?>
+                            <?php echo status_ppn($det->status_ppn) ?>
+                        </td>
+                        <td class="text-center text-middle" style="width: 70px;"><?php echo (int) $det->jml; ?></td>
+                        <td class="text-right text-middle" style="width: 100px;"><?php echo format_angka($det->harga); ?></td>
+                        <td class="text-right text-middle" style="width: 150px;"><?php echo format_angka($det->subtotal); ?></td>
+                    </tr>
+                    <?php $no++; ?>
+                <?php } ?>
             <?php } ?>
         <?php } ?>
 

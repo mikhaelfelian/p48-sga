@@ -76,7 +76,8 @@
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo $det->no_nota ?><br />
+                                                    <?= anchor(base_url('transaksi/data_pembayaran_tambah.php?id=' . $det->id), $det->no_nota, ) ?><br/>
+                                                    <!-- <?php echo $det->no_nota ?><br /> -->
                                                     <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br />
                                                     <?php echo status_rab($det->status) ?><br />
                                                 </td>

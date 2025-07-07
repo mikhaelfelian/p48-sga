@@ -50,7 +50,13 @@
                         <?php if($det->status == '2'){ ?>
                             <small><?php echo status_biaya($det->status_biaya) ?></small>
                         <?php }else{ ?>
-                            <small><?php echo $det->item_link; ?></small><br/>
+                            <!-- <small><?php echo $det->item_link; ?></small><br/> -->
+                            <small>
+                                <a href="<?php echo $det->item_link; ?>" target="_blank">
+                                    <?php echo $det->item_link; ?>
+                                </a>
+                            </small><br/>
+
                         <?php } ?>
                     </td>
                     <td class="text-center text-middle" style="width: 70px;"><?php echo (int) $det->jml; ?></td>

@@ -4444,7 +4444,8 @@ class Transaksi extends BaseController {
             }
 
             if (!empty($status_bayar)) {
-                $sql_penj->where('status_bayar', $status_bayar == 'paid' ? '1' : '0');
+                $status = $status_bayar == 'paid' ? '1' : ($status_bayar == 'partial' ? '2' : '0');
+                $sql_penj->where('status_bayar', $status);
             }
 
             $jml_limit  = $this->Setting->jml_item;
@@ -4494,6 +4495,7 @@ class Transaksi extends BaseController {
                 $TipeFile       = new \App\Models\mTipeFile();
                 $Platform       = new \App\Models\mPlatform();
                 $Profile        = new \App\Models\PengaturanProfile();
+                $PenjPlat   = new \App\Models\trPenjPlat();
                 
                 $sql_penj           = $Penj->asObject()->where('id', $IDPenj)->first();
                 $sql_penj_det       = $PenjDet->asObject()->where('id_penjualan', $sql_penj->id)->find();
@@ -4508,6 +4510,7 @@ class Transaksi extends BaseController {
                 $sql_mut            = $vtrMutasi->asObject()->where('id_penjualan', $IDPenj)->where('status', '1')->find();
                 $sql_po             = $PO->asObject()->where('id_rab', $sql_penj->id_rab)->find();
                 $sql_plat           = $Platform->asObject()->where('status', '1')->find();
+                $sql_penj_plat      = $PenjPlat->asObject()->where('id_penjualan', $IDPenj)->find();
             }else{
                 $sql_psn        = '';
                 $sql_psn_det    = '';
@@ -4516,10 +4519,12 @@ class Transaksi extends BaseController {
                 $sql_sat        = '';
                 $sql_plgn       = '';
                 $sql_mut        = '';
+                $sql_penj_plat  = '';
             }
 
             $data  = [
                 'SQLPenj'       => $sql_penj,
+                'SQLPenjPlat'   => $sql_penj_plat,
                 'SQLPenjDet'    => $sql_penj_det,
                 'SQLPenjDetSum' => $sql_penj_sum,
                 'SQLPenjFile'   => $sql_penj_file,
@@ -4630,7 +4635,7 @@ class Transaksi extends BaseController {
                     'tgl_bayar'     => $validasi->getError('tgl_bayar'),
                     'metode'        => $validasi->getError('metode'),
                     'jml_bayar'     => $validasi->getError('jml_bayar'),
-                    'fupload'       => $validasi->getError('fupload'),
+                    // 'fupload'       => $validasi->getError('fupload'),
                 ];
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);

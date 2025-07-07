@@ -28,6 +28,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-8">
+                    <!-- CARD ITEM -->
                     <!-- Default box -->
                     <div class="card">
                         <div class="card-header">
@@ -38,6 +39,7 @@
                                 <div class="col-12 col-md-12 col-lg-12 order-2 order-md-1">
                                     <div class="row">
                                         <div class="col-12">
+                                            <h4>DATA ITEM</h5>
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr class="bg-yellow">
@@ -48,7 +50,7 @@
                                                     </tr>                                    
                                                 </thead>
                                                 <tbody>
-                                                    <?php $no = 1; $gtotal = 0; ?>
+                                                    <?php $no = 1; $sub = 0; $gtotal = 0; ?>
                                                     <?php foreach ($SQLPenjDet as $det) { ?>
                                                             <tr>
                                                                 <td class="text-center"><?php echo $no . '.'; ?></td>
@@ -70,15 +72,15 @@
                                                                 <td class="text-right"><?php echo format_angka($det->subtotal); ?></td>
                                                             </tr>
                                                             
-                                                            <?php $no++ ?>
+                                                            <?php $no++; $sub += $det->harga; $gtotal += $det->subtotal; ?>
                                                             <?php } ?>
                                                         <tr>
                                                             <td class="text-right text-bold" colspan="4">Subtotal</td>
-                                                            <td class="text-right text-bold"><?php // echo format_angka($sub); ?></td>
+                                                            <td class="text-right text-bold"><?php  echo format_angka($sub); ?></td>
                                                         </tr>
                                                     <tr>
                                                         <td class="text-right text-bold" colspan="4">Grand Total</td>
-                                                        <td class="text-right text-bold"><?php // echo format_angka($gtotal); ?></td>
+                                                        <td class="text-right text-bold"><?php  echo format_angka($gtotal); ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -90,11 +92,69 @@
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
+
+                    <!-- CARD PEMBAYARAN -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">History Pembayaran</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr class="bg-yellow">
+                                                <th class="text-left">No</th>
+                                                <th class="text-left">Tanggal</th>
+                                                <th class="text-center">Nominal</th>
+                                                <th class="text-left">Metode</th>
+                                                <th class="text-left">Nota</th>
+                                                <th class="text-left">Bukti</th>
+                                                <th class="text-left">Keterangan</th>
+                                            </tr>                                    
+                                        </thead>
+                                        <tbody>
+                                            <?php $no = 1; $sub = 0; ?>
+                                            <?php foreach ($SQLPenjPlat as $det) { ?>
+                                            <tr>
+                                                <td class="text-center"><?php echo $no . '.'; ?></td>
+                                                <td class="text-left">
+                                                    <?php echo tgl_indo5($det->tgl_simpan); ?></i></small>
+                                                </td>
+                                                <td class="text-center"><?php echo format_angka($det->nominal); ?></td>
+                                                <td class="text-left"><?php echo $det->platform; ?></td>
+                                                <td class="text-left"><?php echo $det->no_nota; ?></td>
+                                                <td class="text-left">
+                                                    <?php if (!empty($det->file)): ?>
+                                                        <img src="<?php echo base_url($det->file); ?>" 
+                                                            alt="Gambar Nota" 
+                                                            class="img-fluid" 
+                                                            style="max-height: 250px;">
+                                                    <?php else: ?>
+                                                        <span>Tidak ada gambar</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-left"><?php echo $det->keterangan;?></td>
+                                            </tr>
+                                            
+                                            <?php $no++; $sub += $det->nominal; ?>
+                                            <?php } ?>
+                                            <tr>
+                                                <td class="text-right text-bold" colspan="2">Subtotal : </td>
+                                                <td class="text-left text-bold" colspan="5"><?php echo format_angka($sub); ?></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
                 </div>
                 <div class="col-lg-4">
                     <?php echo form_open_multipart(base_url('transaksi/set_trans_bayar.php'), 'autocomplete="off"') ?>
                     <?php echo form_hidden('id', $SQLPenj->id); ?>
-                    
                     <div class="card">
                         <div class="card-body">
                             <div class="form-group<?php echo (!empty($psnGagal['tgl_bayar']) ? ' text-danger' : '') ?>">

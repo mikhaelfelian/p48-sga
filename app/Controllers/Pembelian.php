@@ -886,6 +886,7 @@ class Pembelian extends BaseController {
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
             $Pengaturan = new \App\Models\pengaturan();
+            
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -1551,6 +1552,7 @@ class Pembelian extends BaseController {
             $Beli       = new \App\Models\vtrPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
             $Platform   = new \App\Models\mPlatform();
+            $BeliPlat   = new \App\Models\trPembelianPlat();
                 
             $sql_beli   = $Beli->asObject()->where('id', $IDBeli)->first();
             $sql_profile= $Profile->asObject()->where('status', '1')->find();
@@ -1564,6 +1566,7 @@ class Pembelian extends BaseController {
                 $sql_item           = $Itm->asObject()->where('id', $IDItm)->first();
                 $sql_sat            = $Sat->asObject()->where('status', '1')->find();
                 $sql_plat           = $Platform->asObject()->where('status', '1')->find();
+                $sql_beli_plat      = $BeliPlat->asObject()->where('id_pembelian', $IDBeli)->find();
             }else{
                 $sql_beli           = '';
                 $sql_beli_det       = '';
@@ -1571,10 +1574,12 @@ class Pembelian extends BaseController {
                 $sql_item           = '';
                 $sql_sat            = '';
                 $sql_plat           = '';
+                $sql_beli_plat      = '';
             }
                         
             $data  = [
                 'SQLBeli'       => $sql_beli,
+                'SQLBeliPlat'   => $sql_beli_plat,
                 'SQLBeliDet'    => $sql_beli_det,
                 'SQLBeliDetRw'  => $sql_beli_det_rw,
                 'SQLPlat'       => $sql_plat,

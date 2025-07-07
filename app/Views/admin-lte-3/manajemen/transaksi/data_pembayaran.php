@@ -56,6 +56,7 @@
                                             <select name="filter_status_bayar" class="form-control rounded-0">
                                                 <option value="">- Semua -</option>
                                                 <option value="paid" <?php echo (request()->getVar('filter_status_bayar') == 'paid' ? 'selected' : '') ?>>Terbayar</option>
+                                                <option value="partial" <?php echo (request()->getVar('filter_status_bayar') == 'partial' ? 'selected' : '') ?>>Belum Lunas</option>
                                                 <option value="unpaid" <?php echo (request()->getVar('filter_status_bayar') == 'unpaid' ? 'selected' : '') ?>>Belum Bayar</option>
                                             </select>
                                         </th>

@@ -11,7 +11,7 @@ class trPembelianDet extends Model {
     protected $table                = 'tbl_trans_beli_det';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_user','id_pembelian','id_item','id_satuan','tgl_terima','kode','item','jml','jml_satuan','jml_diterima','satuan','keterangan','harga','disk1','disk2','disk3','diskon','potongan','subtotal','ppn','status_ppn','sp'];
+    protected $allowedFields        = ['id_user','id_pembelian','id_item','id_satuan','tgl_terima','kode','item', 'item_sn','jml','jml_satuan','jml_diterima','satuan','keterangan','harga','disk1','disk2','disk3','diskon','potongan','subtotal','ppn','status_ppn','sp'];
     
     # Tanggal
     protected $useTimestamps        = true;

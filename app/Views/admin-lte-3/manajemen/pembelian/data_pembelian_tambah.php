@@ -246,6 +246,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-sm-6">
+                                                    <div
+                                                        class="form-group <?php echo (!empty($psnGagal['item_sn']) ? 'text-danger' : '') ?>">
+                                                        <label class="control-label">SN ITEM</label>
+                                                        <div class="input-group mb-3">
+                                                            <?php echo form_input(['id' => 'item_sn', 'name' => 'item_sn', 'class' => 'form-control rounded-0 pull-right' . (!empty($psnGagal['item_sn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN Item ...', 'value' => (!empty($SQLBeliDetRw) ? $SQLBeliDetRw->item_sn : '')]) ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         <?php } ?>
                                         <div class="row">
@@ -340,7 +349,8 @@
                                                             <td class="text-center"><?php echo $no; ?></td>
                                                             <td class="text-left" style="width: 350px;">
                                                                 <small><?php echo (!empty($det->kode) ? $det->kode : ''); ?></small><br />
-                                                                <?php echo $det->item; ?>
+                                                                <?php echo $det->item; ?><br/>
+                                                                <strong>SN : <?= $det->item_sn; ?></strong>
                                                             </td>
                                                             <td class="text-center" style="width: 100px;">
                                                                 <?php echo (float) $det->jml; ?>

@@ -38,6 +38,10 @@
                 <?php echo form_hidden('jml_gtotal', 0); ?>
                 <?php echo form_hidden('user', $Pengguna->id); ?>
                 <?php echo form_hidden('route', 'transaksi/rab/data_rab.php'); ?>
+                <!-- INPUT INI AKAN DI SET OLEH JAVASCSCRIPT -->
+                <?php echo form_hidden('status', ''); ?>
+                <?php echo form_hidden('pesan', ''); ?>
+                <!--  -->
                     <div class="row my-3">
                         <div class="col-sm-12">
                             <textarea name="keterangan" cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di tolak..."></textarea>
@@ -46,10 +50,11 @@
                     <div class="row">
                         <?php if ($SQLRab->id_user == $Pengguna->id) { ?>
                             <div class="col-md-3">
-                                <?php echo form_hidden('pesan', 'toastr.warning("Transaksi dikembalikan ke draft !!");'); ?>
-                                <?php echo form_hidden('status', '0'); ?>
+                                <!-- <?php echo form_hidden('pesan', 'toastr.warning("Transaksi dikembalikan ke draft !!");'); ?>
+                                <?php echo form_hidden('status', '0'); ?> -->
 
-                                <button type="submit" class="btn btn-app bg-danger" onclick="return confirm('Batalkan ?')">
+                                <button type="submit" class="btn btn-app bg-danger"
+                                    onclick="return setStatus(0, 'toastr.warning(&quot;Transaksi dikembalikan ke draft !!&quot;)');">
                                     <i class="fa-solid fa-arrows-rotate"></i><br/>
                                     Batal Proses
                                 </button>
@@ -57,10 +62,11 @@
                         <?php } ?>
                         <div class="col-md-3">
                             <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
-                                <?php echo form_hidden('pesan', 'toastr.success("Transaksi sudah di ACC !!");'); ?>
-                                <?php echo form_hidden('status', '2'); ?>
+                                <!-- <?php echo form_hidden('pesan', 'toastr.success("Transaksi sudah di ACC !!");'); ?>
+                                <?php echo form_hidden('status', '2'); ?> -->
 
-                                <button type="submit" class="btn btn-app bg-success">
+                                <button type="submit" class="btn btn-app bg-success"
+                                    onclick="return setStatus(2, 'toastr.success(&quot;Transaksi sudah di ACC !!&quot;)');">
                                     <i class="fa-solid fa-check"></i><br/>
                                     Terima
                                 </button>
@@ -68,10 +74,11 @@
                         </div>
                         <div class="col-md-3">
                             <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
-                                <?php echo form_hidden('pesan', 'toastr.error("Transaksi sudah tolak !!");'); ?>
-                                <?php echo form_hidden('status', '3'); ?>
+                                <!-- <?php echo form_hidden('pesan', 'toastr.error("Transaksi sudah tolak !!");'); ?>
+                                <?php echo form_hidden('status', '3'); ?> -->
 
-                                <button type="submit" class="btn btn-app bg-warning" onclick="return confirm('Tolak ?')">
+                                <button type="submit" class="btn btn-app bg-warning"
+                                    onclick="return confirm('Tolak?') && setStatus(3, 'toastr.error(&quot;Transaksi sudah tolak !!&quot;)');">
                                     <i class="fa-solid fa-remove"></i><br/>
                                     Tolak
                                 </button>
@@ -329,3 +336,10 @@
         ?>
     </div>
 </div>
+<script>
+function setStatus(statusValue, pesanValue) {
+    document.querySelector('input[name="status"]').value = statusValue;
+    document.querySelector('input[name="pesan"]').value = pesanValue;
+    return true; // agar form tetap submit
+}
+</script>

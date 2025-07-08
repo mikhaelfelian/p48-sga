@@ -85,8 +85,10 @@
                                                 <td class="text-right" style="width: 150px;"><?php echo format_angka($det->jml_gtotal) ?></td>
                                                 <td style="width: 50px;"><?= status_pembayaran_penj($det->status_bayar) ?></td>
                                                 <td style="width: 150px;">
+                                                    <?php if($det->status_bayar != '1'): ?>
                                                     <?php echo anchor(base_url('pembelian/faktur/data_pembayaran_tambah.php?id='.$det->id), '<i class="fa fa-shopping-cart"></i> Bayar', 'class="btn btn-warning btn-flat btn-xs" style="width: 65px;"') ?>                                                   
                                                     &nbsp;
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

@@ -1308,11 +1308,17 @@ class Gudang extends BaseController {
                 $vtrMutasi      = new \App\Models\vtrMutasi();
                 $MutasiDet      = new \App\Models\trMutasiDet();
                 $Profile        = new \App\Models\PengaturanProfile();
+                $Penjualan      = new \App\Models\trPenj();
                 
                 $sql_sat        = $Sat->asObject()->where('status', '1')->find();
                 $sql_mts        = $vtrMutasi->asObject()->where('id', $IDMts)->first();
                 $sql_mts_det    = $MutasiDet->asObject()->where('id_mutasi', $IDMts)->find();
                 $sql_profile    = $Profile->asObject()->where('id', $sql_mts->id_perusahaan)->first();
+                $sql_penj       = $Penjualan->asObject()
+                                    ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as nama_pelanggan')
+                                    ->join('tbl_m_pelanggan', 'tbl_m_pelanggan.id = tbl_trans_jual.id_pelanggan', 'left')
+                                    ->where('tbl_trans_jual.id', $sql_mts->id_penjualan)
+                                    ->first();
             }else{                
                 $sql_sat        = '';
                 $sql_item       = '';
@@ -1386,7 +1392,7 @@ class Gudang extends BaseController {
             $pdf->Cell(7.5, .5, $sql_mts->user, 'B', 0, 'L', $fill);
             $pdf->Cell(2, .5, 'Kepada', 'B', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', 'B', 0, 'C', $fill);
-            $pdf->Cell(2, .5, '', 'B', 0, '', $fill);
+            $pdf->Cell(2, .5, $sql_penj->nama_pelanggan, 'B', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS', '', 10);
             $pdf->Cell(14.5, 1, $sql_mts->p_nama, 'B', 0, 'L', $fill);

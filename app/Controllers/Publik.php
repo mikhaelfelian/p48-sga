@@ -85,7 +85,7 @@ class Publik extends BaseController {
                             'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
                             'utang' => $total_kekurangan,
                             'limit_hutang' =>  (int)$sett->limit_hutang,
-                            'limit' => (int)$sett->limit_hutang > 0 && $total_kekurangan <= (int)$sett->limit_hutang
+                            'limit' => (int)$sett->limit_hutang
                         ];
                     }
                     

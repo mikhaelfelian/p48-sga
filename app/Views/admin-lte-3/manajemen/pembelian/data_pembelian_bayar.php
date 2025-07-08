@@ -229,9 +229,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-info float-right rounded-0"><i class="fa fa-shopping-cart"></i> Bayar</button>
-                        </div>
+                        <?php if($SQLBeli->status_bayar != '1'): ?>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-info float-right rounded-0"><i class="fa fa-shopping-cart"></i> Bayar</button>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <?php echo form_close(); ?>
                 </div>

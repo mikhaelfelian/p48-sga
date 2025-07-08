@@ -72,7 +72,7 @@
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('pembelian/faktur/data_pembelian_det.php?id='.$det->id), $det->no_nota, 'class="text-default"') ?><br/>
+                                                    <?php echo anchor(base_url('pembelian/faktur/data_pembayaran_tambah.php?id='.$det->id), $det->no_nota, 'class="text-default"') ?><br/>
                                                     <span class="mailbox-read-time float-left"><?php echo tgl_indo5($det->tgl_simpan) ?></span>
                                                 </td>
                                                 <td style="width: 450px;">

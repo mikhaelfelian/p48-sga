@@ -3104,10 +3104,13 @@ class Transaksi extends BaseController {
                 
                 $data = [
                     'id'            => $id,
-                    'tgl_masuk'     => tgl_indo_sys2($tgl_msk),
                     'no_nota'       => $no_nota,
                     'no_kontrak'    => $no_kontrak,
                 ];
+
+                if (!empty($tgl_msk)) {
+                    $data['tgl_masuk'] = tgl_indo_sys2($tgl_msk);
+                }
 
                 $Penj->save($data);
                 $last_id = $Penj->insertID();

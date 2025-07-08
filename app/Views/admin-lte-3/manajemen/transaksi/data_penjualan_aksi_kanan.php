@@ -16,7 +16,6 @@
                         echo form_open(base_url('transaksi/set_trans_update.php'), 'autocomplete="off"');
                         echo form_hidden('id', $SQLPenj->id);
                         echo form_hidden('no_nota', $SQLPenj->no_nota);
-                        echo form_hidden('tgl_masuk', $SQLPenj->tgl_masuk);
                         ?>
                         <span class="float-left">
                             <input type="text" name="no_kontrak" id="no_kontrak" class="form-control pull-right rounded-0" placeholder="Isikan No Kontrak ..." value="<?php echo $SQLPenj->no_kontrak ?>">
@@ -40,7 +39,6 @@
                         echo form_open(base_url('transaksi/set_trans_update.php'), 'autocomplete="off"');
                         echo form_hidden('id', $SQLPenj->id);
                         echo form_hidden('no_kontrak', $SQLPenj->no_kontrak);
-                        echo form_hidden('tgl_masuk', $SQLPenj->tgl_masuk);
                         ?>
                         <span class="float-left">
                             <input type="text" name="no_nota" id="no_nota" class="form-control pull-right rounded-0" placeholder="Isikan No Nota ..." value="<?php echo $SQLPenj->no_nota ?>">

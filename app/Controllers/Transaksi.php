@@ -3061,6 +3061,68 @@ class Transaksi extends BaseController {
             return redirect()->to(base_url());
         }
     }
+
+    public function set_penjualan_update() {
+        if ($this->ionAuth->loggedIn()) {
+            # Load helper validasi
+            $validasi   = \Config\Services::validation();
+            
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $id         = $this->input->getVar('id');
+            $tgl_msk    = $this->input->getVar('tgl_masuk');
+            $no_kontrak = $this->input->getVar('no_kontrak');
+            $no_nota   = $this->input->getVar('no_nota');
+
+            $Penj       = new \App\Models\trPenj();
+
+            # Aturan validasi form tulis disini
+            $aturan = [
+                'id'  => [
+                    'rules'     => 'required',
+                    'errors'    => [
+                        'required'      => 'ID tidak boleh kosong',
+                    ]
+                ],
+            ];
+
+            # Simpan config validasi
+            $validasi->setRules($aturan);
+
+            # Jalankan validasi
+            if(!$this->validate($aturan)){
+                $psn_gagal = [
+                    'id'     => $validasi->getError('id'),
+                ];
+
+                $this->session->setFlashdata('psn_gagal', $psn_gagal);
+
+                return redirect()->to(base_url('transaksi/rab/data_rab_tambah.php'));
+            }else{
+                
+                $data = [
+                    'id'            => $id,
+                    'tgl_masuk'     => tgl_indo_sys2($tgl_msk),
+                    'no_nota'       => $no_nota,
+                    'no_kontrak'    => $no_kontrak,
+                ];
+
+                $Penj->save($data);
+                $last_id = $Penj->insertID();
+
+                if($last_id > 0){
+                    $this->session->setFlashdata('transaksi_toast', 'toastr.success("Transaksi berhasil disimpan !!");');
+                }
+
+                return redirect()->to(base_url('transaksi/data_penjualan_aksi.php?id='.$id));
+            }
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
     
     public function set_penjualan_simpan() {
         if ($this->ionAuth->loggedIn()) {

@@ -203,6 +203,7 @@ $routes->group('transaksi', ['filter' => 'auth'], function($routes) {
     $routes->get('data_penjualan.php', 'Transaksi::data_penjualan');
     $routes->get('data_penjualan_tambah.php', 'Transaksi::data_penjualan_tambah');
     $routes->get('data_penjualan_aksi.php', 'Transaksi::data_penjualan_aksi');
+    $routes->post('set_trans_update.php', 'Transaksi::set_penjualan_update');
     $routes->post('set_trans_simpan.php', 'Transaksi::set_penjualan_simpan');
     $routes->post('set_trans_proses.php', 'Transaksi::set_penjualan_proses');
     $routes->post('set_trans_bayar.php', 'Transaksi::set_penjualan_bayar');

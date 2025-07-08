@@ -60,5 +60,10 @@
 <script type="text/javascript">
     $(function () {        
         <?php echo session()->getFlashdata('transaksi_toast'); ?>
+        $("#tgl").datepicker({
+            dateFormat: 'dd/mm/yy',
+            SetDate: new Date(),
+            autoclose: true
+        });
     });
 </script>

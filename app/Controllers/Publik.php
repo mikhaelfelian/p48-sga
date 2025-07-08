@@ -37,18 +37,58 @@ class Publik extends BaseController {
             
             if(!empty($Term)){
                 $Plgn = new \App\Models\mPelanggan();
+                $Penj           = new \App\Models\vtrPenj();
+                $Setting    = new \App\Models\Pengaturan();
+
+
                 $sql_plgn = $Plgn->asObject()
                     ->where('status', '1')
                     ->like('nama', $Term)
                     ->find();
+                $sett = $Setting->asObject()->first();
 
                 $data = [];
                 foreach ($sql_plgn as $plgn){
-                    $data[] = [
-                        'id'    => $plgn->id,
-                        'kode'  => $plgn->kode,
-                        'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
-                    ];
+                    // CARI TRANSAKSI PELANGGAN YG BELUM LUNAS
+                    $trans = $Penj->asObject()
+                        ->select('jml_gtotal, jml_bayar')
+                        ->where('id_pelanggan', $plgn->id)
+                        ->where('status_bayar !=', '1')
+                        ->find();
+                    
+                    // Hiung total kekurangan;
+                    $total_kekurangan = 0;
+                    foreach($trans as $t){
+                        $gtotal = (float) $t->jml_gtotal;
+                        $bayar = (float) $t->jml_bayar;
+                        $sisa = $gtotal - $bayar;
+                        $total_kekurangan += $sisa;
+                    }
+                    
+
+                    // JIKA DI SET LIMIT > 0
+                    if($sett && (int)$sett->limit_hutang > 0){
+                        // JIKA HUTANG BELUM MENCAPAI LIMIT, TAMPILKAN PELANGGAN
+                        if($total_kekurangan <= (int)$sett->limit_hutang){
+                            $data[] = [
+                                'id'    => $plgn->id,
+                                'kode'  => $plgn->kode,
+                                'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
+                                'utang' => $total_kekurangan,
+                                'limit_hutang' =>  (int)$sett->limit_hutang
+                            ];
+                        }
+                    }else {
+                        $data[] = [
+                            'id'    => $plgn->id,
+                            'kode'  => $plgn->kode,
+                            'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
+                            'utang' => $total_kekurangan,
+                            'limit_hutang' =>  (int)$sett->limit_hutang,
+                            'limit' => (int)$sett->limit_hutang > 0 && $total_kekurangan <= (int)$sett->limit_hutang
+                        ];
+                    }
+                    
                 }
             }
 

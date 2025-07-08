@@ -60,6 +60,16 @@
                                         <label class="control-label">Telp</label>
                                         <?php echo form_input(['id' => 'no_tlp', 'name' => 'no_tlp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['no_tlp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan telp ...', 'value' => (!empty($Pengaturan->tlp) ? $Pengaturan->tlp : '')]) ?>
                                     </div>
+                                    <div class="form-group <?php echo (!empty($psnGagal['no_tlp']) ? 'has-error' : '') ?>">
+                                        <label class="control-label">Limit Hutang Pelanggan</label>
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">Rp. </span>
+                                            </div>
+                                            <input type="text" id="limit_hutang" name="limit_hutang" value="<?php echo (!empty($Pengaturan->limit_hutang) ? $Pengaturan->limit_hutang : '') ?>" class="form-control rounded-0 text-left" style="vertical-align: middle;" placeholder="Isikan limit hutang ...">
+                                        </div>
+                                    </div>
+
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row">
@@ -182,6 +192,7 @@
 </div>
 <script type="text/javascript">
     $(function () {
-<?php echo session()->getFlashdata('pengaturan_toast'); ?>
+        $("input[id=limit_hutang]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
+        <?php echo session()->getFlashdata('pengaturan_toast'); ?>
     });
 </script>

@@ -16,7 +16,7 @@ class mPelanggan extends Model {
     protected $table                = 'tbl_m_pelanggan';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_user','kode','nama', 'no_telp', 'npwp', 'alamat', 'kota', 'provinsi', 'tipe', 'status'];
+    protected $allowedFields        = ['id_user','kode','nama', 'no_telp', 'npwp', 'alamat', 'kota', 'provinsi', 'tipe', 'status', 'limit_hutang'];
     
     # Tanggal
     protected $useTimestamps        = true;

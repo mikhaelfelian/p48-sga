@@ -54,6 +54,15 @@
                                 <label class="control-label">NPWP</label>
                                 <?php echo form_input(['id' => 'npwp', 'name' => 'npwp', 'class' => 'form-control rounded-0' . (!empty($psnGagal['npwp']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan npwp pelanggan ...', 'value' => (!empty($SQLPelanggan->npwp) ? $SQLPelanggan->npwp : '')]) ?>
                             </div>
+                            <div class="form-group <?php echo (!empty($psnGagal['no_tlp']) ? 'has-error' : '') ?>">
+                                <label class="control-label">Limit Hutang</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Rp. </span>
+                                    </div>
+                                    <input type="text" id="limit_hutang" name="limit_hutang" value="<?php echo (!empty($SQLPelanggan->limit_hutang) ? $SQLPelanggan->limit_hutang : '') ?>" class="form-control rounded-0 text-left" style="vertical-align: middle;" placeholder="Isikan limit hutang ...">
+                                </div>
+                            </div>
                             <div class="form-group <?php echo (!empty($psnGagal['alamat']) ? 'has-error' : '') ?>">
                                 <label class="control-label">Alamat*</label>
                                 <?php echo form_textarea(['id' => 'alamat', 'name' => 'alamat', 'class' => 'form-control rounded-0' . (!empty($psnGagal['alamat']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan alamat pelanggan ...', 'value' => (!empty($SQLPelanggan->alamat) ? $SQLPelanggan->alamat : '')]) ?>
@@ -216,6 +225,7 @@
 
 <script type="text/javascript">
     $(function () {
+        $("input[id=limit_hutang]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
         <?php echo session()->getFlashdata('master_toast'); ?>
     });
 </script>

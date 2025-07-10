@@ -1428,6 +1428,7 @@ class Master extends BaseController {
             $prov   = $this->input->getVar('provinsi');
             $tipe   = $this->input->getVar('tipe');
             $status = $this->input->getVar('status');
+            $limit_hutang = $this->input->getVar('limit_hutang');
 
             $Plgn   = new \App\Models\mPelanggan();
 
@@ -1497,6 +1498,7 @@ class Master extends BaseController {
                     'kota'      => strtoupper($kota),
                     'tipe'      => $tipe,
                     'status'    => $status,
+                    'limit_hutang' => format_angka_db($limit_hutang),
                 ];
 
                 $Plgn->save($data);
@@ -1592,6 +1594,7 @@ class Master extends BaseController {
             $prov   = $this->input->getVar('provinsi');
             $tipe   = $this->input->getVar('tipe');
             $status = $this->input->getVar('status');
+            $limit_hutang = $this->input->getVar('limit_hutang');
 
             $Plgn   = new \App\Models\mPelanggan();
 
@@ -1666,6 +1669,7 @@ class Master extends BaseController {
                     'kota'      => $kota,
                     'tipe'      => $tipe,
                     'status'    => $status,
+                    'limit_hutang' => format_angka_db($limit_hutang),
                 ];
 
                 $Plgn->save($data);

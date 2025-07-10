@@ -66,26 +66,47 @@ class Publik extends BaseController {
                     }
                     
 
-                    // JIKA DI SET LIMIT > 0
-                    if($sett && (int)$sett->limit_hutang > 0){
+                    // // JIKA DI SET LIMIT > 0
+                    // if($sett && (int)$sett->limit_hutang > 0){
+                    //     // JIKA HUTANG BELUM MENCAPAI LIMIT, TAMPILKAN PELANGGAN
+                    //     if($total_kekurangan <= (int)$sett->limit_hutang){
+                    //         $data[] = [
+                    //             'id'    => $plgn->id,
+                    //             'kode'  => $plgn->kode,
+                    //             'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
+                    //             'utang' => $total_kekurangan,
+                    //             'limit_hutang' =>  (int)$sett->limit_hutang
+                    //         ];
+                    //     }
+                    // }else {
+                    //     $data[] = [
+                    //         'id'    => $plgn->id,
+                    //         'kode'  => $plgn->kode,
+                    //         'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
+                    //         'utang' => $total_kekurangan,
+                    //         'limit_hutang' =>  (int)$sett->limit_hutang,
+                    //     ];
+                    // }
+
+                    // LIMIT HUTANG DI SET PER PELANGGAN
+                    if($plgn->limit_hutang && $plgn->limit_hutang > 0) {
                         // JIKA HUTANG BELUM MENCAPAI LIMIT, TAMPILKAN PELANGGAN
-                        if($total_kekurangan <= (int)$sett->limit_hutang){
+                        if($total_kekurangan <= (int)$plgn->limit_hutang){
                             $data[] = [
                                 'id'    => $plgn->id,
                                 'kode'  => $plgn->kode,
                                 'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
                                 'utang' => $total_kekurangan,
-                                'limit_hutang' =>  (int)$sett->limit_hutang
+                                'limit_hutang' =>  (int)$plgn->limit_hutang
                             ];
                         }
-                    }else {
+                    } else {
                         $data[] = [
                             'id'    => $plgn->id,
                             'kode'  => $plgn->kode,
                             'nama'  => (!empty($plgn->kode) ? '['.$plgn->kode.'] ' : '').$plgn->nama,
                             'utang' => $total_kekurangan,
-                            'limit_hutang' =>  (int)$sett->limit_hutang,
-                            'limit' => (int)$sett->limit_hutang
+                            'limit_hutang' =>  (int)$plgn->limit_hutang,
                         ];
                     }
                     

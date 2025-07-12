@@ -15,10 +15,10 @@
                     if (isset($_GET['act']) && $_GET['act'] == 'no_kontrak') {
                         echo form_open(base_url('transaksi/set_trans_update.php'), 'autocomplete="off"');
                         echo form_hidden('id', $SQLPenj->id);
-                        echo form_hidden('no_nota', $SQLPenj->no_nota);
+                        echo form_hidden('no_nota', (!empty($SQLPenj) && $SQLPenj->no_nota) ? $SQLPenj->no_nota : '');
                         ?>
                         <span class="float-left">
-                            <input type="text" name="no_kontrak" id="no_kontrak" class="form-control pull-right rounded-0" placeholder="Isikan No Kontrak ..." value="<?php echo $SQLPenj->no_kontrak ?>">
+                            <input type="text" name="no_kontrak" id="no_kontrak" class="form-control pull-right rounded-0" placeholder="Isikan No Kontrak ..." value="<?php echo (!empty($SQLPenj) && $SQLPenj->no_kontrak) ? $SQLPenj->no_kontrak :'' ?>">
                         </span>
                         <?php echo nbs(2) ?>
                         <button type="submit" class="btn btn-primary btn-flat btn-sm"><i class="fa fa-save"></i></button>
@@ -38,10 +38,10 @@
                     if (isset($_GET['act']) && $_GET['act'] == 'no_nota') {
                         echo form_open(base_url('transaksi/set_trans_update.php'), 'autocomplete="off"');
                         echo form_hidden('id', $SQLPenj->id);
-                        echo form_hidden('no_kontrak', $SQLPenj->no_kontrak);
+                        echo form_hidden('no_kontrak', (!empty($SQLPenj) && $SQLPenj->no_kontrak) ? $SQLPenj->no_kontrak : '');
                         ?>
                         <span class="float-left">
-                            <input type="text" name="no_nota" id="no_nota" class="form-control pull-right rounded-0" placeholder="Isikan No Nota ..." value="<?php echo $SQLPenj->no_nota ?>">
+                            <input type="text" name="no_nota" id="no_nota" class="form-control pull-right rounded-0" placeholder="Isikan No Nota ..." value="<?php echo (!empty($SQLPenj) && $SQLPenj->no_kontrak) ?  $SQLPenj->no_nota : '' ?>">
                         </span>
                         <?php echo nbs(2) ?>
                         <button type="submit" class="btn btn-primary btn-flat btn-sm"><i class="fa fa-save"></i></button>
@@ -73,11 +73,11 @@
                     if (isset($_GET['act']) && $_GET['act'] == 'tgl_masuk') {
                         echo form_open(base_url('transaksi/set_trans_update.php'), 'autocomplete="off"');
                         echo form_hidden('id', $SQLPenj->id);
-                        echo form_hidden('no_kontrak', $SQLPenj->no_kontrak);
-                        echo form_hidden('no_nota', $SQLPenj->no_nota);
+                        echo form_hidden('no_kontrak', (!empty($SQLPenj) && $SQLPenj->no_kontrak) ? $SQLPenj->no_kontrak : '');
+                        echo form_hidden('no_nota', (!empty($SQLPenj) && $SQLPenj->no_nota) ? $SQLPenj->no_nota : '');
                         ?>
                         <span class="float-left">
-                            <?php echo form_input(['id' => 'tgl', 'name' => 'tgl_masuk', 'class' => 'form-control rounded-0 text-left', 'style' => 'vertical-align: middle;', 'placeholder' => 'Isikan Tanggal (dd/mm/yyyy) atau (17/08/1945) ...', 'value' => (!empty($SQLPenj) ? tgl_indo2($SQLPenj->tgl_masuk) : '')]) ?>
+                            <?php echo form_input(['id' => 'tgl', 'name' => 'tgl_masuk', 'class' => 'form-control rounded-0 text-left', 'style' => 'vertical-align: middle;', 'placeholder' => 'Isikan Tanggal (dd/mm/yyyy) atau (17/08/1945) ...', 'value' => ((!empty($SQLPenj) && $SQLPenj->tgl_masuk) ? tgl_indo2($SQLPenj->tgl_masuk) : '')]) ?>
                         </span>
                         <?php echo nbs(2) ?>
                         <button type="submit" class="btn btn-primary btn-flat btn-sm"><i class="fa fa-save"></i></button>

@@ -14,6 +14,13 @@
 </a>
 <?php } ?>
 
+<?php if (hakOwner() == TRUE OR hakAdmin() == TRUE) { ?>
+<a class="btn btn-app bg-info"
+    href="<?php echo base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . '&status=5') ?>">
+    <i class="fas fa-scissors"></i> Potongan
+</a>
+<?php } ?>
+
 <?php if (hakOwner() == TRUE OR hakAdmin() == TRUE OR hakPurchasing() == TRUE) { ?>
     <?php if ($SQLRab->status == '4' or $SQLRab->status == '6') { ?>
         <a class="btn btn-app bg-info"

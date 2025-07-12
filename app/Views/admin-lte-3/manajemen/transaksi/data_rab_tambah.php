@@ -76,6 +76,15 @@
                                             <?php } ?>
                                         </select>
                                     </div>
+                                    <div class="form-group<?php echo (!empty($psnGagal['pph']) ? ' text-danger' : '') ?>">
+                                        <label class="control-label">Persentase PPH RAB*</label>
+                                        <select name="pph" class="form-control rounded-0<?php echo (!empty($psnGagal['pph']) ? ' is-invalid' : '') ?>" required>
+                                            <option value="">- Pilih -</option>
+                                            <option value="0.5">0.5%</option>
+                                            <option value="1.5">1.5%</option>
+                                            <option value="2">2.5%</option>
+                                        </select>
+                                    </div>
                                     <div class="form-group <?php echo (!empty($psnGagal['perusahaan']) ? 'text-danger' : '') ?>">
                                         <label class="control-label">Perusahaan*</label>
                                         <select name="perusahaan" class="form-control rounded-0<?php echo (!empty($psnGagal['perusahaan']) ? ' is-invalid' : '') ?>">

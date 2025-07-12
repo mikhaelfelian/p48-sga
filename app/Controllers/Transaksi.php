@@ -642,7 +642,7 @@ class Transaksi extends BaseController {
                 
                 $sql_rab        = $Rab->asObject()->where('id', $IDRab)->first();
                 $sql_rab_det_rw = $RabDet->asObject()->where('id', $IDItmDet)->first();
-                $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('status', '1')->where('id_rab', $IDRab)->first();             
+                $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS c')->where('status', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '0')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi2= $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_log    = $RabLog->asObject()->where('id_rab', $IDRab)->find();             
@@ -743,6 +743,7 @@ class Transaksi extends BaseController {
                 $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('status', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '0')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi2= $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '1')->where('id_rab', $IDRab)->first();             
+                $sql_rab_sum_bi3= $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '3')->where('status_biaya', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_log    = $RabLog->asObject()->where('id_rab', $IDRab)->find();             
                 $sql_item       = $Itm->asObject()->where('id', $IDItm)->first();
                 $sql_sat        = $Sat->asObject()->where('status', '1')->find();
@@ -754,6 +755,7 @@ class Transaksi extends BaseController {
                 $sql_po         = $PO->asObject()->where('id_rab', $IDRab)->find();             
                 $sql_po_rw      = $PO->asObject()->where('id', $IDPO)->first();             
                 $sql_po_rw_det  = $PODet->asObject()->where('id_pembelian', $IDPO)->find();             
+
             }else{
                 $sql_psn        = '';
                 $sql_psn_det    = '';
@@ -772,13 +774,15 @@ class Transaksi extends BaseController {
                 default:
                     $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
                     $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
-                    
+                    $sql_rab_det_bi2 = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '3')->find();;
+
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_aksi';
                     break;
 
                 case '1':
                     $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', $status)->find();
                     $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
+                    $sql_rab_det_bi2 = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '3')->find();;
                     
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_item';
                     break;
@@ -786,6 +790,7 @@ class Transaksi extends BaseController {
                 case '2':
                     $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', $status)->find();
                     $sql_rab_det_bi = '';
+                    $sql_rab_det_bi2 = '';
                     
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_biaya';
                     break;
@@ -793,6 +798,7 @@ class Transaksi extends BaseController {
                 case '3':                    
                     $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
                     $sql_rab_det_bi = '';
+                    $sql_rab_det_bi2 = '';
                     
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_po';
                     break;
@@ -802,16 +808,26 @@ class Transaksi extends BaseController {
             
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_pen';
                     break;
+                
+                case '5':
+                    $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', 3)->find();// DATA POTONGAN
+                    $sql_rab_det_bi = '';
+                    $sql_rab_det_bi2 = '';
+                    
+                    $view = $this->ThemePath . '/manajemen/transaksi/data_rab_potongan';
+                    break;
             }
 
             $data  = [
                 'SQLRab'            => $sql_rab,
                 'SQLRabDet'         => $sql_rab_det,
-                'SQLRabDetBi'       => $sql_rab_det_bi,
+                'SQLRabDetBi'       => $sql_rab_det_bi, // biaya
+                'SQLRabDetBi2'      => $sql_rab_det_bi2, // potongan
                 'SQLRabDetRw'       => $sql_rab_det_rw,
                 'SQLRabDetSum'      => $sql_rab_sum,
                 'SQLRabDetSumBi'    => $sql_rab_sum_bi,
                 'SQLRabDetSumBi2'   => $sql_rab_sum_bi2,
+                'SQLRabDetSumBi3'   => $sql_rab_sum_bi3,
                 'SQLRabLog'         => $sql_rab_log,
                 'SQLItem'           => $sql_item,
                 'SQLSatuan'         => $sql_sat,
@@ -869,6 +885,7 @@ class Transaksi extends BaseController {
             $no_paket   = $this->input->getVar('no_paket');
             $status     = $this->input->getVar('status');
             $status_ppn = $this->input->getVar('status_ppn');
+            $pph        = $this->input->getVar('pph');
 
             $Profile    = new \App\Models\PengaturanProfile;
             $Plgn       = new \App\Models\mPelanggan();
@@ -941,6 +958,7 @@ class Transaksi extends BaseController {
                     'jml_pagu'      => format_angka_db($pagu),
                     'status'        => '0',
                     'status_ppn'    => $status_ppn,
+                    'pph'           => (float)$pph
                 ];
 
                 $Rab->save($data);
@@ -1235,7 +1253,7 @@ class Transaksi extends BaseController {
                 if($status == '1'){
                     $hrg_dpp         = hitung_dpp($this->Setting->dpp, $subtotal, '1');
                     $hrg_ppn         = hitung_ppn($this->Setting->jml_ppn, $this->Setting->ppn_tot, $subtotal);
-                    $hrg_pph         = hitung_pph($this->Setting->dpp, $this->Setting->pph, $subtotal);
+                    $hrg_pph         = hitung_pph($this->Setting->dpp, $sql_rab->pph, $subtotal);
 
                     $hrg_hpp         = format_angka_db($hpp);
                     $hrg_hpp_subtot  = $hrg_hpp * $jml;
@@ -1300,16 +1318,19 @@ class Transaksi extends BaseController {
                 # Hitung ulang totalnya dengan cara di SUM, lalu masukkan ke perhitungan tabel global
                 $sql_rab_sum     = $RabDet->asObject()->select('SUM(harga_dpp) AS harga_dpp, SUM(harga_ppn) AS harga_ppn, SUM(harga_pph) AS harga_pph, SUM(subtotal) AS subtotal, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot, SUM(profit) AS profit')->where('id_rab', $sql_rab->id)->where('status', '1')->first();             
                 $sql_rab_sum_bi  = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '2')->where('status_biaya', '0')->first();
-                $sql_rab_sum_bi2 = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '2')->where('status_biaya', '1')->first();
+                $sql_rab_sum_bi2 = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '2')->where('status_biaya', '1')->first(); // BIAYA
+                $sql_rab_sum_bi3 = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '3')->where('status_biaya', '1')->first(); // POTONGAN
+                $biayaTabahKurang = ($sql_rab_sum_bi2->subtotal ?? 0) - ($sql_rab_sum_bi3->subtotal ?? 0);
 
                 # Cek jika ada biaya yang tampil di nota, maka hitung ulang
-                if(!empty($sql_rab_sum_bi2->subtotal)){
-                    $gtotal     = $sql_rab_sum->subtotal + $sql_rab_sum_bi2->subtotal;
+                if(!empty($sql_rab_sum_bi2->subtotal) || !empty($sql_rab_sum_bi3->subtotal) ){
+                    // $gtotal     = $sql_rab_sum->subtotal + $sql_rab_sum_bi2->subtotal;
+                    $gtotal     = $sql_rab_sum->subtotal + $biayaTabahKurang;
                     $jml_dpp    = hitung_dpp($this->Setting->dpp, $gtotal);
                     $jml_ppn    = hitung_ppn($this->Setting->jml_ppn, $this->Setting->ppn_tot, $gtotal);
-                    $jml_pph    = hitung_pph($this->Setting->dpp, $this->Setting->pph, $gtotal);
+                    $jml_pph    = hitung_pph($this->Setting->dpp, $sql_rab->pph, $gtotal);
                     $ppn        = $this->Setting->jml_ppn;
-                    $pph        = $this->Setting->pph;
+                    $pph        = $sql_rab->pph;
                     $netto      = $jml_dpp - $jml_pph;
                     $lk         = $netto - $sql_rab_sum->harga_hpp_tot;
                     $biaya      = $lk - $sql_rab_sum_bi->subtotal;
@@ -1330,10 +1351,11 @@ class Transaksi extends BaseController {
                     'jml_total'     => (float)$jml_dpp,
                     'ppn'           => (float)$this->Setting->ppn,
                     'jml_ppn'       => (float)$jml_ppn,
-                    'pph'           => (float)$this->Setting->pph,
+                    'pph'           => (float)$sql_rab->pph,
                     'jml_pph'       => (float)$jml_pph,
                     'jml_gtotal'    => (float)$sql_rab_sum->subtotal,
-                    'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
+                    // 'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
+                    'jml_biaya'     => (float)$biayaTabahKurang,
                     'jml_hpp'       => (float)$sql_rab_sum->harga_hpp_tot,
                     'jml_hpp_ppn'   => (float)$sql_rab_sum->harga_hpp_ppn,
                     'jml_profit'    => (float)$lb,
@@ -1365,6 +1387,11 @@ class Transaksi extends BaseController {
                     $this->session->setFlashdata('transaksi_toast', 'toastr.success("Item berhasil disimpan !!");');
                 }else{
                     $this->session->setFlashdata('transaksi_toast', 'toastr.success("Item berhasil diupdate !!");');
+                }
+
+                // JIKA POTONGAN ARAHKAN KE STATUS HALAMAN 5
+                if($status == 3) {
+                    return redirect()->to(base_url('transaksi/rab/data_rab_aksi.php'.(!empty($idrab) ? '?id='.$idrab : '').(!empty($status) ? '&status=5' : '')));
                 }
 
                 return redirect()->to(base_url('transaksi/rab/data_rab_aksi.php'.(!empty($idrab) ? '?id='.$idrab : '').(!empty($status) ? '&status='.$status : '')));
@@ -1546,15 +1573,18 @@ class Transaksi extends BaseController {
                 $sql_rab_sum     = $RabDet->asObject()->select('SUM(harga_dpp) AS harga_dpp, SUM(harga_ppn) AS harga_ppn, SUM(harga_pph) AS harga_pph, SUM(subtotal) AS subtotal, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot, SUM(profit) AS profit')->where('id_rab', $sql_rab->id)->where('status', '1')->first();             
                 $sql_rab_sum_bi  = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '2')->where('status_biaya', '0')->first();
                 $sql_rab_sum_bi2 = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '2')->where('status_biaya', '1')->first();
-                                
+                $sql_rab_sum_bi3 = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('id_rab', $sql_rab->id)->where('status', '3')->where('status_biaya', '1')->first();
+                $biayaTabahKurang = ($sql_rab_sum_bi2->subtotal ?? 0) - ($sql_rab_sum_bi3->subtotal ?? 0);
+                
                 # Cek jika ada biaya yang tampil di nota, maka hitung ulang
                 if(!empty($sql_rab_sum_bi->subtotal)){
-                    $gtotal     = $sql_rab_sum->subtotal + $sql_rab_sum_bi2->subtotal;
+                    // $gtotal     = $sql_rab_sum->subtotal + $sql_rab_sum_bi2->subtotal;
+                    $gtotal     = $sql_rab_sum->subtotal + $biayaTabahKurang;
                     $jml_dpp    = hitung_dpp($this->Setting->dpp, $gtotal);
                     $jml_ppn    = hitung_ppn($this->Setting->ppn, $this->Setting->ppn_tot, $gtotal);
-                    $jml_pph    = hitung_pph($this->Setting->dpp, $this->Setting->pph, $gtotal);
+                    $jml_pph    = hitung_pph($this->Setting->dpp, $sql_rab->pph, $gtotal);
                     $ppn        = $this->Setting->jml_ppn;
-                    $pph        = $this->Setting->pph;
+                    $pph        = $sql_rab->pph;
                     $netto      = $jml_dpp - $jml_pph;
                     $lk         = $netto - $sql_rab_sum->harga_hpp_tot;
                     $biaya      = $lk - $sql_rab_sum_bi->subtotal;
@@ -1575,10 +1605,11 @@ class Transaksi extends BaseController {
                     'jml_total'     => (float)$jml_dpp,
                     'ppn'           => (float)$this->Setting->ppn,
                     'jml_ppn'       => (float)$jml_ppn,
-                    'pph'           => (float)$this->Setting->pph,
+                    'pph'           => (float)$sql_rab->pph,
                     'jml_pph'       => (float)$jml_pph,
                     'jml_gtotal'    => (float)$sql_rab_sum->subtotal,
-                    'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
+                    // 'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
+                    'jml_biaya'     => (float)$biayaTabahKurang,
                     'jml_hpp'       => (float)$sql_rab_sum->harga_hpp_tot,
                     'jml_hpp_ppn'   => (float)$sql_rab_sum->harga_hpp_ppn,
                     'jml_profit'    => (float)$lb,
@@ -2413,7 +2444,7 @@ class Transaksi extends BaseController {
             if (isset($status)) {
                 if ($status == '1') {
                     $dpp    = hitung_dpp($this->Setting->dpp, $gtotal);
-                    $pph    = hitung_pph($this->Setting->dpp, $this->Setting->pph, $gtotal);
+                    $pph    = hitung_pph($this->Setting->dpp, $sql_rab->pph, $gtotal);
                     $ppn    = hitung_ppn($this->Setting->jml_ppn,$this->Setting->ppn_tot, $gtotal);
                     $netto  = $dpp - $pph;
                     $lk     = $netto - $sql_rab_sum->harga_hpp_tot;

@@ -225,7 +225,7 @@
         <th class="text-right"><?= $pph; ?> %</th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">NETT</th>
+        <th colspan="3" class="text-right">NETTO</th>
         <th class="text-right"><?php echo format_angka($netto); ?></th>
     </tr>
     <tr>

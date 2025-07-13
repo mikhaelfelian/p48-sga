@@ -119,7 +119,7 @@
         $dppJual = $totalJual / 1.11;
         $ppnJual = ($dppJual * 11) / 100;
         $pph = $SQLRab->pph;
-        // $totPph = ($pph * $totalJual) / 100;
+        $totPph = ($pph * $totalJual) / 100;
         $tipeNetto = "SWASTA"; // swasta / umum
         $netto = $dppJual; // tipe swasta netto == dpp jual
         if(in_array($SQLRab->id_tipe, [1,2,3])){
@@ -151,6 +151,13 @@
         if($tipeNetto == "NON SWASTA"){
             $labaFinal = $labaSetelahPphBadan + $potensiRest;
         }
+
+        // jika laba minus, buat 0 saja
+        if($laba <=0){ $laba = 0; }
+        if($pphBadan <=0) { $pphBadan = 0; }
+        if($labaSetelahPphBadan <=0) { $labaSetelahPphBadan = 0; }
+        if($potensiRest <= 0) {$potensiRest = 0;}
+
     ?>
 
     <!-- FLOW LAMA -->
@@ -221,8 +228,8 @@
         <th class="text-right"><?php echo format_angka($ppnJual); ?></th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">PPH</th>
-        <th class="text-right"><?= $pph; ?> %</th>
+        <th colspan="3" class="text-right">PPH (<?= $pph; ?>%)</th>
+        <th class="text-right"><?php echo format_angka($totPph); ?></th>
     </tr>
     <tr>
         <th colspan="3" class="text-right">NETTO</th>

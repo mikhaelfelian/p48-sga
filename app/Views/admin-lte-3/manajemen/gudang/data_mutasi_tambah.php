@@ -104,7 +104,7 @@
                                                     <option value="<?php echo $profile->id ?>"><?php echo strtoupper($profile->nama) ?></option>
                                                 <?php } ?>
                                             </select>
-                                        </div>                                       
+                                        </div>
                                     </div>
                                     <div class="form-group <?php echo (!empty($psnGagal['pelanggan']) ? 'text-danger' : '') ?>">
                                         <label class="control-label">Catatan</label>
@@ -122,13 +122,13 @@
                                     <button type="reset" class="btn btn-danger btn-flat"><i class="fa fa-remove"></i> Batal</button>
                                     <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Simpan</button>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                     </div>
                     <?php echo form_close() ?>
                 </div>
                 <div class="col-md-6">
-                    <?php if(!empty($SQLMutasi)){ ?>
+                    <?php if (!empty($SQLMutasi)) { ?>
                         <?php echo form_open(base_url('gudang/mutasi/cart_simpan.php'), 'autocomplete="off"') ?>
                         <?php echo form_hidden('id_mutasi', (!empty($SQLMutasi) ? $SQLMutasi->id : '')) ?>
                         <?php echo form_hidden('id_item', (!empty($SQLItem) ? $SQLItem->id : '')) ?>
@@ -145,7 +145,7 @@
                                                 <div class="form-group row<?php echo (!empty($psnGagal['item']) ? ' text-danger' : '') ?>">
                                                     <label for="inputEmail3" class="col-sm-3 col-form-label">Item</label>
                                                     <div class="col-sm-9">
-                                                        <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['item']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Item ...', 'value' => (!empty($SQLItem->item) ? $SQLItem->item : '')]) ?>                                                       
+                                                        <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['item']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Item ...', 'value' => (!empty($SQLItem->item) ? $SQLItem->item : '')]) ?>
                                                     </div>
                                                 </div>
                                                 <?php if (!empty($SQLItem)) { ?>
@@ -164,15 +164,26 @@
                                                             <select name="satuan" class="form-control rounded-0<?php echo (!empty($psnGagal['satuan']) ? ' is-invalid' : '') ?>">
                                                                 <option value="">- Satuan -</option>
                                                                 <?php foreach ($SQLSatuan as $satuan) { ?>
-                                                                    <option value="<?php echo $satuan->id ?>"<?php echo (!empty($SQLRabDetRw) ? ($SQLRabDetRw->id_satuan == $satuan->id ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
+                                                                    <option value="<?php echo $satuan->id ?>" <?php echo (!empty($SQLRabDetRw) ? ($SQLRabDetRw->id_satuan == $satuan->id ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
                                                                 <?php } ?>
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group row<?php echo (!empty($psnGagal['kode_sn[]']) ? ' text-danger' : '') ?>">
+                                                        <label class="col-sm-3 col-form-label">PILIH SN*</label>
+                                                        <div class="col-sm-5">
+                                                            <select name="kode_sn[]" class="form-control select2<?php echo (!empty($psnGagal['kode_sn']) ? ' is-invalid' : '') ?>" multiple="multiple" data-placeholder="- PILIH KODE SN -" style="width: 100%;" required>
+                                                                <?php foreach ($SQLItemStokDet as $det) { ?>
+                                                                    <option value="<?php echo $det->id ?>"><?php echo $det->kode; ?></option>
+                                                                <?php } ?>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
                                                     <div class="form-group row<?php echo (!empty($psnGagal['sn']) ? ' text-danger' : '') ?>">
                                                         <label for="inputEmail3" class="col-sm-3 col-form-label">Catatan</label>
                                                         <div class="col-sm-9">
-                                                            <?php echo form_textarea(['id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['sn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN, pisahkan dengan koma atau titik koma  ...', 'rows' => '5']) ?>                                                       
+                                                            <?php echo form_textarea(['id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['sn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN, pisahkan dengan koma atau titik koma  ...', 'rows' => '5']) ?>
                                                         </div>
                                                     </div>
                                                 <?php } ?>
@@ -190,14 +201,14 @@
                                     <div class="col-lg-6 text-right">
                                         <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Simpan</button>
                                     </div>
-                                </div>                            
+                                </div>
                             </div>
                         </div>
                         <?php echo form_close() ?>
                     <?php } ?>
                 </div>
             </div>
-            <?php if(!empty($SQLMutasi)){ ?>
+            <?php if (!empty($SQLMutasi)) { ?>
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
@@ -233,7 +244,7 @@
                                         <th class="text-center" style="width: 2px;">:</th>
                                         <td class="text-left"></td>
                                     </tr>
-                                    <?php if($SQLMutasi->tipe == '3'){ ?>
+                                    <?php if ($SQLMutasi->tipe == '3') { ?>
                                         <tr>
                                             <th class="text-left" style="width: 100px;">Kepada</th>
                                             <th class="text-center" style="width: 2px;">:</th>
@@ -251,7 +262,7 @@
                                         <td class="text-left" colspan="4"><?php echo $SQLMutasi->keterangan ?></td>
                                     </tr>
                                 </table>
-                                <hr/>
+                                <hr />
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -265,14 +276,14 @@
                                     </thead>
                                     <tbody>
                                         <?php $no = 1; ?>
-                                        <?php foreach ($SQLMutasiDet as $det){ ?>
+                                        <?php foreach ($SQLMutasiDet as $det) { ?>
                                             <tr>
                                                 <td class="text-center" style="width: 100px;">
-                                                    <?php if($SQLMutasi->status > 0){ ?>
-                                                        <?php if(!hakAdminM()) : ?>
-                                                        <a href="<?php echo base_url('gudang/mutasi/cart_hapus.php?id='.$request->getVar('id').'&status='.$request->getVar('status').'&id_item='.$det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
+                                                    <?php if ($SQLMutasi->status > 0) { ?>
+                                                        <?php if (!hakAdminM()) : ?>
+                                                            <a href="<?php echo base_url('gudang/mutasi/cart_hapus.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_item=' . $det->id) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
                                                         <?php endif; ?>
-                                                        <a href="<?php echo base_url('gudang/mutasi/data_mutasi_tambah.php?id='.$request->getVar('id').'&id_item='.$det->id_item.'&id_item_det='.$det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
+                                                        <a href="<?php echo base_url('gudang/mutasi/data_mutasi_tambah.php?id=' . $request->getVar('id') . '&id_item=' . $det->id_item . '&id_item_det=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
                                                     <?php } ?>
                                                 </td>
                                                 <td class="text-center" style="width: 50px;"><?php echo $no; ?>.</td>
@@ -285,7 +296,7 @@
                                                 <td class="text-center" style="width: 100px;"><?php echo $det->jml ?></td>
                                                 <td class="text-left" style="width: 100px;"><?php echo $det->satuan ?></td>
                                             </tr>
-                                        <?php $no++; ?>
+                                            <?php $no++; ?>
                                         <?php } ?>
                                     </tbody>
                                 </table>
@@ -301,7 +312,7 @@
                                             <?php echo form_open(base_url('gudang/mutasi/set_trans_proses.php'), 'autocomplete="off"') ?>
                                             <?php echo form_hidden('id', (!empty($SQLMutasi) ? $SQLMutasi->id : '')) ?>
                                             <?php echo form_hidden('status', '1') ?>
-                                        
+
                                             <button type="submit" class="btn btn-success btn-flat"><i class="fas fa-arrow-right"></i> Proses &raquo;</button>
                                             <?php echo form_close() ?>
                                         <?php } ?>
@@ -318,12 +329,17 @@
     <!-- /.content -->
 </div>
 <script type="text/javascript">
-    $(function () {
+    $(function() {
+        $('.select2').select2(); // Inisialisasi Select2 untuk elemen dengan class select2
         $("#masuk-keluar").hide().find('input').prop('disabled', true);
         // $("#2").hide().find('input').prop('disabled', true);
         // $("#3").hide().find('input').prop('disabled', true);
 
-        $("input[id=pagu],input[id=hps]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
+        $("input[id=pagu],input[id=hps]").autoNumeric({
+            aSep: '.',
+            aDec: ',',
+            aPad: false
+        });
         $("#tgl").datepicker({
             dateFormat: 'dd/mm/yy',
             SetDate: new Date(),
@@ -332,20 +348,20 @@
 
         // Data Pelanggan
         $('#pelanggan').autocomplete({
-            source: function (request, response) {
+            source: function(request, response) {
                 $.ajax({
                     url: "<?php echo base_url('/json_pelanggan.php') ?>",
                     dataType: "json",
                     data: {
                         term: request.term
                     },
-                    success: function (data) {
+                    success: function(data) {
                         response(data);
                     }
                 });
             },
             minLength: 1,
-            select: function (event, ui) {
+            select: function(event, ui) {
                 var $itemrow = $(this).closest('tr');
                 //Populate the input fields from the returned values
                 $itemrow.find('#id_pelanggan').val(ui.item.id);
@@ -358,42 +374,42 @@
             }
 
             // Format the list menu output of the autocomplete
-        }).data("ui-autocomplete")._renderItem = function (ul, item) {
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
             return $("<li></li>")
-                    .data("item.autocomplete", item)
-                    .append("<a>" + item.nama + "</a>")
-                    .appendTo(ul);
+                .data("item.autocomplete", item)
+                .append("<a>" + item.nama + "</a>")
+                .appendTo(ul);
         };
 
-        $('#tipe_mutasi').on('change', function () {
+        $('#tipe_mutasi').on('change', function() {
             var tipe_mts = $(this).val();
 
             // $("div.divTipe").hide();
             // $("#" + tipe_mts).show().find('input').prop('disabled', false);
-            if(['2','3'].includes(tipe_mts)){
+            if (['2', '3'].includes(tipe_mts)) {
                 $("#masuk-keluar").show().find('input').prop('disabled', false)
-            }else {
+            } else {
                 $("#masuk-keluar").hide().find('input').prop('disabled', true)
             }
         });
 
-<?php if (!empty($SQLMutasi)) { ?>
+        <?php if (!empty($SQLMutasi)) { ?>
             // Data Item
             $('#item').autocomplete({
-                source: function (request, response) {
+                source: function(request, response) {
                     $.ajax({
                         url: "<?php echo base_url('/json_item.php') ?>",
                         dataType: "json",
                         data: {
                             term: request.term
                         },
-                        success: function (data) {
+                        success: function(data) {
                             response(data);
                         }
                     });
                 },
                 minLength: 1,
-                select: function (event, ui) {
+                select: function(event, ui) {
                     var $itemrow = $(this).closest('tr');
                     //Populate the input fields from the returned values
                     $itemrow.find('#id_item').val(ui.item.id);
@@ -407,13 +423,13 @@
                 }
 
                 // Format the list menu output of the autocomplete
-            }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            }).data("ui-autocomplete")._renderItem = function(ul, item) {
                 return $("<li></li>")
-                        .data("item.autocomplete", item)
-                        .append("<a>" + item.nama + "</a>")
-                        .appendTo(ul);
+                    .data("item.autocomplete", item)
+                    .append("<a>" + item.nama + "</a>")
+                    .appendTo(ul);
             };
-<?php } ?>
+        <?php } ?>
 
         <?php echo session()->getFlashdata('gudang_toast'); ?>
     });

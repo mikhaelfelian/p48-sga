@@ -947,21 +947,37 @@ class Gudang extends BaseController {
                 $Item           = new \App\Models\mItem();
                 $vtrMutasi      = new \App\Models\vtrMutasi();
                 $MutasiDet      = new \App\Models\trMutasiDet();
+                $ItemStokDet= new \App\Models\mItemStokDet();
                 
                 $sql_sat        = $Sat->asObject()->where('status', '1')->find();
                 $sql_item       = $Item->asObject()->where('id', $IDItem)->first();
                 $sql_mut        = $vtrMutasi->asObject()->where('id', $IDMts)->first();
                 $sql_mut_det    = $MutasiDet->asObject()->where('id_mutasi', $IDMts)->find();
+                if(!empty($sql_mut)){
+                    $sql_item_stock_det    = $ItemStokDet->asObject()->where('id_item', $IDItem)->where('id_gudang', $sql_mut->id_gd_asal);
+                    if($sql_mut->tipe == 2){
+                        // STOK MASUK BERARTI TAMPILKAN LIST SN YG STATUSNYA SUDAH TERPAKAI
+                        $sql_item_stock_det = $sql_item_stock_det->where('status', '0');
+                    }
+                    if($sql_mut->tipe == 3){
+                        // STOK KELUAR BERARTI TAMPILKAN LIST SN YANG STATUSNYA TERSEDIA
+                        $sql_item_stock_det = $sql_item_stock_det->where('status', '1');
+                    }
+
+                    $sql_item_stock_det = $sql_item_stock_det->find();
+                }
             }else{                
                 $sql_sat        = '';
                 $sql_item       = '';
                 $sql_mut        = '';
                 $sql_mut_det    = '';
+                $sql_item_stock_det    = '';
             }
             
             $data  = [
                 'SQLSatuan'     => $sql_sat,
                 'SQLItem'       => $sql_item,
+                'SQLItemStokDet'=> $sql_item_stock_det,
                 'SQLMutasi'     => $sql_mut,
                 'SQLMutasiDet'  => $sql_mut_det,
                 'SQLUsers'      => $this->ionAuth->users('sales')->result(),
@@ -1212,12 +1228,15 @@ class Gudang extends BaseController {
             $satuan     = $this->input->getVar('satuan');
             $sn         = $this->input->getVar('sn');
             $ket        = $this->input->getVar('keterangan');
+            $kode_sn_list = $this->request->getVar('kode_sn');
 
             $Plgn       = new \App\Models\mPelanggan();
             $Item       = new \App\Models\mItem();
             $Satuan     = new \App\Models\mSatuan();
             $Mts        = new \App\Models\trMutasi();
             $MtsDet     = new \App\Models\trMutasiDet();
+            $MtsStock   = new \App\Models\trMutasiStok();
+            $ItemStokDet   = new \App\Models\mItemStokDet();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -1261,11 +1280,14 @@ class Gudang extends BaseController {
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
 
-                return redirect()->to(base_url('gudang/mutasi/data_mutasi_tambah.php'.(!empty($idrab) ? '?id='.$idrab : '').(!empty($iditem) ? '&id_item='.$iditem : '').(!empty($status) ? '&status='.$status : '')));
+                return redirect()->to(base_url('gudang/mutasi/data_mutasi_tambah.php'.(!empty($id_mts) ? '?id='.$id_mts : '')));
             }else{
                 $sql_mts        = $Mts->asObject()->where('id', $id_mts)->first();
                 $sql_item       = $Item->asObject()->where('id', $id_item)->first();
                 $sql_sat        = $Satuan->asObject()->where('id', $satuan)->first();
+
+                # Start Transact SQL
+                $this->db->transBegin();
 
                 $data = [
                     'id'            => $id_mts_det,
@@ -1281,16 +1303,66 @@ class Gudang extends BaseController {
                     'jml'           => (float)$jml,
                     'jml_satuan'    => (!empty($sql_sat->jml) ? (int)$sql_sat->jml : 1),
                     'satuan'        => (!empty($sql_sat->satuanBesar) ? $sql_sat->satuanBesar : ''),
-                    'keterangan'    => $sn
+                    'keterangan'    => $ket
                 ];
 
                 $MtsDet->save($data);
                 $last_id = $MtsDet->insertID();
+                // dd($last_id);
 
-                if($last_id > 0){
-                    $this->session->setFlashdata('gudang_toast', 'toastr.success("Item berhasil disimpan !!");');
-                }else{
-                    $this->session->setFlashdata('gudang_toast', 'toastr.success("Item berhasil diupdate !!");');
+                // LOOPING DATA KODE SN DAN INSERT DATA DIBAWAH INI
+                if (!empty($kode_sn_list) && is_array($kode_sn_list)) {
+                    foreach ($kode_sn_list as $id_sn) {
+                        // INSERT ke mutasi stok
+                        $MtsStock->save([
+                            'id_user'       => $ID->id,
+                            'id_mutasi'     => $id_mts,
+                            'id_mutasi_det' => $last_id,
+                            'id_item'       => (!empty($sql_item->id) ? $sql_item->id : 0),
+                            'id_item_stok_det'   => $id_sn, // asumsinya ada kolom ini untuk relasi SN
+                            'id_gd_asal'    => $sql_mts->id_gd_asal,
+                            'id_gd_tujuan'  => $sql_mts->id_gd_tujuan,
+                            'tgl_masuk'     => $sql_mts->tgl_simpan,
+                            'tgl_simpan'    => $sql_mts->tgl_simpan,
+                            'item'          => '',
+                            'stok_awal'     => 1,
+                            'jml'           => 1,
+                            'stok_akhir'    => 1,
+                            'keterangan'    => $ket
+                        ]);
+                
+                        // UPDATE status di item_stok_det
+                        // Tentukan status update berdasarkan status mutasi
+                        $status_stok = 1; // default
+                        if ($sql_mts->tipe == 3) {
+                            $status_stok = 0;
+                        }
+
+                        // UPDATE status SN di item_stok_det
+                        $ItemStokDet->update($id_sn, [
+                            'status' => $status_stok
+                        ]);
+                    }
+                }
+
+                # End off transact SQL
+                $this->db->transComplete();
+
+                # Cek status transact SQL, jika gagal maka rollback
+                if ($this->db->transStatus() === false) {
+                    $this->db->transRollback();
+                
+                    // ✅ Tambahkan pesan error jika gagal
+                    $this->session->setFlashdata('gudang_toast', 'toastr.error("Gagal menyimpan item. Silakan coba lagi.");');
+                    dd($this->db->error()['message']);
+                } else {
+                    $this->db->transCommit();
+                
+                    if ($id_mts_det == 0 && $last_id > 0) {
+                        $this->session->setFlashdata('gudang_toast', 'toastr.success("Item berhasil disimpan !!");');
+                    } else {
+                        $this->session->setFlashdata('gudang_toast', 'toastr.success("Item berhasil diupdate !!");');
+                    }
                 }
 
                 return redirect()->to(base_url('gudang/mutasi/data_mutasi_tambah.php'.(!empty($id_mts) ? '?id='.$id_mts : '')));

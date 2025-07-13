@@ -738,6 +738,7 @@ class Transaksi extends BaseController {
                 $Profile        = new \App\Models\PengaturanProfile();
                 
                 $sql_rab        = $Rab->asObject()->where('id', $IDRab)->first();
+                $sql_rab_tipe   = $Tipe->asObject()->where('id', $sql_rab->id_tipe)->first();
                 $sql_rab_det_rw = $RabDet->asObject()->where('id', $IDItmDet)->first();
 //                $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
                 $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('status', '1')->where('id_rab', $IDRab)->first();             
@@ -774,7 +775,7 @@ class Transaksi extends BaseController {
                 default:
                     $sql_rab_det    = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '1')->find();
                     $sql_rab_det_bi = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '2')->where('status_biaya', '0')->find();
-                    $sql_rab_det_bi2 = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '3')->find();;
+                    $sql_rab_det_bi2 = $RabDet->asObject()->where('id_rab', $IDRab)->where('status', '3')->find();
 
                     $view = $this->ThemePath . '/manajemen/transaksi/data_rab_aksi';
                     break;
@@ -820,6 +821,7 @@ class Transaksi extends BaseController {
 
             $data  = [
                 'SQLRab'            => $sql_rab,
+                'SQLRabTipe'        => $sql_rab_tipe,
                 'SQLRabDet'         => $sql_rab_det,
                 'SQLRabDetBi'       => $sql_rab_det_bi, // biaya
                 'SQLRabDetBi2'      => $sql_rab_det_bi2, // potongan

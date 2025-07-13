@@ -205,6 +205,10 @@
     
     <!-- UPDATE TERBARU -->
     <tr>
+        <th colspan="3" class="text-right">TIPE RAB</th>
+        <th class="text-right"><?php echo $SQLRabTipe->tipe;  ?></th>
+    </tr>
+    <tr>
         <th colspan="3" class="text-right">TOTAL PENJUALAN</th>
         <th class="text-right"><?php echo format_angka($totalJual); ?></th>
     </tr>
@@ -221,7 +225,7 @@
         <th class="text-right"><?= $pph; ?> %</th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">NETTO (<?= $tipeNetto;?>)</th>
+        <th colspan="3" class="text-right">NETT</th>
         <th class="text-right"><?php echo format_angka($netto); ?></th>
     </tr>
     <tr>
@@ -242,7 +246,7 @@
     </tr>
 
     <tr>
-        <th colspan="3" class="text-right">ADMINISTRASI (<?= $tipeNetto; ?>)</th>
+        <th colspan="3" class="text-right">ADMINISTRASI</th>
         <th class="text-right"><?php echo format_angka($administrasi); ?></th>
     </tr>
 
@@ -256,17 +260,17 @@
     </tr>
 
     <tr>
-        <th colspan="3" class="text-right">LABA (<?= $tipeNetto; ?>)</th>
+        <th colspan="3" class="text-right">LABA</th>
         <th class="text-right"><?php echo format_angka($laba); ?></th>
     </tr>
 
     <tr>
-        <th colspan="3" class="text-right">PPH BADAN (<?= $tipeNetto; ?>)</th>
+        <th colspan="3" class="text-right">PPH BADAN</th>
         <th class="text-right"><?php echo format_angka($pphBadan); ?></th>
     </tr>
 
     <tr>
-        <th colspan="3" class="text-right">LABA SETELAH PPH BADAN (<?= $tipeNetto; ?>)</th>
+        <th colspan="3" class="text-right">LABA SETELAH PPH BADAN</th>
         <th class="text-right"><?php echo format_angka($labaSetelahPphBadan); ?></th>
     </tr>
     <tr>
@@ -274,7 +278,7 @@
         <th class="text-right"><?php echo format_angka($potensiRest); ?></th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">LABA FINAL (<?= $tipeNetto; ?>)</th>
+        <th colspan="3" class="text-right">LABA FINAL</th>
         <th class="text-right"><?php echo format_angka($labaFinal); ?></th>
     </tr>
     

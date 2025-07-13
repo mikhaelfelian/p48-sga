@@ -772,6 +772,50 @@ class Gudang extends BaseController {
             return redirect()->to(base_url());
         }
     }
+
+    public function set_beli_hapus_sn(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID          = $this->ionAuth->user()->row();
+            $IDGrup      = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup   = $this->ionAuth->groups()->result();
+            
+            $id          = $this->input->getVar('id');
+            $id_beli     = $this->input->getVar('id_beli');
+            $id_item     = $this->input->getVar('id_item');
+            $id_item_det = $this->input->getVar('id_item_det');
+            $Hal         = $this->input->getVar('page');
+            
+            if($this->input->is('get') == 1){
+                $ItemStokDet= new \App\Models\mItemStokDet();
+                
+                # Start Transact SQL
+                $this->db->transBegin();
+                
+                # DELETE RECORDS SQL
+                $ItemStokDet->where('id', $id)->delete();
+                
+                # End off transact SQL
+                $this->db->transComplete();
+                
+                # Cek status transact SQL, jika gagal maka rollback
+                if ($this->db->transStatus() === false) {
+                    $this->db->transRollback();
+                }else{
+                    # Set commit jika berhasil
+                    $this->db->transCommit();
+                }
+
+                $this->session->setFlashdata('gudang_toast', 'toastr.success("SN berhasil dihapus !!");');
+
+                return redirect()->to(base_url('gudang/penerimaan/data_beli_terima_item.php'.(!empty($id_beli) ? '?id='.$id_beli : '').(!empty($id_item) ? '&id_item='.$id_item : '').(!empty($id_item_det) ? '&id_item_det='.$id_item_det : '')));
+            }
+            
+//            return redirect()->to(base_url('gudang/mutasi/data_mutasi_tambah.php'.(!empty($IDMts) ? '?id='.$IDMts : '')));         
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
        
     public function set_beli_terima_proses() {
         if ($this->ionAuth->loggedIn()) {

@@ -270,6 +270,7 @@ $routes->group('gudang', ['filter' => 'auth'], function($routes) {
     $routes->get('penerimaan/data_beli_terima.php', 'Gudang::data_beli_terima');
     $routes->get('penerimaan/data_beli_terima_item.php', 'Gudang::data_beli_terima_item');
     $routes->get('penerimaan/cart_hapus.php', 'Gudang::cart_beli_hapus');
+    $routes->get('penerimaan/set_hapus_item_sn.php', 'Gudang::set_beli_hapus_sn');
     $routes->post('penerimaan/set_terima_item.php', 'Gudang::set_beli_terima_simpan');
     $routes->post('penerimaan/set_terima_item_sn.php', 'Gudang::set_beli_terima_simpan_sn');
     $routes->post('penerimaan/set_terima_proses.php', 'Gudang::set_beli_terima_proses');

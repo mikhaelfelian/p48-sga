@@ -39,7 +39,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <?php if (!empty($SQLBeli)) { ?>
-                                            <?php // echo form_open(base_url('pembelian/faktur/cart_simpan.php'), 'autocomplete="off"') ?>
+                                            <?php // echo form_open(base_url('pembelian/faktur/cart_simpan.php'), 'autocomplete="off"') 
+                                            ?>
                                             <?php
                                             echo form_hidden('id_beli', $request->getVar('id'));
                                             echo form_hidden('id_item', (!empty($SQLItem) ? $SQLItem->id : ''));
@@ -69,7 +70,7 @@
                                                         <select name="satuan" class="form-control rounded-0<?php echo (!empty($psnGagal['satuan']) ? ' is-invalid' : '') ?>" readonly="TRUE">
                                                             <option value="">- Pilih -</option>
                                                             <?php foreach ($SQLSatuan as $satuan) { ?>
-                                                                <option value="<?php echo $satuan->id ?>"<?php echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
+                                                                <option value="<?php echo $satuan->id ?>" <?php echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
@@ -89,7 +90,8 @@
                                                     <!--<button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-save"></i> Simpan</button>-->
                                                 </div>
                                             </div>
-                                            <?php // echo form_close() ?>
+                                            <?php // echo form_close() 
+                                            ?>
                                         <?php } ?>
                                     </div>
                                     <div class="col-md-6">
@@ -107,7 +109,8 @@
                                                         <select name="gudang" class="form-control rounded-0<?php echo (!empty($psnGagal['gudang']) ? ' is-invalid' : '') ?>">
                                                             <!--<option value="">- Pilih -</option>-->
                                                             <?php foreach ($SQLGudang as $gudang) { ?>
-                                                                <option value="<?php echo $gudang->id ?>"<?php // echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '')           ?>><?php echo strtoupper($gudang->gudang) ?></option>
+                                                                <option value="<?php echo $gudang->id ?>" <?php // echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '')           
+                                                                                                            ?>><?php echo strtoupper($gudang->gudang) ?></option>
                                                             <?php } ?>
                                                         </select>
                                                     </div>
@@ -136,9 +139,9 @@
                                                     <select name="satuan" class="form-control rounded-0<?php echo (!empty($psnGagal['satuan']) ? ' is-invalid' : '') ?>" readonly="TRUE">
                                                         <option value="">- Pilih -</option>
                                                         <?php foreach ($SQLSatuan as $satuan) { ?>
-                                                            <option value="<?php echo $satuan->id ?>"<?php echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
+                                                            <option value="<?php echo $satuan->id ?>" <?php echo (!empty($SQLBeliDetRw) ? ($satuan->id == $SQLBeliDetRw->id_satuan ? ' selected' : '') : '') ?>><?php echo strtoupper($satuan->satuanBesar) . ($satuan->jml > 1 ? ' (' . $satuan->jml . ' ' . $satuan->satuanTerkecil . ')' : '') ?></option>
                                                         <?php } ?>
-                                                    </select>                                                    
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -146,7 +149,7 @@
                                                     <div class="form-group">
                                                         <label for="inputEmail3" class="control-label">Keterangan</label>
                                                         <?php echo form_textarea(['id' => 'keterangan', 'name' => 'keterangan', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['jml']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN, pisahkan dengan koma atau titik koma  ...', 'rows' => '5']) ?>
-                                                    </div>                                                    
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row">
@@ -165,87 +168,190 @@
                         </div>
                     </div>
                 </div>
-            <?php } ?>
-            <?php if (!empty($SQLBeli)) { ?>            
                 <div class="row">
-                    <div class="col-lg-12">
-                        <!-- Item box -->
-                        <div class="card">
+                    <div class="col-md-12">
+                        <div class="card card-default">
                             <div class="card-header">
-                                <h3 class="card-title">DATA RIWAYAT PENERIMAAN</h3>
+                                <h3 class="card-title">Form INPUT SN ITEM</h3>
+                                <div class="card-tools">
+
+                                </div>
                             </div>
-                            <div class="card-body">                                
+                            <div class="card-body table-responsive">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center"></th>
-                                                    <th class="text-center">No</th>
-                                                    <th class="text-left">Tgl</th>
-                                                    <th class="text-left">Deskripsi</th>
-                                                    <th class="text-center">Jml</th>
-                                                    <th class="text-left"></th>
-                                                </tr>                                    
-                                            </thead>
-                                            <tbody>
-                                                <?php $no = 1; ?>
-                                                <?php foreach ($SQLItemStokHist as $det) { ?>
-                                                    <tr>
-                                                        <td class="text-center" style="width: 65px;">
-                                                            <?php if(!hakAdminM()) : ?>
-                                                            <a href="<?php echo base_url('gudang/penerimaan/cart_hapus.php?id=' . $det->id . '&id_beli=' . $request->getVar('id') . '&id_item=' . $request->getVar('id_item') . '&id_item_det=' . $request->getVar('id_item_det')) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
-                                                            <?php endif; ?>
-                                                        </td>
-                                                        <td class="text-center" style="width: 50px;"><?php echo $no ?></td>
-                                                        <td class="text-left" style="width: 150px;"><?php echo tgl_indo2($det->tgl_masuk) ?></td>
-                                                        <td class="text-left" style="width: 400px;">
-                                                            <?php echo $det->keterangan ?>
-                                                            <?php if (!empty($det->sn)) { ?>
-                                                                <?php echo br(); ?>
-                                                                <small><?php echo nl2br($det->sn) ?></small>
-                                                            <?php } ?>
-                                                        </td>
-                                                        <td class="text-center" style="width: 120px;"><?php echo $det->jml . (!empty($det->satuan) ? ' ' . $det->satuan : '') ?></td>
-                                                        <td class="text-left"></td>
-                                                    </tr>
-                                                    <?php $no++; ?>
-                                                <?php } ?>
-                                            </tbody>
-                                        </table>
+                                    <div class="col-md-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <?php echo form_open(base_url('gudang/penerimaan/set_terima_item_sn.php'), 'autocomplete="off"') ?>
+                                                <?php
+                                                echo form_hidden('id_beli', $request->getVar('id'));
+                                                echo form_hidden('id_beli_det', $request->getVar('id_item_det'));
+                                                echo form_hidden('id_item', (!empty($SQLItem) ? $SQLItem->id : ''));
+                                                ?>
+                                                <div class="row">
+                                                    <div class="col-sm-9">
+                                                        <div class="form-group<?php echo (!empty($psnGagal['kode_sn']) ? ' text-danger' : '') ?>">
+                                                            <label for="inputEmail3" class="control-label">Masukan KODE SN Item</label>
+                                                            <?php echo form_input(['id' => 'kode_sn', 'name' => 'kode_sn', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['kode_sn']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan SN Item yang diterima ...']) ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <div style="margin-top: 32px;">
+                                                            <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-check"></i> Terima</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?php echo form_close() ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h3 class="card-title">DATA KODE SN</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="text-center"></th>
+                                                                    <th class="text-center">No</th>
+                                                                    <th class="text-left">Tgl</th>
+                                                                    <th class="text-left">KODE SN</th>
+                                                                    <th class="text-center">Jml</th>
+                                                                    <th class="text-left">Status</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php $no = 1; ?>
+                                                                <?php foreach ($SQLItemStokDet as $det) { ?>
+                                                                    <tr>
+                                                                        <td class="text-center" style="width: 65px;">
+                                                                            <?php if (!hakAdminM()) : ?>
+                                                                                <a href="<?php echo base_url('gudang/penerimaan/set_hapus_item_sn.php?id=' . $det->id . '&id_beli=' . $request->getVar('id') . '&id_item=' . $request->getVar('id_item') . '&id_item_det=' . $request->getVar('id_item_det')) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->kode; ?>] ?')"><i class="fa fa-trash"></i></a>
+                                                                            <?php endif; ?>
+                                                                        </td>
+                                                                        <td class="text-center" style="width: 50px;"><?php echo $no ?></td>
+                                                                        <td class="text-left" style="width: 150px;"><?php echo tgl_indo2($det->tgl_simpan) ?></td>
+                                                                        <td class="text-left" style="width: 400px;">
+                                                                            <?php echo $det->kode; ?>
+                                                                        </td>
+                                                                        <td class="text-center" style="width: 120px;"><?php echo $det->jml; ?></td>
+                                                                        <td class="text-left"><?= $det->status == '1' ? '<small class="badge badge-success">Tersedia</small>' : '<small class="badge badge-warning">Tidak Tersedia</small>'; ?></td>
+                                                                    </tr>
+                                                                    <?php $no++; ?>
+                                                                <?php } ?>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- /.card-body -->
+                                            <div class="card-footer">
+                                                <div class="row">
+                                                    <div class="col-lg-6">
+
+                                                    </div>
+                                                    <div class="col-lg-6 text-right">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.card-body -->
-                            <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-lg-6">
-
-                                    </div>
-                                    <div class="col-lg-6 text-right">
-
-                                    </div>
-                                </div>                            
-                            </div>
                         </div>
-                        <!-- /.card -->
                     </div>
                 </div>
-            <?php } ?>
         </div>
-        <!-- /.container-fluid -->
+    <?php } ?>
+    <?php if (!empty($SQLBeli)) { ?>
+        <div class="row">
+            <div class="col-lg-12">
+                <!-- Item box -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">DATA RIWAYAT PENERIMAAN</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center"></th>
+                                            <th class="text-center">No</th>
+                                            <th class="text-left">Tgl</th>
+                                            <th class="text-left">Deskripsi</th>
+                                            <th class="text-center">Jml</th>
+                                            <th class="text-left"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php $no = 1; ?>
+                                        <?php foreach ($SQLItemStokHist as $det) { ?>
+                                            <tr>
+                                                <td class="text-center" style="width: 65px;">
+                                                    <?php if (!hakAdminM()) : ?>
+                                                        <a href="<?php echo base_url('gudang/penerimaan/cart_hapus.php?id=' . $det->id . '&id_beli=' . $request->getVar('id') . '&id_item=' . $request->getVar('id_item') . '&id_item_det=' . $request->getVar('id_item_det')) ?>" class="btn btn-danger btn-flat btn-xs" onclick="return confirm('Hapus [<?php echo $det->item; ?>] ?')"><i class="fa fa-trash"></i></a>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-center" style="width: 50px;"><?php echo $no ?></td>
+                                                <td class="text-left" style="width: 150px;"><?php echo tgl_indo2($det->tgl_masuk) ?></td>
+                                                <td class="text-left" style="width: 400px;">
+                                                    <?php echo $det->keterangan ?>
+                                                    <?php if (!empty($det->sn)) { ?>
+                                                        <?php echo br(); ?>
+                                                        <small><?php echo nl2br($det->sn) ?></small>
+                                                    <?php } ?>
+                                                </td>
+                                                <td class="text-center" style="width: 120px;"><?php echo $det->jml . (!empty($det->satuan) ? ' ' . $det->satuan : '') ?></td>
+                                                <td class="text-left"></td>
+                                            </tr>
+                                            <?php $no++; ?>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-lg-6">
+
+                            </div>
+                            <div class="col-lg-6 text-right">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    <?php } ?>
     </div>
-    <!-- /.content -->
+    <!-- /.container-fluid -->
+</div>
+<!-- /.content -->
 </div>
 <script type="text/javascript">
-    $(function () {
+    $(function() {
         $("input[id=tgl]").datepicker({
             dateFormat: 'dd/mm/yy',
             SetDate: new Date(),
             autoclose: true
         });
 
-        $("input[id=jml]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
-<?php echo session()->getFlashdata('gudang_toast'); ?>
+        $("input[id=jml]").autoNumeric({
+            aSep: '.',
+            aDec: ',',
+            aPad: false
+        });
+        <?php echo session()->getFlashdata('gudang_toast'); ?>
     });
 </script>

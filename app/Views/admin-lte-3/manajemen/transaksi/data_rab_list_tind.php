@@ -139,10 +139,7 @@
             $laba = $netto - $totalBeli - $administrasi - $biaya1 - $potonganPenj; //laba negri
         }
 
-        $pphBadan = $laba; // swasta
-        if($tipeNetto == "NON SWASTA"){
-            $pphBadan = ($laba * 22) / 100; // 22% laba negri
-        }
+        $pphBadan = ($laba * 22) / 100;
 
         $labaSetelahPphBadan = $laba - $pphBadan;
 

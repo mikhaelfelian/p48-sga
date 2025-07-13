@@ -1348,22 +1348,25 @@ class Transaksi extends BaseController {
                     $lb         = $biaya + $sql_rab_sum->harga_hpp_ppn;
                 }
                 
-                $data_rab = [
-                    'id'            => $sql_rab->id,
-                    'jml_total'     => (float)$jml_dpp,
-                    'ppn'           => (float)$this->Setting->ppn,
-                    'jml_ppn'       => (float)$jml_ppn,
-                    'pph'           => (float)$sql_rab->pph,
-                    'jml_pph'       => (float)$jml_pph,
-                    'jml_gtotal'    => (float)$sql_rab_sum->subtotal,
-                    // 'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
-                    'jml_biaya'     => (float)$biayaTabahKurang,
-                    'jml_hpp'       => (float)$sql_rab_sum->harga_hpp_tot,
-                    'jml_hpp_ppn'   => (float)$sql_rab_sum->harga_hpp_ppn,
-                    'jml_profit'    => (float)$lb,
-                ];
-                
-                $Rab->save($data_rab);
+                // HANYA UPDATE RAB KETIKA DATA ITEM YG DIBUAT. KALAU YG DI BUAT DATA BIAYA DAN POTONGAN GAUSAH
+                if($status == 1){
+                    $data_rab = [
+                        'id'            => $sql_rab->id,
+                        'jml_total'     => (float)$jml_dpp,
+                        'ppn'           => (float)$this->Setting->ppn,
+                        'jml_ppn'       => (float)$jml_ppn,
+                        'pph'           => (float)$sql_rab->pph,
+                        'jml_pph'       => (float)$jml_pph,
+                        'jml_gtotal'    => (float)$sql_rab_sum->subtotal,
+                        // 'jml_biaya'     => (float)$sql_rab_sum_bi2->subtotal,
+                        'jml_biaya'     => (float)$biayaTabahKurang,
+                        'jml_hpp'       => (float)$sql_rab_sum->harga_hpp_tot,
+                        'jml_hpp_ppn'   => (float)$sql_rab_sum->harga_hpp_ppn,
+                        'jml_profit'    => (float)$lb,
+                    ];
+                    
+                    $Rab->save($data_rab);
+                }
 
                 // JIKA HPP ITEM PADA RAB DIUBAH. MAKA UBAH JUGA HPP ITEM MASTER
                 if(!empty($sql_item->id) && ($sql_item->harga_beli != format_angka_db($hpp))){

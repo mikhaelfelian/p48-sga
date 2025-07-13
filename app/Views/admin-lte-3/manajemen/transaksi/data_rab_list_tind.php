@@ -153,10 +153,10 @@
         }
 
         // jika laba minus, buat 0 saja
-        if($laba <=0){ $laba = 0; }
+        // if($laba <=0){ $laba = 0; }
         if($pphBadan <=0) { $pphBadan = 0; }
-        if($labaSetelahPphBadan <=0) { $labaSetelahPphBadan = 0; }
-        if($potensiRest <= 0) {$potensiRest = 0;}
+        // if($labaSetelahPphBadan <=0) { $labaSetelahPphBadan = 0; }
+        // if($potensiRest <= 0) {$potensiRest = 0;}
 
     ?>
 

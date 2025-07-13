@@ -889,6 +889,57 @@ class Gudang extends BaseController {
         }
     }
 
+    public function data_sn(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $kode       = $this->input->getVar('filter_kode');
+            
+            $vtrMutasi  = new \App\Models\vtrMutasi();
+            $sql_mutasi = $vtrMutasi->asObject()->where('tipe !=', '4')->where('status_hps', '0'); //->like('no_nota', (!empty($kode) ? $kode : ''))->orderBy('id', 'DESC');
+            
+            $jml_limit  = $this->Setting->jml_item;
+            $ItemStokDet        = new \App\Models\mItemStokDet();
+            $sql_item_stok_det = $ItemStokDet->asObject()
+            ->select('tbl_m_item_stok_det.*, g.kode AS gudang_kode, g.gudang, i.kode AS item_kode, i.item')
+            ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
+            ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
+            ->orderBy('id', 'DESC');
+
+            if (!empty($kode)) {
+                $sql_item_stok_det->like('tbl_m_item_stok_det.kode', $kode);
+            }
+
+            $data  = [
+                'SQLItemDet'     => $sql_item_stok_det->paginate($jml_limit),
+                'Pagination'    => $ItemStokDet->pager->links('default', 'bootstrap_full'),
+                'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/gudang/menu_kiri',
+                'konten'        => $this->ThemePath.'/manajemen/gudang/data_sn',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);           
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function set_sn_cari() {                
+        if ($this->input->is('post') == 1) {
+            $kode   = $this->input->getVar('kode');
+            
+            return redirect()->to(base_url('gudang/stok/data_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode : '')));
+        }
+    }
     
     # == MUTASI == #
     public function data_mutasi(){

@@ -19,6 +19,13 @@
             <p>Mutasi Stok</p>
         </a>
     </li>
+    <li class="nav-header">DATA KODE SN</li>
+    <li class="nav-item">
+        <a href="<?php echo base_url('gudang/stok/data_sn.php') ?>" class="nav-link">
+            <i class="nav-icon fas fa-cubes"></i>
+            <p>KODE SN</p>
+        </a>
+    </li>
     <!--
     <li class="nav-header">PENGEMBALIAN</li>
     <li class="nav-item">

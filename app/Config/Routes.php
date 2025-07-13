@@ -296,6 +296,8 @@ $routes->group('gudang', ['filter' => 'auth'], function($routes) {
     $routes->post('pengiriman/cart_hapus.php', 'Gudang::cart_mutasi_hapus');
     
     # --- GUDANG - STOK ---
+    $routes->get('stok/data_sn.php', 'Gudang::data_sn');
+    $routes->post('stok/set_sn_cari.php', 'Gudang::set_sn_cari');
     $routes->get('stok/data_item.php', 'Gudang::data_item');
     $routes->get('stok/data_item_det.php', 'Gudang::data_item_stok');
     $routes->post('stok/set_item_simpan.php', 'Gudang::set_item_simpan');

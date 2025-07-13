@@ -72,7 +72,7 @@
                                                         <div class="form-group">
                                                             <div class="input-group mb-3">
                                                                 <div class="custom-control custom-switch custom-switch-off-danger custom-switch-on-success">
-                                                                    <?php echo form_checkbox(['id' => 'customSwitch3', 'name' => 'status_biaya', 'value' => '1', 'class' => 'custom-control-input', 'checked' => (!empty($SQLRabDetRw) ? ($SQLRabDetRw->status_biaya == '1' ? true : false) : false)]) ?>
+                                                                    <?php echo form_checkbox(['id' => 'customSwitch3', 'name' => 'status_biaya', 'value' => '1', 'class' => 'custom-control-input', 'checked' => (!empty($SQLRabDetRw) ? ($SQLRabDetRw->status_biaya == '1' ? true : false) : true)]) ?>
                                                                     <label class="custom-control-label" for="customSwitch3">Ya</label>
                                                                 </div>
                                                             </div>

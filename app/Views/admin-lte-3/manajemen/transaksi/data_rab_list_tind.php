@@ -116,41 +116,44 @@
 
         // update
         $totalJual = $gtotal;
-        $totalBeli = $SQLRabDetSum->harga_hpp_tot;
-        
         $dppJual = $totalJual / 1.11;
-        $dppBeli = $totalBeli / 1.11;
-        
+        $ppnJual = ($dppJual * 11) / 100;
         $pph = $SQLRab->pph;
-        $totPph = ($pph * $totalJual) / 100;
-
-
-        $tipeNetto = "SWASTA";
-        $netto = $totalJual; // tipe swasta netto == total jual
-        if(in_array($SQLRab->id_tipe, [1,2,3,4])){
+        // $totPph = ($pph * $totalJual) / 100;
+        $tipeNetto = "SWASTA"; // swasta / umum
+        $netto = $dppJual; // tipe swasta netto == dpp jual
+        if(in_array($SQLRab->id_tipe, [1,2,3])){
             $tipeNetto = "NON SWASTA";
             $pphJual = ($dppJual * $SQLRab->pph) / 100;
             $netto = $dppJual - $pphJual;
         }
-        
-        $ppnJual = ($dppJual * 11) / 100;
+        $totalBeli = $SQLRabDetSum->harga_hpp_tot;
+        $dppBeli = $totalBeli / 1.11;
         $ppnBeli = ($dppBeli * 11) / 100;
         $selisihPajak = $ppnJual - $ppnBeli;
-
         $administrasi = (0.25 / 100) * $netto;
-
         $biaya1 = ($SQLRabDetSumBi2->subtotal ?? 0);
         $potonganPenj = ($SQLRabDetSumBi3->subtotal ?? 0);
+        $laba = $totalJual - $totalBeli - $selisihPajak - $administrasi - $biaya1 - $potonganPenj; //laba swasta
+        if($tipeNetto == "NON SWASTA"){
+            $laba = $netto - $totalBeli - $administrasi - $biaya1 - $potonganPenj; //laba negri
+        }
 
-        $laba = $netto - $selisihPajak - $administrasi - $biaya1 - $potonganPenj;
-
-        $pphBadan = ($laba * 22) / 100;
+        $pphBadan = $laba; // swasta
+        if($tipeNetto == "NON SWASTA"){
+            $pphBadan = ($laba * 22) / 100; // 22% laba negri
+        }
 
         $labaSetelahPphBadan = $laba - $pphBadan;
 
-        $potensiRest = $ppnJual;
-        $labaFinal = $labaSetelahPphBadan + $potensiRest;
-        
+        $potensiRest = 0; // swasta
+        if($tipeNetto == "NON SWASTA"){
+            $potensiRest = $ppnBeli;
+        }
+        $labaFinal = $labaSetelahPphBadan; // umum
+        if($tipeNetto == "NON SWASTA"){
+            $labaFinal = $labaSetelahPphBadan + $potensiRest;
+        }
     ?>
 
     <!-- FLOW LAMA -->
@@ -213,26 +216,28 @@
         <th class="text-right"><?php echo format_angka($dppJual); ?></th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">DPP BELI</th>
-        <th class="text-right"><?php echo format_angka($dppBeli); ?></th>
+        <th colspan="3" class="text-right">PPN JUAL</th>
+        <th class="text-right"><?php echo format_angka($ppnJual); ?></th>
     </tr>
     <tr>
-        <th colspan="3" class="text-right">PPH (<?= $pph; ?> %)</th>
-        <th class="text-right"><?php echo format_angka($totPph); ?></th>
+        <th colspan="3" class="text-right">PPH</th>
+        <th class="text-right"><?= $pph; ?> %</th>
     </tr>
-
     <tr>
         <th colspan="3" class="text-right">NETTO (<?= $tipeNetto;?>)</th>
         <th class="text-right"><?php echo format_angka($netto); ?></th>
     </tr>
-
+    <tr>
+        <th colspan="3" class="text-right">TOTAL BELI</th>
+        <th class="text-right"><?php echo format_angka($totalBeli); ?></th>
+    </tr>
+    <tr>
+        <th colspan="3" class="text-right">DPP BELI</th>
+        <th class="text-right"><?php echo format_angka($dppBeli); ?></th>
+    </tr>
     <tr>
         <th colspan="3" class="text-right">PPN BELI</th>
         <th class="text-right"><?php echo format_angka($ppnBeli); ?></th>
-    </tr>
-    <tr>
-        <th colspan="3" class="text-right">PPN JUAL</th>
-        <th class="text-right"><?php echo format_angka($ppnJual); ?></th>
     </tr>
     <tr>
         <th colspan="3" class="text-right">SELISIH PAJAK</th>

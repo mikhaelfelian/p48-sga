@@ -3934,7 +3934,7 @@ class Transaksi extends BaseController {
                                     'id_item_stok_det'  => $id_sn, // asumsinya ada kolom ini untuk relasi SN
                                     'kode_sn'           => $getSN->kode,
                                     'keterangan'        => 'STOK KELUAR PENGIRIMAN',
-                                    'status'            => 1
+                                    'status'            => '1'
                                 ]);
                             }
                         }

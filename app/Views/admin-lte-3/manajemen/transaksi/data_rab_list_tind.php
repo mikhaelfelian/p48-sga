@@ -127,6 +127,13 @@
             $pphJual = ($dppJual * $SQLRab->pph) / 100;
             $netto = $dppJual - $pphJual;
         }
+
+        // JIKA RAB-> PPH == 0 % MAKA UBAH TIPE SEBAGAI SWASTA DAN GUNAKAN RUMUS SWASTA
+        if($SQLRab->pph == 0){
+            $tipeNetto = "SWASTA";
+            $netto = $dppJual;
+        }
+
         $totalBeli = $SQLRabDetSum->harga_hpp_tot;
         $dppBeli = $totalBeli / 1.11;
         $ppnBeli = ($dppBeli * 11) / 100;

@@ -26,6 +26,7 @@ class trMutasiStok extends Model
         'tgl_simpan',
         'tgl_masuk',
         'item',
+        'kode_sn',
         'stok_awal',
         'jml',
         'stok_akhir',

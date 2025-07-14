@@ -2927,6 +2927,7 @@ class Transaksi extends BaseController {
                 $Tipe           = new \App\Models\mTipe();
                 $TipeFile       = new \App\Models\mTipeFile();
                 $Profile        = new \App\Models\PengaturanProfile();
+                $ItemStokDet        = new \App\Models\mItemStokDet();
                 
                 $sql_penj           = $Penj->asObject()->where('id', $IDPenj)->first();
                 $sql_rab            = $Rab->asObject()->where('id', $sql_penj->id_rab)->first();
@@ -2946,6 +2947,7 @@ class Transaksi extends BaseController {
                 $sql_po             = $PO->asObject()->where('id_rab', $sql_penj->id_rab)->orWhere('id_penjualan', $sql_penj->id)->find();
                 $sql_po_rw          = $PO->asObject()->where('id', $IDPO)->first();
                 $sql_po_rw_det      = $PODet->asObject()->where('id_pembelian', $IDPO)->find();    
+                $sql_item_stok_det  = $ItemStokDet->asObject()->where('id_item', $IDItm)->where('status', 1)->find();
             }else{
                 $sql_psn        = '';
                 $sql_psn_det    = '';
@@ -2954,6 +2956,7 @@ class Transaksi extends BaseController {
                 $sql_sat        = '';
                 $sql_plgn       = '';
                 $sql_mut        = '';
+                $sql_item_stok_det = '';
             }
                             
             # Tentukan view berdasarkan status
@@ -3010,6 +3013,7 @@ class Transaksi extends BaseController {
                 'SQLMutasiDet'  => $sql_mut_det,
                 'SQLMutasiDetRw'=> $sql_mut_det_rw,
                 'SQLItem'       => $sql_item,
+                'SQLItemStokDet'=> $sql_item_stok_det,
                 'SQLSatuan'     => $sql_sat,
                 'SQLPlgn'       => $sql_plgn,
                 'SQLUser'       => $ID,
@@ -3824,6 +3828,7 @@ class Transaksi extends BaseController {
             $sn             = $this->input->getVar('sn');
             $ket            = $this->input->getVar('keterangan');
             $status         = $this->input->getVar('status');
+            $kode_sn_list = $this->request->getVar('kode_sn');
 
             $Plgn           = new \App\Models\mPelanggan();
             $Item           = new \App\Models\mItem();
@@ -3831,6 +3836,8 @@ class Transaksi extends BaseController {
             $Mts            = new \App\Models\trMutasi();
             $MtsDet         = new \App\Models\trMutasiDet();
             $PenjDet        = new \App\Models\trPenjDet();
+            $ItemStokDet   = new \App\Models\mItemStokDet();
+            $TrJualKirimSn = new \App\Models\trJualKirimSn();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -3882,6 +3889,9 @@ class Transaksi extends BaseController {
                 
                 if(!empty($sql_penj_det)){
                     if($jml <= $sql_penj_det->jml){
+                        # Start Transact SQL
+                        $this->db->transBegin();
+
                         $data = [
                             'id'                => $id_mts_det,
                             'id_mutasi'         => $id_mts,
@@ -3901,16 +3911,58 @@ class Transaksi extends BaseController {
 
                         $MtsDet->save($data);
                         $last_id = $id_mts_det;
+                        
+                        // LOOPING DATA KODE SN DAN INSERT DATA DIBAWAH INI
+                        if (!empty($kode_sn_list) && is_array($kode_sn_list)) {
+                            foreach ($kode_sn_list as $id_sn) {
+                                // UPDATE status di item_stok_det
 
-                        if(empty($id_mts_det)){
-                            $this->session->setFlashdata('transaksi_toast', 'toastr.success("Item berhasil disimpan !!");');
-                        }else{
-                            $this->session->setFlashdata('transaksi_toast', 'toastr.success("'.$jml.' Item berhasil dikirim !!");');
+                                // UPDATE status SN di item_stok_det
+                                $ItemStokDet->update($id_sn, [
+                                    'status' => 0
+                                ]);
+
+
+                                $getSN = $ItemStokDet->asObject()->where('id', $id_sn)->first();
+
+                                // INSERT ke mutasi stok
+                                $TrJualKirimSn->save([
+                                    'id_user'           => $ID->id,
+                                    'id_penjualan'      =>  $id,
+                                    'id_penjualan_det'  => $id_penj_det,
+                                    'id_item'           => (!empty($sql_item->id) ? $sql_item->id : 0),
+                                    'id_item_stok_det'  => $id_sn, // asumsinya ada kolom ini untuk relasi SN
+                                    'kode_sn'           => $getSN->kode,
+                                    'keterangan'        => 'STOK KELUAR PENGIRIMAN',
+                                    'status'            => 1
+                                ]);
+                            }
                         }
+                        # End off transact SQL
+                        $this->db->transComplete();
+
+                        # Cek status transact SQL, jika gagal maka rollback
+                        if ($this->db->transStatus() === false) {
+                            $this->db->transRollback();
+                        
+                            // ✅ Tambahkan pesan error jika gagal
+                            $this->session->setFlashdata('gudang_toast', 'toastr.error("Gagal menyimpan item. Silakan coba lagi.");');
+                            // dd($this->db->error()['message']);
+                        } else {
+                            $this->db->transCommit();
+                        
+                            if(empty($id_mts_det)){
+                                $this->session->setFlashdata('transaksi_toast', 'toastr.success("Item berhasil disimpan !!");');
+                            }else{
+                                $this->session->setFlashdata('transaksi_toast', 'toastr.success("'.$jml.' Item berhasil dikirim !!");');
+                            }
+                        }
+
+                        
                     }else{
                         $this->session->setFlashdata('transaksi_toast', 'toastr.error("Jumlah yang dikirim tidak sesuai !!");');
                     } 
-                }
+                }else{}
 
                 return redirect()->to(base_url('transaksi/data_penjualan_aksi.php?act=do_input&id='.$id.(!empty($status) ? '&status='.$status : '').(!empty($id_mts) ? '&id_do='.$id_mts : '')));
             }

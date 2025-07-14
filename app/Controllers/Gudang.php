@@ -1364,6 +1364,21 @@ class Gudang extends BaseController {
                 // LOOPING DATA KODE SN DAN INSERT DATA DIBAWAH INI
                 if (!empty($kode_sn_list) && is_array($kode_sn_list)) {
                     foreach ($kode_sn_list as $id_sn) {
+                        // UPDATE status di item_stok_det
+                        // Tentukan status update berdasarkan status mutasi
+                        $status_stok = 1; // default
+                        if ($sql_mts->tipe == 3) {
+                            $status_stok = 0;
+                        }
+
+                        // UPDATE status SN di item_stok_det
+                        $ItemStokDet->update($id_sn, [
+                            'status' => $status_stok
+                        ]);
+
+
+                        $getSN = $ItemStokDet->asObject()->where('id', $id_sn)->first();
+
                         // INSERT ke mutasi stok
                         $MtsStock->save([
                             'id_user'       => $ID->id,
@@ -1376,22 +1391,11 @@ class Gudang extends BaseController {
                             'tgl_masuk'     => $sql_mts->tgl_simpan,
                             'tgl_simpan'    => $sql_mts->tgl_simpan,
                             'item'          => '',
+                            'kode_sn'       => $getSN->kode,
                             'stok_awal'     => 1,
                             'jml'           => 1,
                             'stok_akhir'    => 1,
-                            'keterangan'    => $ket
-                        ]);
-                
-                        // UPDATE status di item_stok_det
-                        // Tentukan status update berdasarkan status mutasi
-                        $status_stok = 1; // default
-                        if ($sql_mts->tipe == 3) {
-                            $status_stok = 0;
-                        }
-
-                        // UPDATE status SN di item_stok_det
-                        $ItemStokDet->update($id_sn, [
-                            'status' => $status_stok
+                            'keterangan'    => $status_stok == 0 ? 'STOK KELUAR' : 'STOK MASUK'
                         ]);
                     }
                 }
@@ -1405,7 +1409,7 @@ class Gudang extends BaseController {
                 
                     // ✅ Tambahkan pesan error jika gagal
                     $this->session->setFlashdata('gudang_toast', 'toastr.error("Gagal menyimpan item. Silakan coba lagi.");');
-                    dd($this->db->error()['message']);
+                    // dd($this->db->error()['message']);
                 } else {
                     $this->db->transCommit();
                 

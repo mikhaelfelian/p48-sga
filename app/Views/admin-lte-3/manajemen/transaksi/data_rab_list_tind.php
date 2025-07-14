@@ -131,7 +131,7 @@
         // JIKA RAB-> PPH == 0 % MAKA UBAH TIPE SEBAGAI SWASTA DAN GUNAKAN RUMUS SWASTA
         if($SQLRab->pph == 0){
             $tipeNetto = "SWASTA";
-            $netto = $dppJual;
+            $netto = $totalJual; // ini agak di bedakan
         }
 
         $totalBeli = $SQLRabDetSum->harga_hpp_tot;

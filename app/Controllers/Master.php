@@ -220,6 +220,89 @@ class Master extends BaseController {
             return redirect()->to(base_url('master/data_kategori.php?'.(!empty($kat) ? 'filter_kat='.$kat : '').(!empty($kde) ? '&filter_kode='.$kde : '')));
         }
     }
+
+    public function xls_kategori(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $kode       = $this->input->getVar('filter_kode');
+            $kat        = $this->input->getVar('filter_kat');
+
+            $Kategori   = new \App\Models\mKategori();
+            $sql_kat    = $Kategori->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''))->find();
+            
+            
+            $objPHPExcel = new Spreadsheet();
+            
+            # Header Excel
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getAlignment()->setHorizontal('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getAlignment()->setVertical('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getFont()->setBold(TRUE);
+            
+            # Judul header
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A1', 'DATA KATEGORI')->mergeCells('A1:E1');
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:E2');
+            
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A4', 'No')
+                    ->setCellValue('B4', 'Kode')
+                    ->setCellValue('C4', 'Kategori')
+                    ->setCellValue('D4', 'Keterangan')
+                    ->setCellValue('E4', 'Status');
+            
+            $objPHPExcel->getActiveSheet()->freezePane("A5");
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:E4');
+            
+            # Pengaturan panjang sel
+            $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+
+            if(empty($tmpl)){
+                $no     = 1;
+                $cell   = 5;
+                foreach ($sql_kat as $data) {
+                    $objPHPExcel->getActiveSheet()->getStyle('A'.$cell)->getAlignment()->setHorizontal('center');
+                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':E'.$cell)->getAlignment()->setHorizontal('left');
+//                    $objPHPExcel->getActiveSheet()->getStyle('D'.$cell)->getAlignment()->setHorizontal('center');
+//                    $objPHPExcel->getActiveSheet()->getStyle('E'.$cell)->getAlignment()->setHorizontal('left');
+                    // $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getAlignment()->setHorizontal('right');
+                    // $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getNumberFormat()->setFormatCode("_(\"\"* #,##0_);_(\"\"* \(#,##0\);_(\"\"* \"-\"??_);_(@_)");
+
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('A' . $cell, $no)
+                                ->setCellValue('B' . $cell, strtoupper($data->kode))
+                                ->setCellValue('C' . $cell, strtoupper($data->kategori))
+                                ->setCellValue('D' . $cell, $data->keterangan)
+                                ->setCellValue('E' . $cell, $data->status == 1 ? 'Aktif' : 'Non Aktif');
+
+                    $no++;
+                    $cell++;
+                }
+            }
+
+            $objPHPExcel->getActiveSheet()->setTitle('Data Kategori');
+
+            $writer     = new Xlsx($objPHPExcel);
+            $fileName   = 'data_kategori_'.(!empty($tmpl) ? 'template' : date('YmdH'));
+
+            // Redirect hasil generate xlsx ke web client
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename='.$fileName.'.xlsx');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
     
     
     public function data_merk_list(){
@@ -1781,7 +1864,7 @@ class Master extends BaseController {
                     ->setCellValue('I4', 'LIMIT HUTANG');
             
             $objPHPExcel->getActiveSheet()->freezePane("A5");
-            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:F4');
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:I4');
             
             # Pengaturan panjang sel
             $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
@@ -2177,7 +2260,7 @@ class Master extends BaseController {
                     ->setCellValue('J4', 'CP');
             
             $objPHPExcel->getActiveSheet()->freezePane("A5");
-            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:F4');
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:J4');
             
             # Pengaturan panjang sel
             $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
@@ -2189,7 +2272,7 @@ class Master extends BaseController {
             $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(20);
 
             if(empty($tmpl)){
                 $no     = 1;

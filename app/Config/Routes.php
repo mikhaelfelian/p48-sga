@@ -169,6 +169,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
     $routes->post('karyawan_set_update.php', 'Master::karyawan_set_update');
     $routes->get('karyawan_set_hapus.php', 'Master::karyawan_set_hapus');
     $routes->post('karyawan_set_cari.php', 'Master::karyawan_set_cari');
+    $routes->get('xls_karyawan.php', 'Master::xls_karyawan');
+
 });
 
 

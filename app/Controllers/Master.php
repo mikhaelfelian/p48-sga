@@ -1752,9 +1752,6 @@ class Master extends BaseController {
             $nama       = $this->input->getVar('filter_nama');
             $kode        = $this->input->getVar('filter_kode');
 
-            // $Model      = new \App\Models();
-            // $sql_item   = $Model->asObject()->like('item2', (!empty($item) ? $item : ''))->find();
-
             $Plgn       = new \App\Models\mPelanggan();
             $sql_plgn   = $Plgn->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('nama', (!empty($nama) ? $nama : ''))->find();
             
@@ -1768,9 +1765,9 @@ class Master extends BaseController {
             
             # Judul header
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:F1');
+                    ->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:I1');
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:F2');
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:I2');
             
             $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A4', 'No')
@@ -2139,6 +2136,103 @@ class Master extends BaseController {
             $nama   = $this->input->getVar('nama');
             
             return redirect()->to(base_url('master/data_supplier.php?'.(!empty($kode) ? 'filter_kode='.$kode : '').(!empty($nama) ? '&filter_nama='.$nama : '')));
+        }
+    }
+
+    public function xls_supplier(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $nama       = $this->input->getVar('filter_nama');
+            $kode        = $this->input->getVar('filter_kode');
+
+            $Supp       = new \App\Models\mSupplier();
+            $sql_supp   = $Supp->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('nama', (!empty($nama) ? $nama : ''))->find();
+            
+            $objPHPExcel = new Spreadsheet();
+            
+            # Header Excel
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getAlignment()->setHorizontal('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getAlignment()->setVertical('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:L4')->getFont()->setBold(TRUE);
+            
+            # Judul header
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A1', 'DATA SUPPLIER')->mergeCells('A1:J1');
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:J2');
+            
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A4', 'No')
+                    ->setCellValue('B4', 'Kode')
+                    ->setCellValue('C4', 'Nama')
+                    ->setCellValue('D4', value: 'No Telpon')
+                    ->setCellValue('E4', 'NPWP')
+                    ->setCellValue('F4', 'Alamat')
+                    ->setCellValue('G4', 'Kota')
+                    ->setCellValue('H4', 'Provinsi')
+                    ->setCellValue('I4', 'No HP')
+                    ->setCellValue('J4', 'CP');
+            
+            $objPHPExcel->getActiveSheet()->freezePane("A5");
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:F4');
+            
+            # Pengaturan panjang sel
+            $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(65);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+
+            if(empty($tmpl)){
+                $no     = 1;
+                $cell   = 5;
+                foreach ($sql_supp as $data) {
+                    $objPHPExcel->getActiveSheet()->getStyle('A'.$cell)->getAlignment()->setHorizontal('center');
+                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':J'.$cell)->getAlignment()->setHorizontal('left');
+//                    $objPHPExcel->getActiveSheet()->getStyle('D'.$cell)->getAlignment()->setHorizontal('center');
+//                    $objPHPExcel->getActiveSheet()->getStyle('E'.$cell)->getAlignment()->setHorizontal('left');
+                    // $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getAlignment()->setHorizontal('right');
+                    // $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getNumberFormat()->setFormatCode("_(\"\"* #,##0_);_(\"\"* \(#,##0\);_(\"\"* \"-\"??_);_(@_)");
+
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('A' . $cell, $no)
+                                ->setCellValue('B' . $cell, strtoupper($data->kode))
+                                ->setCellValue('C' . $cell, strtoupper($data->nama))
+                                ->setCellValue('D' . $cell, $data->no_telp)
+                                ->setCellValue('E' . $cell, $data->npwp)
+                                ->setCellValue('F' . $cell, $data->alamat)
+                                ->setCellValue('G' . $cell, $data->kota)
+                                ->setCellValue('H' . $cell, $data->provinsi)
+                                ->setCellValue('I' . $cell, $data->no_hp)
+                                ->setCellValue('J' . $cell, $data->cp);
+
+                    $no++;
+                    $cell++;
+                }
+            }
+
+            $objPHPExcel->getActiveSheet()->setTitle('Data Supplier');
+
+            $writer     = new Xlsx($objPHPExcel);
+            $fileName   = 'data_supplier_'.(!empty($tmpl) ? 'template' : date('YmdH'));
+
+            // Redirect hasil generate xlsx ke web client
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename='.$fileName.'.xlsx');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
         }
     }
     

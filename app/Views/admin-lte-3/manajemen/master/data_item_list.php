@@ -85,7 +85,11 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                     <br/><?php echo (!empty($item->merk) ? $item->merk.' ' : '').ucwords($item->item) ?>
                                                     <br/><small><?php echo $item->keterangan ?></small>
                                                 </td>
-                                                <td style="width: 50px;"><?php echo format_angka($item->harga_jual, 0) ?></td>
+                                                <td style="width: 150px;">
+                                                    <small>Harga Beli : Rp. <?php echo format_angka($item->harga_beli, 0) ?></small>
+                                                    <br>
+                                                    <small>Harga Jual : Rp. <?php echo format_angka($item->harga_jual, 0) ?></small>
+                                                </td>
                                                 <td style="width: 150px;">
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>

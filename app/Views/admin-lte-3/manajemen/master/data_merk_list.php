@@ -1,4 +1,8 @@
 <?php $request = \Config\Services::request(); ?>
+<?php 
+$request    = \Config\Services::request();
+$url        = new \CodeIgniter\HTTP\URI(current_url(true));
+?>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -32,6 +36,15 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            <?php
+                                $uri        = substr($url->getSegment(2), 5, -4);
+                                $kode        = $request->getVar('filter_kode');
+                                $merk        = $request->getVar('filter_merk');
+                                
+                                $uri_xls    = base_url('master/xls_'.$uri.'.php?'.(!empty($kode) ? 'filter_kode='.$kode.'&' : '').(!empty($merk) ? 'filter_merk='.$merk : ''));
+                            ?>
+                            <button class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo $uri_xls ?>'"><i class="fas fa-file-excel"></i> Data MERK</button>
+                            
                             <table class="table table-striped">
                                 <thead>
                                     <tr>

@@ -99,6 +99,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
     $routes->post('set_kategori_update.php', 'Master::set_kategori_update');
     $routes->post('set_kategori_cari.php', 'Master::set_kategori_cari');
     $routes->get('xls_kategori.php', 'Master::xls_kategori');
+    $routes->get('data_kategori_import.php', 'Master::data_kategori_import');
+    $routes->post('set_kategori_upload.php', 'Master::set_kategori_upload');
 
     # Master Merk
     $routes->get('data_merk.php', 'Master::data_merk_list');

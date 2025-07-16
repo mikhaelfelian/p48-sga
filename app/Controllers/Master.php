@@ -221,6 +221,35 @@ class Master extends BaseController {
         }
     }
 
+    public function data_kategori_import(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $IDItem     = $this->input->getVar('id');
+            
+                                    
+            $data  = [
+                'MenuAktif'     => 'active',
+                'MenuOpen'      => 'menu-open',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/master/menu_kiri_kategori',
+                'konten'        => $this->ThemePath.'/manajemen/master/data_kategori_import',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
     public function xls_kategori(){
         if ($this->ionAuth->loggedIn()) {
             $ID         = $this->ionAuth->user()->row();
@@ -229,6 +258,7 @@ class Master extends BaseController {
             
             $kode       = $this->input->getVar('filter_kode');
             $kat        = $this->input->getVar('filter_kat');
+            $tmpl       = $this->input->getVar('status_temp');
 
             $Kategori   = new \App\Models\mKategori();
             $sql_kat    = $Kategori->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''))->find();
@@ -298,6 +328,97 @@ class Master extends BaseController {
             header('Cache-Control: max-age=0');
 
             $writer->save('php://output');
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function set_kategori_upload() {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            # Load helper validasi
+            $validasi   = \Config\Services::validation();
+
+            $fupl   = $this->request->getFile('fupload');
+
+            $Kat        = new \App\Models\mKategori();
+
+            # Aturan validasi form tulis disini
+            $aturan = [
+                'fupload' => [
+                    'rules'     => 'mime_in[fupload,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/excel]',
+                    'errors'    => [
+//                        'uploaded' => 'Berkas unggah tidak tersedia',
+                        'mime_in' => 'Berkas harus berupa excel file',
+                    ]
+                ]
+            ];
+
+            # Simpan config validasi
+            $validasi->setRules($aturan);
+
+            # Jalankan validasi
+            if(!$this->validate($aturan)){
+                $psn_gagal = [
+                    'fupload'   => $validasi->getError('fupload'),
+                ];
+
+                $this->session->setFlashdata('psn_gagal', $psn_gagal);
+
+                return redirect()->to(base_url('master/data_kategori_import.php'));
+            }else{
+                # Muat library untuk unggah file
+                # $path untuk mengatur lokasi unggah file
+                $ext    = $fupl->getClientExtension();
+                $file   = $fupl->getClientName();
+                
+                if($ext == 'xlsx'){
+                    $objPHPExcel    = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                    $objPHPOffice   = $objPHPExcel->load($fupl);
+                }elseif($ext == 'xls'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+                    $objPHPOffice = $objPHPExcel->load($fupl); 
+                }elseif($ext == 'csv'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                    $objPHPOffice = $objPHPExcel->load($fupl);
+                }else{
+                    $this->session->setFlashdata('master_toast', 'toastr.error("Unggah excel error !!");');
+                    return redirect()->to(base_url('master/data_kategori_import.php'));
+                }
+                
+                $data = $objPHPOffice->getWorksheetIterator();
+                
+                $cell = 5;
+                foreach($data as $x => $ws) {
+                    # Ambil nilai tertinggi dari kolom dan baris
+                    $brsmax = $ws->getHighestRow();
+                    $klmmax = $ws->getHighestColumn();
+                    
+                    for($brs=5; $brs <= $brsmax; $brs++){ 
+                        $kode        = $ws->getCellByColumnAndRow(2, $brs)->getValue();                      
+                        $kategori       = $ws->getCellByColumnAndRow(3, $brs)->getValue();
+                        $keterangan       = $ws->getCellByColumnAndRow(4, $brs)->getValue();
+                        $status       = $ws->getCellByColumnAndRow(5, $brs)->getValue();
+                        
+                        $data = [
+                            'kode'          => $kode,
+                            'kategori'      => $kategori,
+                            'keterangan'    => $keterangan,
+                            'status'        => in_array(strtolower($status), ['1', 'aktif']) ? '1' : '0',
+                        ];
+                        
+                        $Kat->save($data);
+                        $last_id = $Kat->insertID();
+                        $this->session->setFlashdata('master_toast', 'toastr.success("Data Kategori berhasil diunggah !!");');
+                    }
+                }
+                
+                return redirect()->to(base_url('master/data_kategori_import.php'));
+            }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());

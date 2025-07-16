@@ -159,6 +159,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
     $routes->get('set_supplier_hapus.php', 'Master::set_supplier_hapus');
     $routes->post('set_supplier_cari.php', 'Master::set_supplier_cari');
     $routes->get('xls_supplier.php', 'Master::xls_supplier');
+    $routes->get('data_supplier_import.php', 'Master::data_supplier_import');
+    $routes->post('set_supplier_upload.php', 'Master::set_supplier_upload');
 
     # Master Karyawan
     $routes->get('karyawan_list.php', 'Master::karyawan_list');

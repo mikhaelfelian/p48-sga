@@ -16,4 +16,12 @@
             </p>
         </a>
     </li>
+    <li class="nav-item">
+        <a href="<?php echo base_url('master/data_supplier_import.php') ?>" class="nav-link">
+            <i class="nav-icon fas fa-file-import"></i>
+            <p>
+                Import
+            </p>
+        </a>
+    </li>
 </ul>

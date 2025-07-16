@@ -2696,6 +2696,7 @@ class Master extends BaseController {
             
             $nama       = $this->input->getVar('filter_nama');
             $kode        = $this->input->getVar('filter_kode');
+            $tmpl       = $this->input->getVar('status_temp');
 
             $Supp       = new \App\Models\mSupplier();
             $sql_supp   = $Supp->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('nama', (!empty($nama) ? $nama : ''))->find();
@@ -2709,9 +2710,9 @@ class Master extends BaseController {
             
             # Judul header
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'DATA SUPPLIER')->mergeCells('A1:J1');
+                    ->setCellValue('A1', 'DATA SUPPLIER')->mergeCells('A1:K1');
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:J2');
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:K2');
             
             $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A4', 'No')
@@ -2723,7 +2724,8 @@ class Master extends BaseController {
                     ->setCellValue('G4', 'Kota')
                     ->setCellValue('H4', 'Provinsi')
                     ->setCellValue('I4', 'No HP')
-                    ->setCellValue('J4', 'CP');
+                    ->setCellValue('J4', 'Rekening')
+                    ->setCellValue('k4', 'Status');
             
             $objPHPExcel->getActiveSheet()->freezePane("A5");
             $objPHPExcel->getActiveSheet()->setAutoFilter('A4:J4');
@@ -2739,13 +2741,14 @@ class Master extends BaseController {
             $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
 
             if(empty($tmpl)){
                 $no     = 1;
                 $cell   = 5;
                 foreach ($sql_supp as $data) {
                     $objPHPExcel->getActiveSheet()->getStyle('A'.$cell)->getAlignment()->setHorizontal('center');
-                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':J'.$cell)->getAlignment()->setHorizontal('left');
+                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':K'.$cell)->getAlignment()->setHorizontal('left');
 //                    $objPHPExcel->getActiveSheet()->getStyle('D'.$cell)->getAlignment()->setHorizontal('center');
 //                    $objPHPExcel->getActiveSheet()->getStyle('E'.$cell)->getAlignment()->setHorizontal('left');
                     // $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getAlignment()->setHorizontal('right');
@@ -2761,7 +2764,8 @@ class Master extends BaseController {
                                 ->setCellValue('G' . $cell, $data->kota)
                                 ->setCellValue('H' . $cell, $data->provinsi)
                                 ->setCellValue('I' . $cell, $data->no_hp)
-                                ->setCellValue('J' . $cell, $data->cp);
+                                ->setCellValue('J' . $cell, $data->rekening)
+                                ->setCellValue('K' . $cell, $data->status == 1 ? 'Aktif' : 'Non Aktif');
 
                     $no++;
                     $cell++;
@@ -2785,7 +2789,139 @@ class Master extends BaseController {
         }
     }
     
+    public function data_supplier_import(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $IDItem     = $this->input->getVar('id');
+            
+                                    
+            $data  = [
+                'MenuAktif'     => 'active',
+                'MenuOpen'      => 'menu-open',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/master/menu_kiri_supplier',
+                'konten'        => $this->ThemePath.'/manajemen/master/data_supplier_import',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
     
+
+    public function set_supplier_upload() {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            # Load helper validasi
+            $validasi   = \Config\Services::validation();
+
+            $fupl   = $this->request->getFile('fupload');
+
+            $Supp   = new \App\Models\mSupplier();
+
+            # Aturan validasi form tulis disini
+            $aturan = [
+                'fupload' => [
+                    'rules'     => 'mime_in[fupload,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/excel]',
+                    'errors'    => [
+//                        'uploaded' => 'Berkas unggah tidak tersedia',
+                        'mime_in' => 'Berkas harus berupa excel file',
+                    ]
+                ]
+            ];
+
+            # Simpan config validasi
+            $validasi->setRules($aturan);
+
+            # Jalankan validasi
+            if(!$this->validate($aturan)){
+                $psn_gagal = [
+                    'fupload'   => $validasi->getError('fupload'),
+                ];
+
+                $this->session->setFlashdata('psn_gagal', $psn_gagal);
+
+                return redirect()->to(base_url('master/data_supplier_import.php'));
+            }else{
+                # Muat library untuk unggah file
+                # $path untuk mengatur lokasi unggah file
+                $ext    = $fupl->getClientExtension();
+                $file   = $fupl->getClientName();
+                
+                if($ext == 'xlsx'){
+                    $objPHPExcel    = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                    $objPHPOffice   = $objPHPExcel->load($fupl);
+                }elseif($ext == 'xls'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+                    $objPHPOffice = $objPHPExcel->load($fupl); 
+                }elseif($ext == 'csv'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                    $objPHPOffice = $objPHPExcel->load($fupl);
+                }else{
+                    $this->session->setFlashdata('master_toast', 'toastr.error("Unggah excel error !!");');
+                    return redirect()->to(base_url('master/data_supplier_import.php'));
+                }
+                
+                $data = $objPHPOffice->getWorksheetIterator();
+                
+                $cell = 5;
+                foreach($data as $x => $ws) {
+                    # Ambil nilai tertinggi dari kolom dan baris
+                    $brsmax = $ws->getHighestRow();
+                    $klmmax = $ws->getHighestColumn();
+                    
+                    for($brs=5; $brs <= $brsmax; $brs++){ 
+                        $kode        = $ws->getCellByColumnAndRow(2, $brs)->getValue();                      
+                        $nama       = $ws->getCellByColumnAndRow(3, $brs)->getValue();
+                        $tlp       = $ws->getCellByColumnAndRow(4, $brs)->getValue();
+                        $npwp       = $ws->getCellByColumnAndRow(5, $brs)->getValue();
+                        $almt       = $ws->getCellByColumnAndRow(6, $brs)->getValue();
+                        $kota       = $ws->getCellByColumnAndRow(7, $brs)->getValue();
+                        $prov       = $ws->getCellByColumnAndRow(8, $brs)->getValue();
+                        $hp       = $ws->getCellByColumnAndRow(9, $brs)->getValue();
+                        $rekening       = $ws->getCellByColumnAndRow(10, $brs)->getValue();
+                        $status       = $ws->getCellByColumnAndRow(11, $brs)->getValue();
+                        
+                        $data = [
+                            'kode'      => $kode,
+                            'nama'      => $nama,
+                            'no_telp'   => $tlp,
+                            'no_hp'     => $hp,
+                            'npwp'      => $npwp,
+                            'rekening'  => $rekening,
+                            'alamat'    => $almt,
+                            'provinsi'  => strtoupper($prov),
+                            'kota'      => strtoupper($kota),
+                            'status'        => in_array(strtolower($status), ['1', 'aktif']) ? '1' : '0',
+                        ];
+        
+                        $Supp->save($data);
+                        $last_id = $Supp->insertID();
+                        $this->session->setFlashdata('master_toast', 'toastr.success("Data Supplier berhasil diunggah !!");');
+                    }
+                }
+                
+                return redirect()->to(base_url('master/data_supplier_import.php'));
+            }
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
     public function karyawan_list(){
         if ($this->ionAuth->loggedIn()) {
             $ID         = $this->ionAuth->user()->row();

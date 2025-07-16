@@ -110,6 +110,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
     $routes->post('set_merk_update.php', 'Master::set_merk_update');
     $routes->post('set_merk_cari.php', 'Master::set_merk_cari');
     $routes->get('xls_merk.php', 'Master::xls_merk');
+    $routes->get('data_merk_import.php', 'Master::data_merk_import');
+    $routes->post('set_merk_upload.php', 'Master::set_merk_upload');
 
     # Master Satuan
     $routes->get('data_satuan.php', 'Master::data_satuan_list');

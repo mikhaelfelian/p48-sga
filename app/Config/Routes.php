@@ -148,6 +148,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
     $routes->get('set_pelanggan_hapus_cp.php', 'Master::set_pelanggan_hapus_cp');
     $routes->post('set_pelanggan_cari.php', 'Master::set_pelanggan_cari');
     $routes->get('xls_pelanggan.php', 'Master::xls_pelanggan');
+    $routes->get('data_pelanggan_import.php', 'Master::data_pelanggan_import');
+    $routes->post('set_pelanggan_upload.php', 'Master::set_pelanggan_upload');
 
     # Master Supplier
     $routes->get('data_supplier.php', 'Master::data_supplier_list');

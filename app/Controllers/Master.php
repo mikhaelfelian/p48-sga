@@ -2159,6 +2159,7 @@ class Master extends BaseController {
             
             $nama       = $this->input->getVar('filter_nama');
             $kode        = $this->input->getVar('filter_kode');
+            $tmpl       = $this->input->getVar('status_temp');
 
             $Plgn       = new \App\Models\mPelanggan();
             $sql_plgn   = $Plgn->asObject()->orderBy('id', 'DESC')->like('kode', (!empty($kode) ? $kode : ''))->like('nama', (!empty($nama) ? $nama : ''))->find();
@@ -2173,9 +2174,9 @@ class Master extends BaseController {
             
             # Judul header
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:I1');
+                    ->setCellValue('A1', 'DATA PELANGGAN')->mergeCells('A1:K1');
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:I2');
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:K2');
             
             $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A4', 'No')
@@ -2186,10 +2187,12 @@ class Master extends BaseController {
                     ->setCellValue('F4', 'Alamat')
                     ->setCellValue('G4', 'Kota')
                     ->setCellValue('H4', 'Provinsi')
-                    ->setCellValue('I4', 'LIMIT HUTANG');
+                    ->setCellValue('I4', 'LIMIT HUTANG')
+                    ->setCellValue('J4', 'Status')
+                    ->setCellValue('K4', 'Tipe Pelanggan');
             
             $objPHPExcel->getActiveSheet()->freezePane("A5");
-            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:I4');
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:K4');
             
             # Pengaturan panjang sel
             $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
@@ -2201,6 +2204,8 @@ class Master extends BaseController {
             $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
             $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(10);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(15);
 
             if(empty($tmpl)){
                 $no     = 1;
@@ -2212,6 +2217,7 @@ class Master extends BaseController {
 //                    $objPHPExcel->getActiveSheet()->getStyle('E'.$cell)->getAlignment()->setHorizontal('left');
                     $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getAlignment()->setHorizontal('right');
                     $objPHPExcel->getActiveSheet()->getStyle('I'.$cell)->getNumberFormat()->setFormatCode("_(\"\"* #,##0_);_(\"\"* \(#,##0\);_(\"\"* \"-\"??_);_(@_)");
+                    $objPHPExcel->getActiveSheet()->getStyle('J'.$cell.':K'.$cell)->getAlignment()->setHorizontal('left');
 
                     $objPHPExcel->setActiveSheetIndex(0)
                                 ->setCellValue('A' . $cell, $no)
@@ -2222,8 +2228,9 @@ class Master extends BaseController {
                                 ->setCellValue('F' . $cell, $data->alamat)
                                 ->setCellValue('G' . $cell, $data->kota)
                                 ->setCellValue('H' . $cell, $data->provinsi)
-                                ->setCellValue('I' . $cell, $data->limit_hutang);
-
+                                ->setCellValue('I' . $cell, $data->limit_hutang)
+                                ->setCellValue('J' . $cell, $data->status == '1' ? 'Aktif' : 'Non Aktif')
+                                ->setCellValue('K' . $cell, $data->tipe == '1' ? 'Personal' : ($data->tipe == '2' ? 'Instansi' : 'Swasta') );
                     $no++;
                     $cell++;
                 }
@@ -2240,6 +2247,140 @@ class Master extends BaseController {
             header('Cache-Control: max-age=0');
 
             $writer->save('php://output');
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function data_pelanggan_import(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $IDItem     = $this->input->getVar('id');
+            
+                                    
+            $data  = [
+                'MenuAktif'     => 'active',
+                'MenuOpen'      => 'menu-open',
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/master/menu_kiri_pelanggan',
+                'konten'        => $this->ThemePath.'/manajemen/master/data_pelanggan_import',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function set_pelanggan_upload() {
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            # Load helper validasi
+            $validasi   = \Config\Services::validation();
+
+            $fupl   = $this->request->getFile('fupload');
+
+            $Plgn   = new \App\Models\mPelanggan();
+
+            # Aturan validasi form tulis disini
+            $aturan = [
+                'fupload' => [
+                    'rules'     => 'mime_in[fupload,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/excel]',
+                    'errors'    => [
+//                        'uploaded' => 'Berkas unggah tidak tersedia',
+                        'mime_in' => 'Berkas harus berupa excel file',
+                    ]
+                ]
+            ];
+
+            # Simpan config validasi
+            $validasi->setRules($aturan);
+
+            # Jalankan validasi
+            if(!$this->validate($aturan)){
+                $psn_gagal = [
+                    'fupload'   => $validasi->getError('fupload'),
+                ];
+
+                $this->session->setFlashdata('psn_gagal', $psn_gagal);
+
+                return redirect()->to(base_url('master/data_pelanggan_import.php'));
+            }else{
+                # Muat library untuk unggah file
+                # $path untuk mengatur lokasi unggah file
+                $ext    = $fupl->getClientExtension();
+                $file   = $fupl->getClientName();
+                
+                if($ext == 'xlsx'){
+                    $objPHPExcel    = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                    $objPHPOffice   = $objPHPExcel->load($fupl);
+                }elseif($ext == 'xls'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+                    $objPHPOffice = $objPHPExcel->load($fupl); 
+                }elseif($ext == 'csv'){
+                    $objPHPExcel  = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+                    $objPHPOffice = $objPHPExcel->load($fupl);
+                }else{
+                    $this->session->setFlashdata('master_toast', 'toastr.error("Unggah excel error !!");');
+                    return redirect()->to(base_url('master/data_pelanggan_import.php'));
+                }
+                
+                $data = $objPHPOffice->getWorksheetIterator();
+                
+                $cell = 5;
+                foreach($data as $x => $ws) {
+                    # Ambil nilai tertinggi dari kolom dan baris
+                    $brsmax = $ws->getHighestRow();
+                    $klmmax = $ws->getHighestColumn();
+                    
+                    for($brs=5; $brs <= $brsmax; $brs++){ 
+                        $kode        = $ws->getCellByColumnAndRow(2, $brs)->getValue();                      
+                        $nama       = $ws->getCellByColumnAndRow(3, $brs)->getValue();
+                        $tlp       = $ws->getCellByColumnAndRow(4, $brs)->getValue();
+                        $npwp       = $ws->getCellByColumnAndRow(5, $brs)->getValue();
+                        $almt        = $ws->getCellByColumnAndRow(6, $brs)->getValue();
+                        $kota        = $ws->getCellByColumnAndRow(7, $brs)->getValue();
+                        $prov        = $ws->getCellByColumnAndRow(8, $brs)->getValue();
+                        $limit_hutang        = $ws->getCellByColumnAndRow(9, $brs)->getValue();
+                        $status        = $ws->getCellByColumnAndRow(10, $brs)->getValue();
+                        $tipe        = $ws->getCellByColumnAndRow(11, $brs)->getValue();                        
+                        $tipe = strtolower($tipe);
+                        
+                        $data = [
+                            'id_user'   => $ID->id,
+                            'kode'      => $kode,
+                            'nama'      => $nama,
+                            'no_telp'   => $tlp,
+                            'npwp'      => $npwp,
+                            'alamat'    => $almt,
+                            'provinsi'  => strtoupper($prov),
+                            'kota'      => strtoupper($kota),
+                            'tipe'      => $tipe == 'personal' ? '1' : ($tipe == 'instansi' ? '2' : '3'),
+                            'status'        => in_array(strtolower($status), ['1', 'aktif']) ? '1' : '0',
+                            'limit_hutang' => format_angka_db($limit_hutang ?? 0),
+                        ];
+                        
+                        $Plgn->save($data);
+                        $last_id = $Plgn->insertID();
+                        $this->session->setFlashdata('master_toast', 'toastr.success("Data item berhasil diunggah !!");');
+                    }
+                }
+                
+                return redirect()->to(base_url('master/data_pelanggan_import.php'));
+            }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());

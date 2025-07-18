@@ -1058,8 +1058,16 @@ class Master extends BaseController {
             $satb       = $this->input->getVar('filter_satb');
             $hlmn       = $this->input->getVar('page');
             
-            $Model      = new \App\Models\vItem();
-            $sql_item   = $Model->asObject()->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            $Model      = new \App\Models\mItem();
+            // $sql_item   = $Model->asObject()->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            $sql_item = $Model->asObject()
+            ->select('tbl_m_item.*, tbl_m_satuan.satuanBesar, tbl_m_kategori.kategori, tbl_m_merk.merk')
+            ->join('tbl_m_satuan', 'tbl_m_satuan.id = tbl_m_item.id_satuan', 'left')
+            ->join('tbl_m_kategori', 'tbl_m_kategori.id = tbl_m_item.id_kategori', 'left')
+            ->join('tbl_m_merk', 'tbl_m_merk.id = tbl_m_item.id_merk', 'left')
+            ->like('tbl_m_item.item', (!empty($item) ? $item : ''))
+            ->orderBy('tbl_m_item.id', 'DESC');
+
 //            $sql_item   = $Model->ItemList($this->Setting->jml_item)['dftItem'];
 //            $jml_baris  = $Model->ItemList($this->Setting->jml_item)['jmlBaris'];
             $jml_limit  = $this->Setting->jml_item;
@@ -1190,8 +1198,15 @@ class Master extends BaseController {
             $tmpl       = $this->input->getVar('status_temp');
             $hlmn       = $this->input->getVar('page');
             
-            $Model      = new \App\Models\vItem();
-            $sql_item   = $Model->asObject()->like('item2', (!empty($item) ? $item : ''))->find();
+            $Model      = new \App\Models\mItem();
+            $sql_item = $Model->asObject()
+                ->select('tbl_m_item.*, tbl_m_satuan.satuanBesar, tbl_m_kategori.kategori, tbl_m_merk.merk')
+                ->join('tbl_m_satuan', 'tbl_m_satuan.id = tbl_m_item.id_satuan', 'left')
+                ->join('tbl_m_kategori', 'tbl_m_kategori.id = tbl_m_item.id_kategori', 'left')
+                ->join('tbl_m_merk', 'tbl_m_merk.id = tbl_m_item.id_merk', 'left')
+                ->like('tbl_m_item.item', (!empty($item) ? $item : ''))
+                ->orderBy('tbl_m_item.id', 'DESC')
+                ->findAll();
             
             $objPHPExcel = new Spreadsheet();
             
@@ -1202,47 +1217,61 @@ class Master extends BaseController {
             
             # Judul header
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A1', 'DATA ITEM')->mergeCells('A1:F1');
+                    ->setCellValue('A1', 'DATA ITEM')->mergeCells('A1:J1');
             $objPHPExcel->setActiveSheetIndex(0)
-                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:F2');
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:J2');
             
             $objPHPExcel->setActiveSheetIndex(0)
                     ->setCellValue('A4', 'No')
-                    ->setCellValue('B4', 'Kategori')
-                    ->setCellValue('C4', 'Merk')
-                    ->setCellValue('D4', 'SKU')
-                    ->setCellValue('E4', 'Item')
-                    ->setCellValue('F4', 'HPP');
+                    ->setCellValue('B4', 'Satuan')
+                    ->setCellValue('C4', 'Kategori')
+                    ->setCellValue('D4', 'Merk')
+                    ->setCellValue('E4', 'SKU')
+                    ->setCellValue('F4', 'Item')
+                    ->setCellValue('G4', 'Keterangan')
+                    ->setCellValue('H4', 'Harga Beli')
+                    ->setCellValue('I4', 'Harga Jual')
+                    ->setCellValue('J4', 'Status');
             
             $objPHPExcel->getActiveSheet()->freezePane("A5");
-            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:F4');
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:J4');
             
             # Pengaturan panjang sel
             $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(25);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(25);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(16);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(65);
-            $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(35);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(35);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(25);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(45);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(45);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(30);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(30);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
 
             if(empty($tmpl)){
                 $no     = 1;
                 $cell   = 5;
                 foreach ($sql_item as $data) {
                     $objPHPExcel->getActiveSheet()->getStyle('A'.$cell)->getAlignment()->setHorizontal('center');
-                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':E'.$cell)->getAlignment()->setHorizontal('left');
+                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':G'.$cell)->getAlignment()->setHorizontal('left');
 //                    $objPHPExcel->getActiveSheet()->getStyle('D'.$cell)->getAlignment()->setHorizontal('center');
 //                    $objPHPExcel->getActiveSheet()->getStyle('E'.$cell)->getAlignment()->setHorizontal('left');
-                    $objPHPExcel->getActiveSheet()->getStyle('F'.$cell)->getAlignment()->setHorizontal('right');
-                    $objPHPExcel->getActiveSheet()->getStyle('F'.$cell)->getNumberFormat()->setFormatCode("_(\"\"* #,##0_);_(\"\"* \(#,##0\);_(\"\"* \"-\"??_);_(@_)");
+                    $objPHPExcel->getActiveSheet()->getStyle('H'.$cell.':I'.$cell)->getAlignment()->setHorizontal('right');
+                    $objPHPExcel->getActiveSheet()->getStyle('H'.$cell.':I'.$cell)->getNumberFormat()->setFormatCode("_(\"\"* #,##0_);_(\"\"* \(#,##0\);_(\"\"* \"-\"??_);_(@_)");
+                    $objPHPExcel->getActiveSheet()->getStyle('J'.$cell)->getAlignment()->setHorizontal('center');
 
                     $objPHPExcel->setActiveSheetIndex(0)
                                 ->setCellValue('A' . $cell, $no)
-                                ->setCellValue('B' . $cell, strtoupper($data->kategori))
-                                ->setCellValue('C' . $cell, strtoupper($data->merk))
-                                ->setCellValue('D' . $cell, $data->kode)
-                                ->setCellValue('E' . $cell, $data->item)
-                                ->setCellValue('F' . $cell, $data->harga_beli);
+                                ->setCellValue('B' . $cell, $data->satuanBesar)
+                                ->setCellValue('C' . $cell, $data->kategori)
+                                ->setCellValue('D' . $cell, $data->merk)
+                                ->setCellValue('E' . $cell, $data->kode)
+                                ->setCellValue('F' . $cell, $data->item)
+                                ->setCellValue('G' . $cell, $data->keterangan)
+                                ->setCellValue('H' . $cell, $data->harga_beli)
+                                ->setCellValue('I' . $cell, $data->harga_jual)
+                                ->setCellValue('J' . $cell, $data->status == 1 ? 'Aktif' : 'Non Aktif');
+
 
                     $no++;
                     $cell++;
@@ -1440,6 +1469,7 @@ class Master extends BaseController {
             $Gudang     = new \App\Models\mGudang();
             $Kat        = new \App\Models\mKategori();
             $Merk       = new \App\Models\mMerk();
+            $Sat        = new \App\Models\mSatuan();
 
             # Aturan validasi form tulis disini
             $aturan = [
@@ -1493,31 +1523,53 @@ class Master extends BaseController {
                     $klmmax = $ws->getHighestColumn();
                     
                     for($brs=5; $brs <= $brsmax; $brs++){ 
-                        $kat        = $ws->getCellByColumnAndRow(2, $brs)->getValue();                      
-                        $merk       = $ws->getCellByColumnAndRow(3, $brs)->getValue();
-                        $kode       = $ws->getCellByColumnAndRow(4, $brs)->getValue();
-                        $item       = $ws->getCellByColumnAndRow(5, $brs)->getValue();
-                        $hpp        = $ws->getCellByColumnAndRow(6, $brs)->getValue();
+                     
+                        $satuan        = $ws->getCellByColumnAndRow(2, $brs)->getValue();                      
+                        $kategori       = $ws->getCellByColumnAndRow(3, $brs)->getValue();
+                        $merk       = $ws->getCellByColumnAndRow(4, $brs)->getValue();
+                        $sku       = $ws->getCellByColumnAndRow(5, $brs)->getValue();
+                        $item        = $ws->getCellByColumnAndRow(6, $brs)->getValue();
+                        $ket        = $ws->getCellByColumnAndRow(7, $brs)->getValue();
+                        $harga_beli        = $ws->getCellByColumnAndRow(8, $brs)->getValue();
+                        $harga_jual        = $ws->getCellByColumnAndRow(9, $brs)->getValue();
+                        $status        = $ws->getCellByColumnAndRow(10, $brs)->getValue();
                         
-                        $sql_kat    = $Kat->asObject()->where('kategori', $kat);
-                        $sql_merk   = $Merk->asObject()->where('merk', $merk);
+                        $sql_satuan    = $Sat->asObject()->where('satuanBesar', $satuan)->first();
+                        $sql_kat    = $Kat->asObject()->where('kategori', $kategori)->first();
+                        $sql_merk   = $Merk->asObject()->where('merk', $merk)->first();
                         
+                        // dd($satuan);
+                        # Cek jika satuan belum ada
+                        if(!$sql_satuan){
+                            $data_satuan = [
+                                'satuanTerkecil'    => $satuan ?? '',
+                                'satuanBesar'       => $satuan ?? '',
+                                'jml'               => 1,
+                                'status'            => '1'
+                            ];
+
+                            $Sat->save($data_satuan);
+                            $id_satuan = $Sat->insertID();
+                        }else {
+                            $id_satuan = $sql_satuan->id;
+                        }
+
                         # Cek jika kategori belum ada
-                        if($sql_kat->countAllResults() == 0){                            
+                        if(!$sql_kat){                            
                             $data_kat = [
-                                'kode'      => strtoupper(substr(str_replace('-', '', $kat), 0, 2)),
-                                'kategori'  => $kat,
+                                'kode'      => strtoupper(substr(str_replace('-', '', $kategori), 0, 2)),
+                                'kategori'  => $kategori,
                                 'status'    => '1'
                             ];
                             
                             $Kat->save($data_kat);
                             $id_kategori = $Kat->insertID();
                         }else{
-                            $id_kategori = $sql_kat->first()->id;
+                            $id_kategori = $sql_kat->id;
                         }
                         
                         # Cek jika merk belum ada
-                        if($sql_merk->countAllResults() == 0){                            
+                        if(!$sql_merk){                            
                             $data_merk = [
                                 'kode'      => strtoupper(substr(str_replace('-', '', $merk), 0, 2)),
                                 'merk'      => $merk,
@@ -1527,18 +1579,20 @@ class Master extends BaseController {
                             $Merk->save($data_merk);
                             $id_merk = $Merk->insertID();
                         }else{
-                            $id_merk = $sql_merk->first()->id;
+                            $id_merk = $sql_merk->id;
                         }
                         
                         $data = [
-                            'id_satuan'     => 1,
+                            'id_satuan'     => $id_satuan,
                             'id_kategori'   => $id_kategori,
                             'id_merk'       => $id_merk,
                             'id_user'       => $ID->id,
-                            'kode'          => $kode,
+                            'kode'          => $sku,
                             'item'          => $item,
-                            'harga_beli'    => format_angka_db($hpp),
-                            'status'        => '1',
+                            'keterangan'    => $ket,
+                            'harga_beli'    => format_angka_db($harga_beli),
+                            'harga_jual'    => format_angka_db($harga_jual),
+                            'status'        => in_array(strtolower($status), ['1', 'aktif']) ? '1' : '0',
                             'status_stok'   => '1',
                         ];
                         

@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="inputEmail3" class="control-label">Banyak Uang</label>
+                                        <label for="inputEmail3" class="control-label">Banyak Uang*</label>
                                         <div class="input-group mb-3">
                                             <div class="input-group-append">
                                                 <span class="input-group-text">Rp. </span>

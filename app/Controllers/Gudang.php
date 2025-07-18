@@ -616,7 +616,7 @@ class Gudang extends BaseController {
                 # SIMPAN DATA PEMBELIAN DETAIL
                 $data_terima = [
                     'id'            => $sql_beli_det->id,
-                    'jml_diterima'  => $stok,
+                    'jml_diterima'  => $sql_beli_det->jml_diterima + $jml,
                     'keterangan'    => $ket,
                 ];
                 

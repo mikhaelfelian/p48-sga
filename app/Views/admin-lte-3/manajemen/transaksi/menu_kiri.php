@@ -33,4 +33,15 @@
             </a>
         </li>
     <?php endif; ?>
+    <?php if (hakOwner() == TRUE OR hakAdmin() == TRUE): ?>
+        <li class="nav-item">
+            <a href="<?php echo base_url('transaksi/struk.php') ?>" class="nav-link">
+                <i class="nav-icon fas fa-print"></i>
+                <p>
+                    Buat Struk
+                    <i class="right fas fa-angle-right"></i>
+                </p>
+            </a>
+        </li>
+    <?php endif; ?>
 </ul>

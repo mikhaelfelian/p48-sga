@@ -178,6 +178,8 @@ $routes->group('master', ['filter' => 'auth'], function($routes) {
 # --- TRANSAKSI ---
 $routes->group('transaksi', ['filter' => 'auth'], function($routes) {
     $routes->get('index.php', 'Transaksi::index');
+    $routes->get('struk.php', 'Transaksi::struk');
+    $routes->get('pdf_struk.php', 'Transaksi::pdf_struk');
     $routes->get('json_pelanggan.php', 'Transaksi::json_pelanggan');
     $routes->get('json_item.php', 'Transaksi::json_item');
     $routes->get('json_po.php', 'Transaksi::json_po');

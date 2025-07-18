@@ -6,6 +6,7 @@ use App\Models\mTipe;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use FPDF;
+use DateTime;
 
 /**
  * Description of Pengaturan
@@ -4881,6 +4882,155 @@ class Transaksi extends BaseController {
 
                 return redirect()->to(base_url(relativePath: 'transaksi/data_pembayaran.php'));
             }
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function struk(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $data  = [
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/transaksi/menu_kiri',
+                'konten'        => $this->ThemePath.'/manajemen/transaksi/struk',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);           
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function pdf_struk(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID                     = $this->ionAuth->user()->row();
+            $kuitansi         = $this->input->getVar('kuitansi');
+            $tgl_masuk              = $this->input->getVar('tgl_masuk');
+            $terima_dari            = $this->input->getVar('terima_dari');
+            $nominal                = $this->input->getVar('nominal');
+            $keperluan              = $this->input->getVar('keperluan');
+            
+            $nominal                = $nominal == '' ? '0' : format_angka_db($nominal);
+            if($tgl_masuk != ""){
+                $tgl_masuk = DateTime::createFromFormat('d/m/Y', $tgl_masuk);
+                $tgl_masuk = $tgl_masuk->format('d F Y');
+            }else{
+                $tgl_masuk = '                  '.date("Y");
+            }
+
+            $Profile        = new \App\Models\PengaturanProfile();
+            $sql_profile    = $Profile->asObject()->first();
+            $logo       = FCPATH . 'file/app/' . $sql_profile->logo_kop;
+            $logo_wm    = FCPATH.'file/app/' . $sql_profile->logo_wm;
+            
+            if (isset($status)) {
+                if($status == '1'){
+                    $pdf = new FPDF('L', 'cm', array(21.5, 33));
+                }else{
+                    $pdf = new FPDF('P', 'cm', array(21.5, 33));
+                }
+            }else{
+                $pdf = new FPDF('P', 'cm', array(21.5, 33));
+            }
+                        
+            $pdf->SetAutoPageBreak('auto', 5);
+            $pdf->SetMargins(1, 1, 1);
+            $pdf->header = 0;
+            $pdf->addPage('', '', false);
+
+            # Tambahkan font
+            $pdf->AddFont('TrebuchetMS','','trebuc.php');
+            $pdf->AddFont('TrebuchetMS-Bold','','trebucbd.php');
+            $pdf->AddFont('Trebuchet-BoldItalic','','trebucbi.php');
+            $pdf->AddFont('TrebuchetMS-Italic','','trebucit.php');
+            
+            # ------------------------ KOP -------------------------------------------
+            # Logo Kiri Atas
+            if(file_exists($logo)){
+                $pdf->Image($logo,1,1,5,2);
+            }
+            
+            # Logo Watermark
+            if(file_exists($logo_wm)){
+                $pdf->Image($logo_wm,2,6,14,5); 
+            }
+
+            $fill = FALSE;
+            $pdf->SetFont('TrebuchetMS-Bold','',9);
+            $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
+            // $pdf->Cell(14, .5, strtoupper($sql_profile->nama), '', 0, 'L', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(5, .5, '', '', 0, '', $fill);
+            // $pdf->Cell(14, .5, $sql_profile->alamat, '', 0, 'L', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
+            // $pdf->Cell(14, .5, strtoupper($sql_profile->kota), '', 0, 'L', $fill);
+            $pdf->Ln();
+            # ------------------------ END KOP -------------------------------------------
+                        
+            # ------------------------ HEADER --------------------------------------------
+            
+            $pdf->Ln(0.75);
+            $pdf->Cell(19, .5, '', 'T', 0, 'C', $fill);
+            $pdf->Ln(0.4);
+
+            $pdf->SetFont('Arial', 'B', 15);
+            $pdf->Cell(18, .5, 'KUITANSI', '', 0, 'C', $fill);
+            $pdf->Ln(0.5);
+            $pdf->SetFont('Arial', '', '9');
+            $pdf->Cell(18, .5, 'No : '.$kuitansi, '', 0, 'C', $fill);
+            $pdf->Ln(0.75);
+            
+            $pdf->SetFont('Arial', '', '9');
+            $pdf->Cell(3, .5, 'Telah Terima Dari', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(15.5, .5, $terima_dari, '', 0, 'L', $fill);
+            $pdf->Ln();
+            $pdf->Cell(3, .5, 'Banyak Uang', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(15.5, .5, format_angka($nominal), '', 0, 'L', $fill);
+            $pdf->Ln();
+            $pdf->Cell(3, .5, 'Untuk Pembayaran', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(15.5, .5, $keperluan, '', 0, 'L', $fill);
+            $pdf->Ln(1);            
+            # ------------------------ END HEADER ----------------------------------------
+            
+            # ------------------------ ISI -----------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 15);
+            $pdf->Cell(19, .9, 'Rp. '.format_angka($nominal), 'TB', 0, 'C', $fill);
+            $pdf->Ln();
+            
+            
+            # ------------------ TTD -------------------------------------------
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Ln(1);
+            $pdf->Cell(14, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'Magelang, '.$tgl_masuk, '', 0, 'C', $fill);
+            $pdf->Ln(1);
+            
+            $pdf->Cell(14, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(5, .5, 'Hormat Kami', '', 0, 'C', $fill);
+            $pdf->Ln(2.5);
+            $pdf->Cell(14, .5, '', '', 0, 'R', $fill);
+            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
+            $pdf->Cell(5, .5, ucwords($ID->first_name), '', 0, 'C', $fill);  
+            
+            $this->response->setContentType('application/pdf');
+            $pdf->Output('rab-'.$tgl_masuk.(isset($status) ? '-internal' : '').'.pdf', 'I');                 
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());

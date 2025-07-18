@@ -18,6 +18,7 @@
                             echo form_hidden('perusahaan', $SQLRab->id_perusahaan);
                             echo form_hidden('sales', $SQLRab->id_sales);
                             echo form_hidden('status', $SQLRab->status);
+                            echo form_hidden('no_paket', $SQLRab->no_paket);
                             ?>
                             <span class="float-left">
                                 <select name="tipe" class="form-control rounded-0<?php echo (!empty($psnGagal['tipe']) ? ' is-invalid' : '') ?>">
@@ -114,6 +115,7 @@
                             echo form_hidden('perusahaan', $SQLRab->id_perusahaan);
                             echo form_hidden('tipe', $SQLRab->id_tipe);
                             echo form_hidden('status', $SQLRab->status);
+                            echo form_hidden('no_paket', $SQLRab->no_paket);
                             ?>
                             <span class="float-left">
                                 <select name="sales" class="form-control rounded-0">
@@ -166,6 +168,7 @@
                             echo form_hidden('sales', $SQLRab->id_sales);
                             echo form_hidden('tipe', $SQLRab->id_tipe);
                             echo form_hidden('status', $SQLRab->status);
+                            echo form_hidden('no_paket', $SQLRab->no_paket);
                             ?>
                             <span class="float-left">
                                 <select name="id_pelanggan" class="form-control rounded-0 select2bs4" style="width: 225px;">
@@ -205,6 +208,50 @@
                         <?php foreach ($SQLPlgnCP as $cp) { ?>
                             <span class="float-left"><small><?php echo nbs(2) . '- ' . strtoupper($cp->nama) . (!empty($cp->no_hp) ? ' / ' . $cp->no_hp : '') . (!empty($cp->jabatan) ? ' / ' . $cp->jabatan : '') ?></small></span>
                         <?php } ?>
+                        <?php
+                    }
+                    ?>
+                </li>
+                <li class="list-group-item">
+                    <b>No Paket</b><br>
+                    <?php
+                    if (isset($_GET['act'])) {
+                        if ($_GET['act'] == 'no_paket') {
+                            echo form_open(base_url('transaksi/rab/set_trans_update.php'), 'autocomplete="off"');
+                            echo form_hidden('id', $SQLRab->id);
+                            echo form_hidden('id_pelanggan', $SQLRab->id_pelanggan);
+                            echo form_hidden('perusahaan', $SQLRab->id_perusahaan);
+                            echo form_hidden('sales', $SQLRab->id_sales);
+                            echo form_hidden('tipe', $SQLRab->id_tipe);
+                            echo form_hidden('status', $SQLRab->status);
+                            ?>
+                            <span class="float-left">
+                                <?php echo form_input(['id' => 'no_paket', 'name' => 'no_paket', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['no_paket']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan No Paket ...', 'value' => $SQLRab->no_paket]) ?>
+                            </span>
+                            <?php echo nbs(2) ?>
+                            <button type="submit" class="btn btn-primary btn-flat btn-sm"><i class="fa fa-save"></i></button>
+                            <?php
+                            echo form_close();
+                        } else {
+                            ?>
+                            <span class="float-left">
+                                <small><?php echo strtoupper($SQLRab->no_paket) ?></small>
+                                <?php if ($SQLRab->status == '4') { ?>
+                                    <?php echo nbs() ?>
+                                    <?php echo anchor(base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . (isset($_GET['status']) ? '&status=' . $request->getVar('status') : '') . '&act=no_paket'), '<i class="fa fa-edit"></i>') ?>
+                                <?php } ?>
+                            </span>
+                            <?php
+                        }
+                    } else {
+                        ?>
+                        <span class="float-left">
+                            <small><?php echo strtoupper($SQLRab->no_paket) ?></small>
+                            <?php if ($SQLRab->status == '4') { ?>
+                                <?php echo nbs() ?>
+                                <?php echo anchor(base_url('transaksi/rab/data_rab_aksi.php?id=' . $request->getVar('id') . (isset($_GET['status']) ? '&status=' . $request->getVar('status') : '') . '&act=no_paket'), '<i class="fa fa-edit"></i>') ?>
+                            <?php } ?>
+                        </span>
                         <?php
                     }
                     ?>

@@ -1001,6 +1001,7 @@ class Transaksi extends BaseController {
             $no_paket   = $this->input->getVar('no_paket');
             $status     = $this->input->getVar('status');
             $status_ppn = $this->input->getVar('status_ppn');
+            $no_paket = $this->input->getVar('no_paket');
 
             $Profile    = new \App\Models\PengaturanProfile;
             $Plgn       = new \App\Models\mPelanggan();
@@ -1039,6 +1040,7 @@ class Transaksi extends BaseController {
                     'id_perusahaan' => $pers,
                     'id_tipe'       => $tipe,
                     'status'        => $status,
+                    'no_paket'      => $no_paket
                 ];
 
                 $Rab->save($data);

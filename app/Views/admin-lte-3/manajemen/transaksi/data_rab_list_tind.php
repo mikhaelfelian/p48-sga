@@ -119,7 +119,7 @@
         $dppJual = $totalJual / 1.11;
         $ppnJual = ($dppJual * 11) / 100;
         $pph = $SQLRab->pph;
-        $totPph = ($pph * $totalJual) / 100;
+        $totPph = ($pph * $dppJual) / 100;
         $tipeNetto = "SWASTA"; // swasta / umum
         $netto = $dppJual; // tipe swasta netto == dpp jual
         if(in_array($SQLRab->id_tipe, [1,2,3])){

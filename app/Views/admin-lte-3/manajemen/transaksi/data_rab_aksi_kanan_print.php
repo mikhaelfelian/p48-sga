@@ -44,7 +44,7 @@
                 <!--  -->
                     <div class="row my-3">
                         <div class="col-sm-12">
-                            <textarea name="keterangan" cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di tolak..."></textarea>
+                            <textarea name="keterangan" cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di terima / tolak..."></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -108,6 +108,14 @@
             # Jika status = 2, maka tampilkan tombol win / lose
             case '2':
                 ?>
+                <div class="row my-3">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label>Alasan Diterima</label>
+                            <textarea name="keterangan" readonly cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di terima / tolak..."><?= $SQLRab->keterangan; ?></textarea>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <?php if (hakSA() == TRUE OR hakOwner() == TRUE OR hakAdminM() == TRUE OR hakAdmin() == TRUE) { ?>
                         <div class="col-md-3">
@@ -198,7 +206,7 @@
                     <div class="col-sm-12">
                         <div class="form-group">
                             <label>Alasan Ditolak</label>
-                            <textarea name="keterangan" readonly cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di tolak..."><?= $SQLRab->keterangan; ?></textarea>
+                            <textarea name="keterangan" readonly cols="20" rows="5" id="keterangan" class="form-control rounded-0" style="height: 100px;" placeholder="Isikan Keterangan jika di terima / tolak..."><?= $SQLRab->keterangan; ?></textarea>
                         </div>
                     </div>
                 </div>

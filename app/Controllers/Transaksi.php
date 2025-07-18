@@ -1763,7 +1763,7 @@ class Transaksi extends BaseController {
                 $this->db->transBegin();
                 
                 // SET KETERANGAN HANYA DIISI KETIKA DI TOLAK
-                if($status != '3') {
+                if(!in_array($status, ['2','3'])) {
                     $keterangan = null;
                 }
                 

@@ -1064,9 +1064,13 @@ class Master extends BaseController {
             ->select('tbl_m_item.*, tbl_m_satuan.satuanBesar, tbl_m_kategori.kategori, tbl_m_merk.merk')
             ->join('tbl_m_satuan', 'tbl_m_satuan.id = tbl_m_item.id_satuan', 'left')
             ->join('tbl_m_kategori', 'tbl_m_kategori.id = tbl_m_item.id_kategori', 'left')
-            ->join('tbl_m_merk', 'tbl_m_merk.id = tbl_m_item.id_merk', 'left')
-            ->like('tbl_m_item.item', (!empty($item) ? $item : ''))
-            ->orderBy('tbl_m_item.id', 'DESC');
+            ->join('tbl_m_merk', 'tbl_m_merk.id = tbl_m_item.id_merk', 'left');
+
+            if (!empty($item)) {
+                $sql_item->like('tbl_m_item.item', $item);
+            }
+            
+            $sql_item->orderBy('tbl_m_item.id', 'DESC');
 
 //            $sql_item   = $Model->ItemList($this->Setting->jml_item)['dftItem'];
 //            $jml_baris  = $Model->ItemList($this->Setting->jml_item)['jmlBaris'];
@@ -1076,6 +1080,7 @@ class Master extends BaseController {
                 'SQLItem'       => $sql_item->paginate($jml_limit),
                 'Pagination'    => $Model->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'PerPage'       => $jml_limit,
                 'MenuAktif'     => 'active',
                 'MenuOpen'      => 'menu-open',
                 'AksesGrup'     => $AksesGrup,

@@ -74,8 +74,12 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                     <?php echo form_close(); ?>
                                     <?php
                                     if (!empty($SQLItem)) {
-                                        $no = $Halaman;
-                                        foreach ($SQLItem as $item) {
+                                        $page = (int)($request->getVar('page') ?? 1); // ambil nomor halaman dari request
+                                        $perPage = $PerPage; // sesuaikan jumlah per halaman
+                                        $start = ($page - 1) * $perPage;
+                                        foreach ($SQLItem as $index => $item) {
+                                            $no = $start + $index + 1;
+
                                             ?>
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>

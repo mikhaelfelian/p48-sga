@@ -137,7 +137,10 @@
         $totalBeli = $SQLRabDetSum->harga_hpp_tot;
         $dppBeli = $totalBeli / 1.11;
         $ppnBeli = ($dppBeli * 11) / 100;
-        $selisihPajak = $ppnJual - $ppnBeli;
+
+        // JIKA PPH != 0. MAKA SELISIH PAJAK == 0
+        $selisihPajak = $SQLRab->pph == 0 ? $ppnJual - $ppnBeli : 0;
+
         $administrasi = (0.25 / 100) * $netto;
         $biaya1 = ($SQLRabDetSumBi2->subtotal ?? 0);
         $potonganPenj = ($SQLRabDetSumBi3->subtotal ?? 0);

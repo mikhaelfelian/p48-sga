@@ -1241,6 +1241,11 @@ class Transaksi extends BaseController {
 
                 $this->session->setFlashdata('psn_gagal', $psn_gagal);
 
+                // JIKA POTONGAN ARAHKAN KE STATUS HALAMAN 5
+                if($status == 3) {
+                    return redirect()->to(base_url('transaksi/rab/data_rab_aksi.php'.(!empty($idrab) ? '?id='.$idrab : '').(!empty($status) ? '&status=5' : '')));
+                }
+                
                 return redirect()->to(base_url('transaksi/rab/data_rab_aksi.php'.(!empty($idrab) ? '?id='.$idrab : '').(!empty($iditem) ? '&id_item='.$iditem : '').(!empty($status) ? '&status='.$status : '')));
             }else{
                 $sql_rab         = $Rab->asObject()->where('id', $idrab)->first();

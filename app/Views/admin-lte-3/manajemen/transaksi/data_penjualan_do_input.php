@@ -70,7 +70,7 @@
                                     <label class="col-sm-3 col-form-label">PILIH SN*</label>
                                     <div class="form-group row<?php echo (!empty($psnGagal['kode_sn[]']) ? ' text-danger' : '') ?>">
                                         <div class="col-sm-12">
-                                            <select name="kode_sn[]" class="form-control select2<?php echo (!empty($psnGagal['kode_sn']) ? ' is-invalid' : '') ?>" multiple="multiple" data-placeholder="- PILIH KODE SN -" style="width: 100%;" required>
+                                            <select name="kode_sn[]" class="form-control select2<?php echo (!empty($psnGagal['kode_sn']) ? ' is-invalid' : '') ?>" multiple="multiple" data-placeholder="- PILIH KODE SN -" style="width: 100%;">
                                                 <?php foreach ($SQLItemStokDet as $det) { ?>
                                                     <option value="<?php echo $det->id ?>"><?php echo $det->kode; ?></option>
                                                 <?php } ?>

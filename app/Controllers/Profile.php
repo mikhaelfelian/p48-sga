@@ -1099,7 +1099,7 @@ class Profile extends BaseController {
         }
         
         // Get employee data
-        $sql_kary = $Karyawan->asObject()->where('id', $id_karyawan)->first();
+        $sql_kary = $Karyawan->asObject()->where('id_user', $id_karyawan)->first();
         
         // If employee not found, redirect to profile
         if (!$sql_kary) {
@@ -1116,13 +1116,23 @@ class Profile extends BaseController {
         
         // Get employee leave data
         $SQLCuti = $CutiModel->asObject()->getCuti($id_karyawan);
+
+        $tahunSekarang = date('Y');
+        $countCuti = $CutiModel->asObject()
+            ->where('id_karyawan', $id_karyawan)
+            ->where("YEAR(tgl_simpan)", $tahunSekarang)
+            ->where('status !=', '2')
+            ->countAllResults();
+        $sisaCuti = $sql_kary->jatah_cuti - $countCuti;
         
+        // dd($ID, $countCuti, $sql_kary);
         $data = [
             'SQLKary'       => $sql_kary,
             'SQLPeg'        => $sql_peg,
             'SQLDept'       => $sql_dept,
             'SQLJabatan'    => $sql_jabatan,
             'SQLCuti'       => $SQLCuti,
+            'SisaCuti'      => $sisaCuti,
             'MenuAktif'     => 'active',
             'MenuOpen'      => 'menu-open',
             'AksesGrup'     => $AksesGrup,

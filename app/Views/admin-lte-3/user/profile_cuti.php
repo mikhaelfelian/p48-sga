@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Employee Leave/Time-off View
  * 
@@ -132,6 +133,18 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group <?php echo (!empty($psnGagal['jatah_cuti']) ? 'has-error' : '') ?>">
+                                            <label class="control-label">Jatah Cuti Tahunan</label>
+                                            <?php echo form_input([ 'id' => 'jatah_cuti', 'name' => 'jatah_cuti', 'class' => 'form-control rounded-0', 'placeholder' => 'Jatah Cuti Tahunanmu','readonly' => true, 'value' => (!empty($SQLKary->jatah_cuti) ? $SQLKary->jatah_cuti . ' Hari' : '0 Hari')])  ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group <?php echo (!empty($psnGagal['jatah_cuti']) ? 'has-error' : '') ?>">
+                                            <label class="control-label">Sisa Cuti</label>
+                                            <?php echo form_input([ 'id' => 'sisa_cuti', 'name' => 'sisa_cuti', 'class' => 'form-control rounded-0', 'placeholder' => 'Sisa Cuti Tahun Ini', 'readonly' => true, 'value' => (!empty($SisaCuti) ? $SisaCuti . ' Hari' : '0 Hari')]) ?>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -160,24 +173,24 @@
                                     $cutiModel = new \App\Models\trSdmCuti();
                                     $isImage = $cutiModel->isImage($SQLCuti->file_ext, $SQLCuti->file_type);
                                     $file_url = $cutiModel->getFileUrl($SQLCuti->file_name);
-                                    
+
                                     // Ensure the file URL is valid
                                     if (!empty($file_url)):
                                     ?>
                                         <?php if ($isImage): ?>
-                                            <a href="<?= $file_url ?>" 
-                                               data-toggle="lightbox" 
-                                               data-title="<?= htmlspecialchars($SQLCuti->keterangan ?? 'Berkas Cuti') ?>"
-                                               data-gallery="gallery">
-                                                <img src="<?= $file_url ?>" 
-                                                     alt="Berkas Cuti" 
-                                                     class="img-thumbnail rounded-0"
-                                                     style="max-height: 250px;">
+                                            <a href="<?= $file_url ?>"
+                                                data-toggle="lightbox"
+                                                data-title="<?= htmlspecialchars($SQLCuti->keterangan ?? 'Berkas Cuti') ?>"
+                                                data-gallery="gallery">
+                                                <img src="<?= $file_url ?>"
+                                                    alt="Berkas Cuti"
+                                                    class="img-thumbnail rounded-0"
+                                                    style="max-height: 250px;">
                                             </a>
                                         <?php else: ?>
-                                            <a href="<?= $file_url ?>" 
-                                               target="_blank" 
-                                               class="btn btn-sm btn-info rounded-0">
+                                            <a href="<?= $file_url ?>"
+                                                target="_blank"
+                                                class="btn btn-sm btn-info rounded-0">
                                                 <i class="fas fa-file-<?= ($SQLCuti->file_ext == 'pdf') ? 'pdf' : 'alt' ?>"></i> Lihat Berkas
                                             </a>
                                         <?php endif; ?>
@@ -224,21 +237,21 @@
                                                             $cutiModel = new \App\Models\trSdmCuti();
                                                             $isImage = $cutiModel->isImage($cuti->file_ext, $cuti->file_type);
                                                             $fileUrl = $cutiModel->getFileUrl($cuti->file_name);
-                                                            
+
                                                             // Ensure the file URL is valid
                                                             if (!empty($fileUrl)):
                                                             ?>
                                                                 <?php if ($isImage): ?>
-                                                                    <a href="<?= $fileUrl ?>" 
-                                                                       data-toggle="lightbox" 
-                                                                       data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
-                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <a href="<?= $fileUrl ?>"
+                                                                        data-toggle="lightbox"
+                                                                        data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
+                                                                        class="btn btn-sm btn-info rounded-0 mb-1">
                                                                         <i class="fas fa-paperclip"></i> Lihat
                                                                     </a>
                                                                 <?php else: ?>
-                                                                    <a href="<?= $fileUrl ?>" 
-                                                                       target="_blank"
-                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <a href="<?= $fileUrl ?>"
+                                                                        target="_blank"
+                                                                        class="btn btn-sm btn-info rounded-0 mb-1">
                                                                         <i class="fas fa-paperclip"></i> Lampiran
                                                                     </a>
                                                                 <?php endif; ?>
@@ -248,12 +261,12 @@
                                                     <td><?= tgl_indo8($cuti->tgl_masuk) ?></td>
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
-                                                        <?php if(!hakAdminM()) : ?>
-                                                        <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
-                                                            class="btn btn-sm btn-danger rounded-0 mb-1"
-                                                            onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
+                                                        <?php if (!hakAdminM()) : ?>
+                                                            <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
+                                                                class="btn btn-sm btn-danger rounded-0 mb-1"
+                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </a>
                                                         <?php endif; ?>
                                                         <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
                                                             class="btn btn-sm btn-primary rounded-0 mb-1">
@@ -278,21 +291,21 @@
                                                             $cutiModel = new \App\Models\trSdmCuti();
                                                             $isImage = $cutiModel->isImage($cuti->file_ext, $cuti->file_type);
                                                             $fileUrl = $cutiModel->getFileUrl($cuti->file_name);
-                                                            
+
                                                             // Ensure the file URL is valid
                                                             if (!empty($fileUrl)):
                                                             ?>
                                                                 <?php if ($isImage): ?>
-                                                                    <a href="<?= $fileUrl ?>" 
-                                                                       data-toggle="lightbox" 
-                                                                       data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
-                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <a href="<?= $fileUrl ?>"
+                                                                        data-toggle="lightbox"
+                                                                        data-title="<?= htmlspecialchars($cuti->keterangan ?? 'Berkas Cuti') ?>"
+                                                                        class="btn btn-sm btn-info rounded-0 mb-1">
                                                                         <i class="fas fa-paperclip"></i> Lihat
                                                                     </a>
                                                                 <?php else: ?>
-                                                                    <a href="<?= $fileUrl ?>" 
-                                                                       target="_blank"
-                                                                       class="btn btn-sm btn-info rounded-0 mb-1">
+                                                                    <a href="<?= $fileUrl ?>"
+                                                                        target="_blank"
+                                                                        class="btn btn-sm btn-info rounded-0 mb-1">
                                                                         <i class="fas fa-paperclip"></i> Lampiran
                                                                     </a>
                                                                 <?php endif; ?>
@@ -303,12 +316,12 @@
                                                     <td><?= tgl_indo8($cuti->tgl_keluar) ?></td>
                                                     <td class="text-center">
                                                         <?php if ($cuti->status == 0): ?>
-                                                            <?php if(!hakAdminM()) : ?>
-                                                            <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
-                                                                class="btn btn-sm btn-danger rounded-0 mb-1"
-                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
+                                                            <?php if (!hakAdminM()) : ?>
+                                                                <a href="<?= base_url('profile/sdm/data_cuti_hapus/' . ($cuti->id ?? '')) ?>"
+                                                                    class="btn btn-sm btn-danger rounded-0 mb-1"
+                                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus pengajuan cuti ini?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
                                                             <?php endif; ?>
                                                             <a href="<?= base_url('profile/sdm/data_cuti_edit/' . ($cuti->id ?? '')) ?>"
                                                                 class="btn btn-sm btn-primary rounded-0 mb-1">
@@ -335,7 +348,7 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
         // For new records, use default dates
         $('.daterange').daterangepicker({
             locale: {
@@ -346,13 +359,13 @@
         // Custom Ekko Lightbox initialization function to address the 'Cannot read properties of null (reading 'on')' error
         function safeInitLightbox(element) {
             var href = $(element).attr('href');
-            
+
             // Verify href is valid
             if (!href || href === '#' || href === 'javascript:void(0)') {
                 console.warn('Invalid lightbox target:', href);
                 return false;
             }
-            
+
             try {
                 // Use the jQuery plugin method instead of direct constructor
                 $(element).ekkoLightbox({
@@ -374,12 +387,12 @@
         }
 
         // Initialize Ekko Lightbox with enhanced error handling
-        $(document).on('click', '[data-toggle="lightbox"]', function (e) {
+        $(document).on('click', '[data-toggle="lightbox"]', function(e) {
             e.preventDefault();
-            
+
             // Store the href for fallback
             var href = $(this).attr('href');
-            
+
             try {
                 // First try our custom safe initialization
                 if (!safeInitLightbox(this)) {

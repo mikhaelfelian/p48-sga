@@ -130,6 +130,14 @@
                                 </div>                                
                             </div>
                             <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group <?php echo (!empty($psnGagal['jatah_cuti']) ? 'has-error' : '') ?>">
+                                        <label class="control-label">Jatah Cuti Tahunan (hari)</label>
+                                        <?php echo form_input(['id' => 'jatah_cuti', 'type'=> 'number', 'name' => 'jatah_cuti', 'class' => 'form-control rounded-0' . (!empty($psnGagal['jatah_cuti']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan Jatah Cuti Karyawan ...', 'value' => (!empty($SQLKary->jatah_cuti) ? $SQLKary->jatah_cuti : '')]) ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-12"><hr></div>
                                 <div class="col-md-6">
                                     <div class="form-group<?php echo (!empty($psnGagal['user']) ? ' has-error' : '') ?>">

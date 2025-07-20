@@ -3081,6 +3081,7 @@ class Master extends BaseController {
             $pass1      = $this->input->getVar('pass');
             $pass2      = $this->input->getVar('pass2');
             $grup       = $this->input->getVar('grup');
+            $jatah_cuti = $this->input->getVar('jatah_cuti');
 
             $Kry        = new \App\Models\mKaryawan();
 
@@ -3193,6 +3194,7 @@ class Master extends BaseController {
                     'alamat'        => $almt,
                     'alamat_dom'    => $almt2,
                     'tmp_lahir'     => $tmp_lhr,
+                    'jatah_cuti'    => $jatah_cuti,
                     'tgl_lahir'     => tgl_indo_sys($tgl_lhr),
                 ];
                 
@@ -3238,6 +3240,7 @@ class Master extends BaseController {
             $pass1      = $this->input->getVar('pass');
             $pass2      = $this->input->getVar('pass2');
             $grup       = $this->input->getVar('grup');
+            $jatah_cuti = $this->input->getVar('jatah_cuti');
 
             $Kry        = new \App\Models\mKaryawan();
 
@@ -3356,7 +3359,7 @@ class Master extends BaseController {
                     'rekening'      => $rekening,
                     'alamat'        => $almt,
                     'alamat_dom'    => $almt2,
-                    'tmp_lahir'     => $tmp_lhr,
+                    'jatah_cuti'    => $jatah_cuti,
                     'tgl_lahir'     => tgl_indo_sys($tgl_lhr),
                 ];
 

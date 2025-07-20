@@ -22,7 +22,7 @@ class mKaryawan extends Model {
     protected $table                = 'tbl_m_karyawan';
     protected $primaryKey           = 'id';
     protected $useAutoIncrement     = true;
-    protected $allowedFields        = ['id_user', 'id_user_group','id_perusahaan', 'kode', 'nik', 'tgl_lahir', 'tmp_lahir', 'nama', 'nama_blk', 'alamat', 'alamat_dom', 'jabatan', 'kota', 'jns_klm', 'no_hp', 'no_rmh', 'file_name', 'file_ext', 'file_type', 'status', 'rekening'];
+    protected $allowedFields        = ['id_user', 'id_user_group','id_perusahaan', 'kode', 'nik', 'tgl_lahir', 'tmp_lahir', 'nama', 'nama_blk', 'alamat', 'alamat_dom', 'jabatan', 'kota', 'jns_klm', 'no_hp', 'no_rmh', 'file_name', 'file_ext', 'file_type', 'status', 'rekening', 'jatah_cuti'];
     
     # Tanggal
     protected $useTimestamps        = true;

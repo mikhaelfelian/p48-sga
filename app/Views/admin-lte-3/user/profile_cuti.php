@@ -154,8 +154,9 @@
                         <div class="card-footer text-left">
                             <a href="<?= base_url('profile') ?>" class="btn btn-secondary mr-2 rounded-0"><i
                                     class="fas fa-arrow-left"></i> Kembali</a>
-                            <button type="submit" form="form-cuti" class="btn btn-primary float-right rounded-0"><i
-                                    class="fas fa-save"></i> Simpan</button>
+                            <button type="submit" form="form-cuti" class="btn btn-primary float-right rounded-0" <?php echo (isset($SisaCuti) && $SisaCuti <= 0) ? 'disabled' : 'availale'; ?>>
+                                <i class="fas fa-save"></i> Simpan
+                            </button>
                         </div>
                     </div>
                     <?= form_close() ?>

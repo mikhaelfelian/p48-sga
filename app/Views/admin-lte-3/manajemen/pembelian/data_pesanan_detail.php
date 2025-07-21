@@ -102,8 +102,8 @@
 
                                 </div>
                                 <div class="col-md-6 text-right">
-                                    <?php if(!empty($SQLPem)){ ?>
-                                        <a class="btn btn-secondary" href="<?= base_url(htmlspecialchars($SQLPem->file_name)); ?>" target="_blank">
+                                    <?php if(!empty($SQLBeli) && $SQLBeli->file_name){ ?>
+                                        <a class="btn btn-secondary" href="<?= base_url(htmlspecialchars($SQLBeli->file_name)); ?>" target="_blank">
                                             <i class="fas fa-image"></i> Preview Nota
                                         </a>
                                     <?php } ?>

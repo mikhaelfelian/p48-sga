@@ -169,6 +169,7 @@ class Pembelian extends BaseController {
                 $sql_item       = $Itm->asObject()->where('id', $IDItm)->first();
                 $sql_sat        = $Sat->asObject()->where('status', '1')->find();
                 $sql_supp       = $Supp->asObject()->where('id', $sql_psn->id_supplier)->first();
+                $sql_pem        = $Beli->asObject()->where('id', $IDPsn)->first();
             }else{
                 $sql_psn        = '';
                 $sql_psn_det    = '';
@@ -184,6 +185,7 @@ class Pembelian extends BaseController {
                 'SQLPsnDet'     => $sql_psn_det,
                 'SQLPsnDetRw'   => $sql_psn_det_rw,
                 'SQLBeli'       => $sql_beli,
+                'SQLPem'        => $sql_pem,
                 'SQLItem'       => $sql_item,
                 'SQLSatuan'     => $sql_sat,
                 'SQLSupp'       => $sql_supp,

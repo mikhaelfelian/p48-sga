@@ -102,6 +102,11 @@
 
                                 </div>
                                 <div class="col-md-6 text-right">
+                                    <?php if(!empty($SQLPem) && $SQLPem->file_name){ ?>
+                                        <a class="btn btn-secondary" href="<?= base_url(htmlspecialchars($SQLBeli->file_name)); ?>" target="_blank">
+                                            <i class="fas fa-image"></i> Preview Nota
+                                        </a>
+                                    <?php } ?>
                                     <?php if($SQLPsn->status_fkt == 0){ ?>
                                         <button type="button" class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo base_url('pembelian/faktur/data_pembelian_tambah.php?id_po=' . $SQLPsn->id . '&id_supplier=' . $SQLPsn->id_supplier) ?>'"><i class="fa fa-shopping-cart"></i> Buat PI</button>
                                     <?php }else{ ?>

@@ -29,7 +29,7 @@
                             <a href="<?php echo base_url('transaksi/data_penjualan_aksi.php?id=' . $request->getVar('id') . '&status=' . $request->getVar('status') . '&id_do=' . $det->id) ?>" class="btn btn-primary btn-flat btn-xs"><i class="fa fa-edit"></i></a>
                         </td>
                         <td class="text-center" style="width: 50px;"><?php echo $no; ?></td>
-                        <td class="text-left" style="width: 100px;"><?php echo tgl_indo($det->tgl_masuk); ?></td>
+                        <td class="text-left" style="width: 100px;"><?php echo tgl_indo2($det->tgl_masuk); ?></td>
                         <td class="text-left" style="width: 350px;">
                             <small><?php echo $det->no_mutasi; ?></small>
                             <?php echo br(); ?>

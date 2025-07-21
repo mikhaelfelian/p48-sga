@@ -1897,7 +1897,7 @@ class Gudang extends BaseController {
                     'id_sales'      => $sql_penj->id_sales,
                     'id_pelanggan'  => $sql_penj->id_pelanggan,
                     'id_perusahaan' => $pers,
-                    'tgl_masuk'     => tgl_indo_sys($tgl_msk),
+                    'tgl_masuk'     => tgl_indo_sys2($tgl_msk),
                     'no_nota'       => $no_nota,
                     'tipe'          => '4',
                     'keterangan'    => $ket,

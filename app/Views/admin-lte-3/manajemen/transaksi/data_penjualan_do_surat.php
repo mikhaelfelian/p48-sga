@@ -40,6 +40,10 @@
                         <?php } ?>
                     </select>
                 </div>
+                <div class="form-group <?php echo (!empty($psnGagal['no_pengiriman']) ? 'text-danger' : '') ?>">
+                    <label class="control-label">No Pengiriman*</label>
+                    <?php echo form_input(['id' => 'no_pengiriman', 'name' => 'no_pengiriman', 'class' => 'form-control pull-right rounded-0' . (!empty($psnGagal['no_pengiriman']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan No Pengiriman ...', 'value' => (!empty($SQLMutasiRw->no_pengiriman) ? $SQLMutasiRw->no_pengiriman : '')]) ?>
+                </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">

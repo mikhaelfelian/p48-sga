@@ -14,7 +14,7 @@ class trMutasi extends Model {
     protected $allowedFields        = [
         'id','id_user','id_user_terima','id_gd_asal','id_gd_tujuan','id_sales',
         'id_pelanggan','id_perusahaan','id_penjualan','tgl_masuk','tgl_keluar','no_nota',
-        'keterangan','tipe','status','status_terima'
+        'keterangan','tipe','status','status_terima', 'no_pengiriman'
     ];
     
     # Tanggal

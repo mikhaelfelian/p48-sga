@@ -1542,28 +1542,28 @@ class Gudang extends BaseController {
             $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
             $pdf->Cell(1.5, .5, 'Telp', 'T', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', 'T', 0, 'C', $fill);
-            $pdf->Cell(7.5, .5, $sql_profile->no_telp, 'T', 0, 'L', $fill);
+            $pdf->Cell(5.5, .5, $sql_profile->no_telp, 'T', 0, 'L', $fill);
             $pdf->Cell(2, .5, 'Tanggal', 'T', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', 'T', 0, 'C', $fill);
-            $pdf->Cell(2, .5, tgl_indo2($sql_mts->tgl_simpan), 'T', 0, '', $fill);
+            $pdf->Cell(4, .5, tgl_indo2($sql_mts->tgl_simpan), 'T', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',9);
             $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
             $pdf->Cell(1.5, .5, 'Fax', '', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
-            $pdf->Cell(7.5, .5, $sql_profile->no_fax, '', 0, '', $fill);
+            $pdf->Cell(5.5, .5, $sql_profile->no_fax, '', 0, '', $fill);
             $pdf->Cell(2, .5, 'Nomor', '', 0, '', $fill);
             $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
-            $pdf->Cell(2, .5, $sql_mts->no_nota, '', 0, '', $fill);
+            $pdf->Cell(4, .5, $sql_mts->no_pengiriman, '', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',9);
             $pdf->Cell(5, .5, '', 'B', 0, 'L', $fill);
             $pdf->Cell(1.5, .5, 'Petugas', 'B', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', 'B', 0, 'C', $fill);
-            $pdf->Cell(7.5, .5, $sql_mts->user, 'B', 0, 'L', $fill);
+            $pdf->Cell(5.5, .5, $sql_mts->user, 'B', 0, 'L', $fill);
             $pdf->Cell(2, .5, 'Kepada', 'B', 0, 'L', $fill);
             $pdf->Cell(.5, .5, ':', 'B', 0, 'C', $fill);
-            $pdf->Cell(2, .5, $sql_penj->nama_pelanggan, 'B', 0, '', $fill);
+            $pdf->Cell(4, .5, $sql_penj->nama_pelanggan, 'B', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS', '', 10);
             $pdf->Cell(14.5, 1, $sql_mts->p_nama, 'B', 0, 'L', $fill);
@@ -1845,6 +1845,7 @@ class Gudang extends BaseController {
             $ket            = $this->input->getVar('keterangan');
             $status         = $this->input->getVar('status');
             $rute           = $this->input->getVar('route');
+            $no_pengiriman  = $this->input->getVar('no_pengiriman');
 
             $Item           = new \App\Models\mItem();
             $Satuan         = new \App\Models\mSatuan();
@@ -1901,6 +1902,7 @@ class Gudang extends BaseController {
                     'tipe'          => '4',
                     'keterangan'    => $ket,
                     'status'        => (!empty($id_penj) ? '1' : '0'),
+                    'no_pengiriman' => $no_pengiriman
                 ];
                 
                 $Mutasi->save($data);

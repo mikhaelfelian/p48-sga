@@ -154,10 +154,10 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="alert alert-info mb-2" role="alert" style="text-align: left;">
-                                                        <strong>Perhatian!</strong><br>
-                                                        Sebelum menekan tombol <strong>Terima</strong>, pastikan Anda telah membuat data <strong>SN (Serial Number)</strong> terlebih dahulu. <br>
-                                                        Data SN sangat penting untuk proses verifikasi dan pencatatan barang masuk. Jika belum dibuat, silakan buat terlebih dahulu agar proses dapat berjalan dengan lancar.
+                                                    <div class="alert alert-warning mb-2" role="alert" style="text-align: left;">
+                                                        <strong>Catatan Penting!</strong><br>
+                                                        Setelah menekan tombol <strong>Terima</strong>, jangan lupa untuk membuat data <strong>Serial Number (SN)</strong> sebanyak jumlah yang telah Anda inputkan. <br>
+                                                        Pembuatan data SN sangat penting untuk memastikan setiap barang tercatat dengan benar.
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 text-right">

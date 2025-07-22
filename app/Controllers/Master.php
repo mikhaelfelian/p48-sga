@@ -1067,7 +1067,13 @@ class Master extends BaseController {
             ->join('tbl_m_merk', 'tbl_m_merk.id = tbl_m_item.id_merk', 'left');
 
             if (!empty($item)) {
-                $sql_item->like('tbl_m_item.item', $item);
+                // $sql_item->like('tbl_m_item.item', $item);
+                $keyword = strtolower($item);
+                $sql_item->groupStart()
+                ->where("LOWER(tbl_m_item.item) LIKE", "%$keyword%")
+                ->orWhere("LOWER(tbl_m_item.kode) LIKE", "%$keyword%")
+                ->orWhere("LOWER(tbl_m_item.keterangan) LIKE", "%$keyword%")
+                ->groupEnd();
             }
             
             $sql_item->orderBy('tbl_m_item.id', 'DESC');

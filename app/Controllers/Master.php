@@ -11,6 +11,7 @@ use App\Models\mTipeFile;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\PengaturanProfile;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 /**
  * Description of Master

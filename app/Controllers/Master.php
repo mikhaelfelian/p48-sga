@@ -3514,7 +3514,8 @@ class Master extends BaseController {
                                 ->setCellValue('I' . $cell, $data->alamat)
                                 ->setCellValue('J' . $cell, $data->alamat_dom)
                                 ->setCellValue('K' . $cell, $data->rekening)
-                                ->setCellValue('L' . $cell, $data->username)
+                                // ->setCellValue('L' . $cell, $data->username)
+                                ->setCellValueExplicit('L' . $cell, $data->username, DataType::TYPE_STRING)
                                 ->setCellValue('M' . $cell, $data->nama_grup)
                                 ->setCellValue('N' . $cell, $data->nama_perusahaan);
                     $no++;

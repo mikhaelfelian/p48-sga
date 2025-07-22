@@ -154,7 +154,11 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-6">
-
+                                                    <div class="alert alert-info mb-2" role="alert" style="text-align: left;">
+                                                        <strong>Perhatian!</strong><br>
+                                                        Sebelum menekan tombol <strong>Terima</strong>, pastikan Anda telah membuat data <strong>SN (Serial Number)</strong> terlebih dahulu. <br>
+                                                        Data SN sangat penting untuk proses verifikasi dan pencatatan barang masuk. Jika belum dibuat, silakan buat terlebih dahulu agar proses dapat berjalan dengan lancar.
+                                                    </div>
                                                 </div>
                                                 <div class="col-md-6 text-right">
                                                     <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-check"></i> Terima</button>
@@ -197,7 +201,7 @@
                                                     </div>
                                                     <div class="col-sm-3">
                                                         <div style="margin-top: 32px;">
-                                                            <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-check"></i> Terima</button>
+                                                            <button type="submit" class="btn btn-primary btn-flat"><i class="fa fa-check"></i> Simpan</button>
                                                         </div>
                                                     </div>
                                                 </div>

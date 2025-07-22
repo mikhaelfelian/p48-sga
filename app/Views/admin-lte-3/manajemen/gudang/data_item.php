@@ -76,8 +76,9 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;"><?php echo strtoupper($item->kategori) ?></td>
                                                 <td style="width: 450px;">
-                                                    <i><b><?php echo $item->kode ?></b></i>
-                                                    <br /><?php echo (!empty($item->merk) ? $item->merk . ' ' : '') . ucwords($item->item) ?>
+                                                    <i><b>Kode : <?php echo $item->kode ?></b></i>
+                                                    <br/><b>Merk : </b><?php echo (!empty($item->merk) ? $item->merk . ' ' : '')  ?>
+                                                    <br/><b>Item : </b> <?=ucwords($item->item);?>
                                                     <br /><small><?php echo $item->keterangan ?></small>
                                                 </td>
                                                 <td style="width: 50px;"><?php echo format_angka($item->jml, 0) ?></td>

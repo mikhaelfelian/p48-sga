@@ -57,10 +57,12 @@ class Gudang extends BaseController {
             }
 
             if (!empty($item)) {
+                $keyword = strtolower($item);
                 $sql_item->groupStart()
-                    ->like('merk', $item)
-                    ->orLike('kode', $item)
-                    ->orLike('keterangan', $item)
+                ->where("LOWER(item) LIKE", "%$keyword%")
+                ->orWhere("LOWER(merk) LIKE", "%$keyword%")
+                ->orWhere("LOWER(kode) LIKE", "%$keyword%")
+                ->orWhere("LOWER(keterangan) LIKE", "%$keyword%")
                 ->groupEnd();
             }
             

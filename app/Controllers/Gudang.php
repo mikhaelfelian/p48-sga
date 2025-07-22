@@ -904,11 +904,48 @@ class Gudang extends BaseController {
             
             $jml_limit  = $this->Setting->jml_item;
             $ItemStokDet        = new \App\Models\mItemStokDet();
+            // $sql_item_stok_det = $ItemStokDet->asObject()
+            // ->select('tbl_m_item_stok_det.*, g.kode AS gudang_kode, g.gudang, i.kode AS item_kode, i.item, p.id')
+            // ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
+            // ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
+            // ->join('tbl_trans_jual_kirim_sn p', 'p.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+            // ->join('tbl_trans_mutasi_stok m', 'm.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+            // ->orderBy('id_item_stok_det.id', 'DESC');
+
             $sql_item_stok_det = $ItemStokDet->asObject()
-            ->select('tbl_m_item_stok_det.*, g.kode AS gudang_kode, g.gudang, i.kode AS item_kode, i.item')
-            ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
-            ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
-            ->orderBy('id', 'DESC');
+                ->select('
+                    tbl_m_item_stok_det.*,
+                    g.kode AS gudang_kode,
+                    g.gudang,
+                    i.kode AS item_kode,
+                    i.item,
+                    
+                    -- Info dari transaksi penjualan (jika ada)
+                    jual_sn.id_penjualan,
+                    jual.no_nota AS no_nota_jual,
+                    pelanggan_jual.nama AS nama_pelanggan_jual,
+                    pelanggan_jual.kode AS kode_pelanggan_jual,
+
+                    -- Info dari mutasi stok (jika ada)
+                    mutasi_sn.id_mutasi,
+                    mutasi.no_nota AS no_nota_mutasi,
+                    pelanggan_mutasi.nama AS nama_pelanggan_mutasi,
+                    pelanggan_mutasi.kode AS kode_pelanggan_mutasi
+                ')
+                ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
+                ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
+
+                // Join ke transaksi penjualan
+                ->join('tbl_trans_jual_kirim_sn jual_sn', 'jual_sn.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+                ->join('tbl_trans_jual jual', 'jual.id = jual_sn.id_penjualan', 'left')
+                ->join('tbl_m_pelanggan pelanggan_jual', 'pelanggan_jual.id = jual.id_pelanggan', 'left')
+
+                // Join ke transaksi mutasi
+                ->join('tbl_trans_mutasi_stok mutasi_sn', 'mutasi_sn.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+                ->join('tbl_trans_mutasi mutasi', 'mutasi.id = mutasi_sn.id_mutasi', 'left')
+                ->join('tbl_m_pelanggan pelanggan_mutasi', 'pelanggan_mutasi.id = mutasi.id_pelanggan', 'left')
+
+                ->orderBy('tbl_m_item_stok_det.id', 'DESC');
 
             if (!empty($kode)) {
                 $sql_item_stok_det->like('tbl_m_item_stok_det.kode', $kode);

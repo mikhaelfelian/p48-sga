@@ -43,6 +43,7 @@ model('trPO');
                                         <th>Item</th>
                                         <th>Gudang</th>
                                         <th>Status</th>
+                                        <th>Asal Keluar</th> <!-- kolom tambahan -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,6 +55,7 @@ model('trPO');
                                         </th>
                                         <th>
                                         </th>
+                                        <th></th>
                                         <th></th>
                                         <th>
                                             <button class="btn btn-primary btn-flat" style="width: 120px;">
@@ -82,6 +84,21 @@ model('trPO');
                                                 </td>
                                                 <td style="width: 150px;">
                                                   <?= $det->status == 1 ? '<small class="badge badge-success">Tersedia</small>' : '<small class="badge badge-warning">Tidak Tersedia</small>'?>
+                                                </td>
+                                                <td style="width: 280px;">
+                                                    <?php if (!empty($det->id_penjualan)) : ?>
+                                                        <span class="badge badge-info">Keluar via Penjualan</span><br/>
+                                                        <small>No Nota: <b><?= $det->no_nota_jual ?></b></small><br/>
+                                                        <small>Pelanggan: <b><?= $det->kode_pelanggan_jual ?> - <?= $det->nama_pelanggan_jual ?></b></small>
+                                                    
+                                                    <?php elseif (!empty($det->id_mutasi)) : ?>
+                                                        <span class="badge badge-warning">Keluar via Mutasi</span><br/>
+                                                        <small>No Nota: <b><?= $det->no_nota_mutasi ?></b></small><br/>
+                                                        <small>Pelanggan: <b><?= $det->kode_pelanggan_mutasi ?> - <?= $det->nama_pelanggan_mutasi ?></b></small>
+                                                    
+                                                    <?php else : ?>
+                                                        <span class="text-muted">Belum keluar</span>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

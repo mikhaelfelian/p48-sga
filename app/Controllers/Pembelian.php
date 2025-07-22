@@ -671,7 +671,9 @@ class Pembelian extends BaseController {
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
             $pdf->Cell(16.5, .5, 'SUBTOTAL', 'T', 0, 'R', $fill);
             $pdf->Cell(2.5, .5, format_angka($subtot), 'T', 0, 'R', $fill);
-            $pdf->Ln();
+            $pdf->Ln(1);
+            $pdf->Cell(19, .5, $sql_po->keterangan, '', 0, 'L', $fill);
+            $pdf->Ln(1.2);
             
             # ------------------ TTD -------------------------------------------
             $pdf->Cell(19, .5, 'Demikian surat pesanan ini kami buat, atas pehatiannya kami ucapkan terima kasih.', '', 0, 'L', $fill);

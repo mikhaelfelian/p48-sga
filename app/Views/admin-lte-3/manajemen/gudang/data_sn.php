@@ -43,7 +43,8 @@ model('trPO');
                                         <th>Item</th>
                                         <th>Gudang</th>
                                         <th>Status</th>
-                                        <th>Asal Keluar</th> <!-- kolom tambahan -->
+                                        <th>Asal Masuk</th>
+                                        <th>Asal Keluar</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -55,6 +56,7 @@ model('trPO');
                                         </th>
                                         <th>
                                         </th>
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th>
@@ -84,6 +86,16 @@ model('trPO');
                                                 </td>
                                                 <td style="width: 150px;">
                                                   <?= $det->status == 1 ? '<small class="badge badge-success">Tersedia</small>' : '<small class="badge badge-warning">Tidak Tersedia</small>'?>
+                                                </td>
+                                                <td style="width: 280px;">
+                                                    <?php if (!empty($det->id_supplier)) : ?>
+                                                        <span class="badge badge-primary">Asal Barang</span><br/>
+                                                        <small>Nota Beli: <b><?= $det->no_nota_beli ?></b></small><br/>
+                                                        <small>Supplier: <b><?= $det->kode_supplier ?> - <?= $det->nama_supplier ?></b></small>
+                                                    
+                                                    <?php else : ?>
+                                                        <span class="text-muted">Tidak Diketahui</span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td style="width: 280px;">
                                                     <?php if (!empty($det->id_penjualan)) : ?>

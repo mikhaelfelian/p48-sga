@@ -955,7 +955,13 @@ class Gudang extends BaseController {
                     mutasi_sn.id_mutasi,
                     mutasi.no_nota AS no_nota_mutasi,
                     pelanggan_mutasi.nama AS nama_pelanggan_mutasi,
-                    pelanggan_mutasi.kode AS kode_pelanggan_mutasi
+                    pelanggan_mutasi.kode AS kode_pelanggan_mutasi,
+
+                    -- Info dari pembelian stok (jika ada)
+                    beli.id_supplier,
+                    beli.no_nota AS no_nota_beli,
+                    supplier.nama AS nama_supplier,
+                    supplier.kode AS kode_supplier,
                 ')
                 ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
                 ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
@@ -969,6 +975,10 @@ class Gudang extends BaseController {
                 ->join('tbl_trans_mutasi_stok mutasi_sn', 'mutasi_sn.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
                 ->join('tbl_trans_mutasi mutasi', 'mutasi.id = mutasi_sn.id_mutasi', 'left')
                 ->join('tbl_m_pelanggan pelanggan_mutasi', 'pelanggan_mutasi.id = mutasi.id_pelanggan', 'left')
+
+                // Join ke transaksi pembelian
+                ->join('tbl_trans_beli beli', 'beli.id = tbl_m_item_stok_det.id_pembelian', 'left')
+                ->join('tbl_m_supplier supplier', 'supplier.id = beli.id_supplier', 'left')
 
                 ->orderBy('tbl_m_item_stok_det.id', 'DESC');
 

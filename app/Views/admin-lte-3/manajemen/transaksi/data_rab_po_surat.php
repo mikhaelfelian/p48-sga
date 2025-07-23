@@ -106,7 +106,7 @@
                             <small><?php echo status_po_fkt($det->status_fkt);    ?></small>
                         </td>
                         <td class="text-center" style="width: 50px;"><?php echo $no; ?></td>
-                        <td class="text-left" style="width: 100px;"><?php echo tgl_indo($det->tgl_masuk); ?></td>
+                        <td class="text-left" style="width: 100px;"><?php echo tgl_indo2($det->tgl_masuk); ?></td>
                         <td class="text-left" style="width: 400px;">
                             <small><?php echo $det->no_po; ?></small>
                             <?php echo br(); ?>

@@ -1143,7 +1143,7 @@ class Transaksi extends BaseController {
                     'id_supplier'   => $ids,
                     'id_rab'        => $id_rab,
                     'id_penjualan'  => $id_penj,
-                    'tgl_masuk'     => tgl_indo_sys($tgl_msk),
+                    'tgl_masuk'     => tgl_indo_sys2($tgl_msk),
                     'no_po'         => $no_nota,
                     'supplier'      => $sql_supp->nama,
                     'keterangan'    => $ket,

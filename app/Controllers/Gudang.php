@@ -238,9 +238,20 @@ class Gudang extends BaseController {
             $ID         = $this->ionAuth->user()->row();
             $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
             $AksesGrup  = $this->ionAuth->groups()->result();
+
+            $no_nota    = $this->input->getVar('filter_no_nota');
+            $supplier   = $this->input->getVar('filter_supplier');
+            
             
             $vtrBeli    = new \App\Models\vtrPembelian();
             $sql_beli   = $vtrBeli->asObject()->where('status', '1')->orderBy('id', 'DESC');
+            if (!empty($no_nota)) {
+                $sql_beli->like('no_nota', $no_nota);
+            }
+            if (!empty($supplier)) {
+                $sql_beli->like('supplier', $supplier);
+            }
+
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [
@@ -258,6 +269,20 @@ class Gudang extends BaseController {
             ];
             
             return view($this->ThemePath.'/index', $data);           
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function set_data_beli_cari() {
+        if ($this->ionAuth->loggedIn()) {
+            if ($this->input->is('post') == 1) {
+                $no_nota   = $this->input->getVar('no_nota');
+                $supplier   = $this->input->getVar('supplier');
+
+                return redirect()->to(base_url('gudang/penerimaan/data_beli.php?'.(!empty($no_nota) ? 'filter_no_nota='.$no_nota : '').(!empty($supplier) ? '&filter_supplier='.$supplier : '')));
+            } 
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
             return redirect()->to(base_url());

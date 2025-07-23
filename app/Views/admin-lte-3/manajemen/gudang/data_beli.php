@@ -47,14 +47,14 @@ model('trPO');
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php // echo form_open(base_url('master/set_item_cari.php')) ?>
+                                    <?php echo form_open(base_url('gudang/penerimaan/set_data_beli_cari.php')) ?>
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan No. PI ...']) ?>
+                                            <?php echo form_input(['id' => 'no_nota', 'name' => 'no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan No. PI ...']) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'item', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Supplier ...']) ?>
+                                            <?php echo form_input(['id' => 'supplier', 'name' => 'supplier', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Supplier ...']) ?>
                                         </th>
                                         <th></th>
                                         <th></th>

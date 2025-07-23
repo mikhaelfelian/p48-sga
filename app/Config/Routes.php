@@ -285,6 +285,7 @@ $routes->group('gudang', ['filter' => 'auth'], function($routes) {
     $routes->get('penerimaan/data_beli.php', 'Gudang::data_beli');
     $routes->get('penerimaan/data_beli_terima.php', 'Gudang::data_beli_terima');
     $routes->get('penerimaan/data_beli_terima_item.php', 'Gudang::data_beli_terima_item');
+    $routes->post('penerimaan/set_data_beli_cari.php', 'Gudang::set_data_beli_cari');
     $routes->get('penerimaan/cart_hapus.php', 'Gudang::cart_beli_hapus');
     $routes->get('penerimaan/set_hapus_item_sn.php', 'Gudang::set_beli_hapus_sn');
     $routes->post('penerimaan/set_terima_item.php', 'Gudang::set_beli_terima_simpan');

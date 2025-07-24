@@ -315,6 +315,7 @@ $routes->group('gudang', ['filter' => 'auth'], function($routes) {
     # --- GUDANG - STOK ---
     $routes->get('stok/data_sn.php', 'Gudang::data_sn');
     $routes->get('stok/xls_sn.php', 'Gudang::xls_sn');
+    $routes->get('stok/pdf_sn.php', 'Gudang::pdf_sn');
     $routes->post('stok/set_sn_cari.php', 'Gudang::set_sn_cari');
     $routes->get('stok/data_item.php', 'Gudang::data_item');
     $routes->get('stok/data_item_det.php', 'Gudang::data_item_stok');

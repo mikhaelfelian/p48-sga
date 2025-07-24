@@ -32,10 +32,16 @@ model('trPO');
                         <div class="card-header">
                             <h3 class="card-title">Data Kode SN</h3>
                             <div class="card-tools">
+                                <a href="<?php echo base_url('gudang/stok/xls_sn.php?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-success btn-sm">
+                                    <i class="fas fa-file-excel"></i> Export Excel
+                                </a>
+                                <a href="<?php echo base_url('gudang/stok/pdf_sn.php?' . $_SERVER['QUERY_STRING']) ?>" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i> Export PDF
+                                </a>
                             </div>
                         </div>
                         <div class="card-body">
-                            <?php                                
+                            <!-- <?php                                
                                 $kode       = $request->getVar('filter_kode');
                                 $item       = $request->getVar('filter_item');
                                 $status     = $request->getVar('filter_status');
@@ -44,7 +50,7 @@ model('trPO');
                                 
                                 $uri_xls    = base_url('gudang/stok/xls_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode.'&' : '').(!empty($item) ? 'filter_item='.$item.'&' : '').(!empty($status) ? 'filter_status='.$status : '').(!empty($keluar) ? 'filter_keluar='.$keluar.'&' : ''));
                             ?>
-                            <button class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo $uri_xls ?>'"><i class="fas fa-file-excel"></i> Export Excel</button>
+                            <button class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo $uri_xls ?>'"><i class="fas fa-file-excel"></i> Export Excel</button> -->
                             
                             <table class="table table-striped">
                                 <thead>

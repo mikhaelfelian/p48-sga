@@ -1336,11 +1336,11 @@ class Gudang extends BaseController {
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
             $pdf->Cell(0.5, .5, 'NO', 'TB', 0, 'C', $fill);
             $pdf->Cell(2, .5, 'SN', 'TB', 0, 'L', $fill);
-            $pdf->Cell(3.5, .5, 'KODE ITEM', 'TB', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'KODE ITEM', 'TB', 0, 'L', $fill);
             $pdf->Cell(2.5, .5, 'GUDANG', 'TB', 0, 'L', $fill);
             $pdf->Cell(1.5, .5, 'STATUS', 'TB', 0, 'L', $fill);
             $pdf->Cell(5, .5, 'KELUAR', 'TB', 0, 'L', $fill);
-            $pdf->Cell(2.5, .5, 'MASUK', 'TB', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'MASUK', 'TB', 0, 'L', $fill);
             $pdf->Ln();
 
             $no     = 1;
@@ -1352,7 +1352,8 @@ class Gudang extends BaseController {
                 if (!empty($data->id_penjualan)) {
                     $asal_keluar = 'Penj: ' . $data->no_nota_jual;
                 } elseif (!empty($data->id_mutasi)) {
-                    $asal_keluar = 'Mut: ' . $data->no_nota_mutasi;
+                    $asal_keluar = 'Mut: ' . $data->no_nota_mutasi;                $asal_masuk = $data->id_supplier ? $data->no_nota_beli : '-';
+
                 } else {
                     $asal_keluar = '-';
                 }
@@ -1360,11 +1361,11 @@ class Gudang extends BaseController {
 
                 $pdf->Cell(0.5, .5, $no . '.', '', 0, 'C', $fill);
                 $pdf->Cell(2, .5, $data->kode, '', 0, 'L', $fill);
-                $pdf->Cell(3.5, .5, $item, '', 0, 'L', $fill);
+                $pdf->Cell(4, .5, $item, '', 0, 'L', $fill);
                 $pdf->Cell(2.5, .5, $data->gudang, '', 0, 'L', $fill);
                 $pdf->Cell(1.5, .5, $status, '', 0, 'C', $fill);
                 $pdf->Cell(5, .5, $asal_keluar, '', 0, 'L', $fill);
-                $pdf->Cell(2.5, .5, $asal_masuk, '', 0, 'L', $fill);
+                $pdf->Cell(4, .5, $asal_masuk, '', 0, 'L', $fill);
                 $pdf->Ln();
                 $no++;
             }

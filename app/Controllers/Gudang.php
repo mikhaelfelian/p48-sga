@@ -923,7 +923,10 @@ class Gudang extends BaseController {
             $AksesGrup  = $this->ionAuth->groups()->result();
             
             $kode       = $this->input->getVar('filter_kode');
-            
+            $item       = $this->input->getVar('filter_item');
+            $status     = $this->input->getVar('filter_status');
+            $keluar     = $this->input->getVar('filter_keluar');
+    
             $vtrMutasi  = new \App\Models\vtrMutasi();
             $sql_mutasi = $vtrMutasi->asObject()->where('tipe !=', '4')->where('status_hps', '0'); //->like('no_nota', (!empty($kode) ? $kode : ''))->orderBy('id', 'DESC');
             
@@ -982,9 +985,34 @@ class Gudang extends BaseController {
 
                 ->orderBy('tbl_m_item_stok_det.id', 'DESC');
 
-            if (!empty($kode)) {
-                $sql_item_stok_det->like('tbl_m_item_stok_det.kode', $kode);
-            }
+            
+                // ✅ Filter Serial Number
+                if (!empty($kode)) {
+                    $sql_item_stok_det->like('tbl_m_item_stok_det.kode', $kode);
+                }
+
+                // ✅ Filter Item
+                if (!empty($item)) {
+                    $sql_item_stok_det->like('i.item', $item);
+                }
+
+                // ✅ Filter Status
+                if (!empty($status)) {
+                    if ($status == 'tersedia') {
+                        $sql_item_stok_det->where('tbl_m_item_stok_det.status', 1);
+                    } elseif ($status == 'terpakai') {
+                        $sql_item_stok_det->where('tbl_m_item_stok_det.status !=', 1);
+                    }
+                }
+
+                // ✅ Filter Asal Keluar
+                if (!empty($keluar)) {
+                    if ($keluar == 'penjualan') {
+                        $sql_item_stok_det->where('jual_sn.id_penjualan IS NOT NULL', null, false);
+                    } elseif ($keluar == 'mutasi') {
+                        $sql_item_stok_det->where('mutasi_sn.id_mutasi IS NOT NULL', null, false);
+                    }
+                }
 
             $data  = [
                 'SQLItemDet'     => $sql_item_stok_det->paginate($jml_limit),
@@ -1009,9 +1037,12 @@ class Gudang extends BaseController {
 
     public function set_sn_cari() {                
         if ($this->input->is('post') == 1) {
-            $kode   = $this->input->getVar('kode');
+            $kode   = $this->input->getVar('filter_kode');
+            $item   = $this->input->getVar('filter_item');
+            $status   = $this->input->getVar('filter_status');
+            $keluar   = $this->input->getVar('filter_keluar');
             
-            return redirect()->to(base_url('gudang/stok/data_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode : '')));
+            return redirect()->to(base_url('gudang/stok/data_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode : '') . (!empty($item) ? '&filter_item='.$item : '') . (!empty($status) ? '&filter_status='.$status : '') . (!empty($keluar) ? '&filter_keluar='.$keluar : '')));
         }
     }
     

@@ -39,12 +39,12 @@ model('trPO');
                                 <thead>
                                     <tr>
                                         <th class="text-center">No.</th>
-                                        <th>Kode</th>
+                                        <th>Serial Number</th>
                                         <th>Item</th>
                                         <th>Gudang</th>
                                         <th>Status</th>
-                                        <th>Asal Masuk</th>
                                         <th>Asal Keluar</th>
+                                        <th>Asal Masuk</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -52,13 +52,27 @@ model('trPO');
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'kode', 'name' => 'kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Serial Number ...']) ?>
                                         </th>
                                         <th>
+                                            <?php echo form_input(['id' => 'filter_item', 'name' => 'filter_item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Item ...']) ?>
+
                                         </th>
                                         <th></th>
-                                        <th></th>
-                                        <th></th>
+                                        <th>
+                                            <select name="filter_status" class="form-control rounded-0">
+                                                <option value="">- Semua -</option>
+                                                <option value="tersedia" <?php echo (request()->getVar('filter_status') == 'paid' ? 'selected' : '') ?>>Tersedia</option>
+                                                <option value="terpakai" <?php echo (request()->getVar('filter_status') == 'partial' ? 'selected' : '') ?>>Tidak Tersedia</option>
+                                            </select>
+                                        </th>
+                                        <th>
+                                            <select name="filter_keluar" class="form-control rounded-0">
+                                                <option value="">- Semua -</option>
+                                                <option value="penjualan" <?php echo (request()->getVar('filter_keluar') == 'paid' ? 'selected' : '') ?>>Penjualan</option>
+                                                <option value="mutasi" <?php echo (request()->getVar('filter_keluar') == 'partial' ? 'selected' : '') ?>>Mutasi</option>
+                                            </select>
+                                        </th>
                                         <th>
                                             <button class="btn btn-primary btn-flat" style="width: 120px;">
                                                 <i class="fa fa-search"></i> Cari
@@ -81,21 +95,11 @@ model('trPO');
                                                     <small><i><?php echo $det->item_kode; ?></i></small><br/>
                                                 </td>
                                                 <td style="width: 150px;">
-                                                  <b><?php echo $det->gudang ?></b><br/>
-                                                  <small><i><?php echo $det->gudang_kode; ?></i></small><br/>
+                                                    <b><?php echo $det->gudang ?></b><br/>
+                                                    <small><i><?php echo $det->gudang_kode; ?></i></small><br/>
                                                 </td>
                                                 <td style="width: 150px;">
-                                                  <?= $det->status == 1 ? '<small class="badge badge-success">Tersedia</small>' : '<small class="badge badge-warning">Tidak Tersedia</small>'?>
-                                                </td>
-                                                <td style="width: 280px;">
-                                                    <?php if (!empty($det->id_supplier)) : ?>
-                                                        <span class="badge badge-primary">Asal Barang</span><br/>
-                                                        <small>Nota Beli: <b><?= $det->no_nota_beli ?></b></small><br/>
-                                                        <small>Supplier: <b><?= $det->kode_supplier ?> - <?= $det->nama_supplier ?></b></small>
-                                                    
-                                                    <?php else : ?>
-                                                        <span class="text-muted">Tidak Diketahui</span>
-                                                    <?php endif; ?>
+                                                    <?= $det->status == 1 ? '<small class="badge badge-success">Tersedia</small>' : '<small class="badge badge-warning">Tidak Tersedia</small>'?>
                                                 </td>
                                                 <td style="width: 280px;">
                                                     <?php if (!empty($det->id_penjualan)) : ?>
@@ -112,6 +116,16 @@ model('trPO');
                                                         <span class="text-muted">Belum keluar</span>
                                                     <?php endif; ?>
                                                 </td>
+                                                <td style="width: 280px;">
+                                                    <?php if (!empty($det->id_supplier)) : ?>
+                                                        <span class="badge badge-primary">Asal Barang</span><br/>
+                                                        <small>Nota Beli: <b><?= $det->no_nota_beli ?></b></small><br/>
+                                                        <small>Supplier: <b><?= $det->kode_supplier ?> - <?= $det->nama_supplier ?></b></small>
+                                                    
+                                                    <?php else : ?>
+                                                        <span class="text-muted">Tidak Diketahui</span>
+                                                    <?php endif; ?>
+                                                </td>
                                             </tr>
                                             <?php
                                         }
@@ -119,6 +133,7 @@ model('trPO');
                                     ?>
                                 </tbody>
                             </table>
+                            <?php dd($SQLItemDet);?>
                             <!-- FOOTER TABLE - PAGINATION -->
                             <div class="d-flex justify-content-end mt-3">
                                 <?php echo (!empty($Pagination) ? $Pagination : ''); ?>

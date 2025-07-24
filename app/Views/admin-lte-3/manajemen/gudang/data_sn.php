@@ -133,7 +133,6 @@ model('trPO');
                                     ?>
                                 </tbody>
                             </table>
-                            <?php dd($SQLItemDet);?>
                             <!-- FOOTER TABLE - PAGINATION -->
                             <div class="d-flex justify-content-end mt-3">
                                 <?php echo (!empty($Pagination) ? $Pagination : ''); ?>

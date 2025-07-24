@@ -35,6 +35,17 @@ model('trPO');
                             </div>
                         </div>
                         <div class="card-body">
+                            <?php                                
+                                $kode       = $request->getVar('filter_kode');
+                                $item       = $request->getVar('filter_item');
+                                $status     = $request->getVar('filter_status');
+                                $keluar     = $request->getVar('filter_keluar');
+    
+                                
+                                $uri_xls    = base_url('gudang/stok/xls_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode.'&' : '').(!empty($item) ? 'filter_item='.$item.'&' : '').(!empty($status) ? 'filter_status='.$status : '').(!empty($keluar) ? 'filter_keluar='.$keluar.'&' : ''));
+                            ?>
+                            <button class="btn btn-success btn-flat" onclick="window.location.href = '<?php echo $uri_xls ?>'"><i class="fas fa-file-excel"></i> Export Excel</button>
+                            
                             <table class="table table-striped">
                                 <thead>
                                     <tr>

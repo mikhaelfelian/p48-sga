@@ -4,6 +4,9 @@ namespace App\Controllers;
 use App\Models\PengaturanProfile;
 use App\Models\mTipe;
 use FPDF;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 /**
  * Description of Gudang
@@ -1043,6 +1046,187 @@ class Gudang extends BaseController {
             $keluar   = $this->input->getVar('filter_keluar');
             
             return redirect()->to(base_url('gudang/stok/data_sn.php?'.(!empty($kode) ? 'filter_kode='.$kode : '') . (!empty($item) ? '&filter_item='.$item : '') . (!empty($status) ? '&filter_status='.$status : '') . (!empty($keluar) ? '&filter_keluar='.$keluar : '')));
+        }
+    }
+
+    public function xls_sn(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID         = $this->ionAuth->user()->row();
+            $IDGrup     = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup  = $this->ionAuth->groups()->result();
+            
+            $kode       = $this->input->getVar('filter_kode');
+            $item       = $this->input->getVar('filter_item');
+            $status     = $this->input->getVar('filter_status');
+            $keluar     = $this->input->getVar('filter_keluar');
+    
+            $vtrMutasi  = new \App\Models\vtrMutasi();
+            $sql_mutasi = $vtrMutasi->asObject()->where('tipe !=', '4')->where('status_hps', '0'); //->like('no_nota', (!empty($kode) ? $kode : ''))->orderBy('id', 'DESC');
+            
+            $jml_limit  = $this->Setting->jml_item;
+            $ItemStokDet        = new \App\Models\mItemStokDet();
+            // $sql_item_stok_det = $ItemStokDet->asObject()
+            // ->select('tbl_m_item_stok_det.*, g.kode AS gudang_kode, g.gudang, i.kode AS item_kode, i.item, p.id')
+            // ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
+            // ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
+            // ->join('tbl_trans_jual_kirim_sn p', 'p.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+            // ->join('tbl_trans_mutasi_stok m', 'm.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+            // ->orderBy('id_item_stok_det.id', 'DESC');
+
+            $sql_item_stok_det = $ItemStokDet->asObject()
+                ->select('
+                    tbl_m_item_stok_det.*,
+                    g.kode AS gudang_kode,
+                    g.gudang,
+                    i.kode AS item_kode,
+                    i.item,
+                    
+                    -- Info dari transaksi penjualan (jika ada)
+                    jual_sn.id_penjualan,
+                    jual.no_nota AS no_nota_jual,
+                    pelanggan_jual.nama AS nama_pelanggan_jual,
+                    pelanggan_jual.kode AS kode_pelanggan_jual,
+
+                    -- Info dari mutasi stok (jika ada)
+                    mutasi_sn.id_mutasi,
+                    mutasi.no_nota AS no_nota_mutasi,
+                    pelanggan_mutasi.nama AS nama_pelanggan_mutasi,
+                    pelanggan_mutasi.kode AS kode_pelanggan_mutasi,
+
+                    -- Info dari pembelian stok (jika ada)
+                    beli.id_supplier,
+                    beli.no_nota AS no_nota_beli,
+                    supplier.nama AS nama_supplier,
+                    supplier.kode AS kode_supplier,
+                ')
+                ->join('tbl_m_gudang g', 'g.id = tbl_m_item_stok_det.id_gudang', 'left')
+                ->join('tbl_m_item i', 'i.id = tbl_m_item_stok_det.id_item', 'left')
+
+                // Join ke transaksi penjualan
+                ->join('tbl_trans_jual_kirim_sn jual_sn', 'jual_sn.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+                ->join('tbl_trans_jual jual', 'jual.id = jual_sn.id_penjualan', 'left')
+                ->join('tbl_m_pelanggan pelanggan_jual', 'pelanggan_jual.id = jual.id_pelanggan', 'left')
+
+                // Join ke transaksi mutasi
+                ->join('tbl_trans_mutasi_stok mutasi_sn', 'mutasi_sn.id_item_stok_det = tbl_m_item_stok_det.id', 'left')
+                ->join('tbl_trans_mutasi mutasi', 'mutasi.id = mutasi_sn.id_mutasi', 'left')
+                ->join('tbl_m_pelanggan pelanggan_mutasi', 'pelanggan_mutasi.id = mutasi.id_pelanggan', 'left')
+
+                // Join ke transaksi pembelian
+                ->join('tbl_trans_beli beli', 'beli.id = tbl_m_item_stok_det.id_pembelian', 'left')
+                ->join('tbl_m_supplier supplier', 'supplier.id = beli.id_supplier', 'left')
+
+                ->orderBy('tbl_m_item_stok_det.id', 'DESC');
+
+            
+            // ✅ Filter Serial Number
+            if (!empty($kode)) {
+                $sql_item_stok_det->like('tbl_m_item_stok_det.kode', $kode);
+            }
+
+            // ✅ Filter Item
+            if (!empty($item)) {
+                $sql_item_stok_det->like('i.item', $item);
+            }
+
+            // ✅ Filter Status
+            if (!empty($status)) {
+                if ($status == 'tersedia') {
+                    $sql_item_stok_det->where('tbl_m_item_stok_det.status', 1);
+                } elseif ($status == 'terpakai') {
+                    $sql_item_stok_det->where('tbl_m_item_stok_det.status !=', 1);
+                }
+            }
+
+            // ✅ Filter Asal Keluar
+            if (!empty($keluar)) {
+                if ($keluar == 'penjualan') {
+                    $sql_item_stok_det->where('jual_sn.id_penjualan IS NOT NULL', null, false);
+                } elseif ($keluar == 'mutasi') {
+                    $sql_item_stok_det->where('mutasi_sn.id_mutasi IS NOT NULL', null, false);
+                }
+            }
+
+            $result = $sql_item_stok_det->findAll();
+            
+            $objPHPExcel = new Spreadsheet();
+            
+            # Header Excel
+            $objPHPExcel->getActiveSheet()->getStyle('A1:F4')->getAlignment()->setHorizontal('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:F4')->getAlignment()->setVertical('center');
+            $objPHPExcel->getActiveSheet()->getStyle('A1:F4')->getFont()->setBold(TRUE);
+            
+            # Judul header
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A1', 'DATA SERIAL NUMBER')->mergeCells('A1:F1');
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A2', $this->Setting->judul_app)->mergeCells('A2:F2');
+            
+            $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A4', 'No')
+                    ->setCellValue('B4', 'Serial Number')
+                    ->setCellValue('C4', 'Gudang')
+                    ->setCellValue('D4', 'Status')
+                    ->setCellValue('E4', 'Asal Keluar')
+                    ->setCellValue('F4', 'Asal Masuk');
+            
+            $objPHPExcel->getActiveSheet()->freezePane("A5");
+            $objPHPExcel->getActiveSheet()->setAutoFilter('A4:F4');
+            
+            # Pengaturan panjang sel
+            $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(6);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(35);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(65);
+            $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(65);
+
+            if(empty($tmpl)){
+                $no     = 1;
+                $cell   = 5;
+                foreach ($result as $data) {
+                    $objPHPExcel->getActiveSheet()->getStyle('A'.$cell)->getAlignment()->setHorizontal('center');
+                    $objPHPExcel->getActiveSheet()->getStyle('B'.$cell.':F'.$cell)->getAlignment()->setHorizontal('left');
+
+                    $gudang = $data->gudang_kode . ' - ' . $data->gudang;
+                    $status = $data->status == 1 ? 'Tersedia' : 'Tidak Tersedia';
+                    $asal_keluar = '';
+                    if (!empty($data->id_penjualan)) {
+                        $asal_keluar = 'Penjualan: ' . $data->no_nota_jual . ' - ' . $data->nama_pelanggan_jual . ' (' . $data->kode_pelanggan_jual . ')';
+                    } elseif (!empty($data->id_mutasi)) {
+                        $asal_keluar = 'Mutasi: ' . $data->no_nota_mutasi . ' - ' . $data->nama_pelanggan_mutasi . ' (' . $data->kode_pelanggan_mutasi . ')';
+                    } else {
+                        $asal_keluar = '-';
+                    }
+                    $asal_masuk = $data->id_supplier ? 'Pembelian: ' . $data->no_nota_beli . ' - ' . $data->nama_supplier . ' (' . $data->kode_supplier . ')' : 'Stok Awal';
+                    $objPHPExcel->setActiveSheetIndex(0)
+                                ->setCellValue('A' . $cell, $no)
+                                ->setCellValue('B' . $cell, $data->kode)
+                                ->setCellValue('C' . $cell, $gudang)
+                                ->setCellValue('D' . $cell, $status)
+                                ->setCellValue('E' . $cell, $asal_keluar)
+                                ->setCellValue('F' . $cell, $asal_masuk);
+
+
+                    $no++;
+                    $cell++;
+                }
+            }
+
+            $objPHPExcel->getActiveSheet()->setTitle('Data Item');
+
+            $writer     = new Xlsx($objPHPExcel);
+            $fileName   = 'data_serial_number_'.(!empty($tmpl) ? 'template' : date('YmdH'));
+
+            // Redirect hasil generate xlsx ke web client
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename='.$fileName.'.xlsx');
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
         }
     }
     

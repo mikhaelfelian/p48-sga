@@ -52,25 +52,25 @@ model('trPO');
                                     <tr>
                                         <th class="text-center"></th>
                                         <th>
-                                            <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Serial Number ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_kode', 'name' => 'filter_kode', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Serial Number ...', 'value' => request()->getVar('filter_kode')])?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'filter_item', 'name' => 'filter_item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Item ...']) ?>
+                                            <?php echo form_input(['id' => 'filter_item', 'name' => 'filter_item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan Item ...', 'value' => request()->getVar('filter_item')]) ?>
 
                                         </th>
                                         <th></th>
                                         <th>
                                             <select name="filter_status" class="form-control rounded-0">
                                                 <option value="">- Semua -</option>
-                                                <option value="tersedia" <?php echo (request()->getVar('filter_status') == 'paid' ? 'selected' : '') ?>>Tersedia</option>
-                                                <option value="terpakai" <?php echo (request()->getVar('filter_status') == 'partial' ? 'selected' : '') ?>>Tidak Tersedia</option>
+                                                <option value="tersedia" <?php echo (request()->getVar('filter_status') == 'tersedia' ? 'selected' : '') ?>>Tersedia</option>
+                                                <option value="terpakai" <?php echo (request()->getVar('filter_status') == 'terpakai' ? 'selected' : '') ?>>Tidak Tersedia</option>
                                             </select>
                                         </th>
                                         <th>
                                             <select name="filter_keluar" class="form-control rounded-0">
                                                 <option value="">- Semua -</option>
-                                                <option value="penjualan" <?php echo (request()->getVar('filter_keluar') == 'paid' ? 'selected' : '') ?>>Penjualan</option>
-                                                <option value="mutasi" <?php echo (request()->getVar('filter_keluar') == 'partial' ? 'selected' : '') ?>>Mutasi</option>
+                                                <option value="penjualan" <?php echo (request()->getVar('filter_keluar') == 'penjualan' ? 'selected' : '') ?>>Penjualan</option>
+                                                <option value="mutasi" <?php echo (request()->getVar('filter_keluar') == 'mutasi' ? 'selected' : '') ?>>Mutasi</option>
                                             </select>
                                         </th>
                                         <th>

@@ -4759,9 +4759,13 @@ class Transaksi extends BaseController {
             $jml_bayar  = $this->input->getVar('jml_bayar');
             $metode     = $this->input->getVar('metode');
             $keterangan     = $this->input->getVar('keterangan');
+            $keterangan_potongan     = $this->input->getVar('keterangan_potongan');
             $rute       = $this->input->getVar('route');
+            $jml_potongan       = $this->input->getVar('jml_potongan');
             $fupl       = $this->request->getFile('fupload');
+            if($jml_potongan == "") $jml_potongan = 0;
 
+            // dd($fupl->getClientExtension());
             $Profile    = new \App\Models\PengaturanProfile();
             $Plgn       = new \App\Models\mPelanggan();
             $Rab        = new \App\Models\trRab();
@@ -4837,6 +4841,7 @@ class Transaksi extends BaseController {
                 $sql_rab            = $Rab->asObject()->where('id', $sql_penj->id_rab)->first();
                 $sql_platform       = $Platform->asObject()->where('id', $metode)->first();
                 $jml_bayar          = format_angka_db($jml_bayar);
+                $jml_potongan       = format_angka_db($jml_potongan);
                 
                 // if($jml_bayar >= $sql_penj->jml_gtotal){
                 //     $status_bayar = '1';
@@ -4844,7 +4849,8 @@ class Transaksi extends BaseController {
                 //     $status_bayar = '0';
                 // }               
 
-                $totalBayar = $jml_bayar + $sql_penj->jml_bayar;
+                $totalBayar = $jml_bayar + $sql_penj->jml_bayar + $jml_potongan;
+                $totalPotongan = $jml_potongan + $sql_penj->jml_potongan;
                 if($totalBayar >= $sql_penj->jml_gtotal){
                     $status_bayar = '1'; //LUNAS
                 }else {
@@ -4862,6 +4868,7 @@ class Transaksi extends BaseController {
                     'jml_kurang' => (float)$sql_penj->jml_gtotal - $totalBayar,
                     // 'metode_bayar'  => $metode,
                     'status_bayar'  => $status_bayar,
+                    'jml_potongan'  => $totalPotongan
                 ];
                 
                 $resultPenj = $Penj->save($data);
@@ -4892,8 +4899,10 @@ class Transaksi extends BaseController {
                     'platform' => $sql_platform->platform,
                     'no_nota' => $sql_penj->no_nota,
                     'nominal' => (float)$jml_bayar,
-                    'file'     => 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
-                    'keterangan' => $keterangan
+                    'jml_potongan' => (float)$jml_potongan,
+                    'file'     => $fupl->getClientExtension() == "" ? null : 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
+                    'keterangan' => $keterangan,
+                    'keterangan_potongan' => $keterangan_potongan
                 ];
                 $resultPenjPlat = $PenjPlat->save($dataPlatform);
                 if (!$resultPenjPlat) {

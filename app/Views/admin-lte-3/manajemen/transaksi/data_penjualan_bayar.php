@@ -107,21 +107,24 @@
                                                 <th class="text-left">No</th>
                                                 <th class="text-left">Tanggal</th>
                                                 <th class="text-center">Nominal</th>
+                                                <th class="text-center">Potongan</th>
                                                 <th class="text-left">Metode</th>
                                                 <th class="text-left">Nota</th>
                                                 <th class="text-left">Bukti</th>
                                                 <th class="text-left">Keterangan</th>
+                                                <th class="text-left">Keterangan Potongan</th>
                                             </tr>                                    
                                         </thead>
                                         <tbody>
-                                            <?php $no = 1; $sub = 0; ?>
+                                            <?php $no = 1; $sub = 0; $pot = 0;?>
                                             <?php foreach ($SQLPenjPlat as $det) { ?>
                                             <tr>
                                                 <td class="text-center"><?php echo $no . '.'; ?></td>
                                                 <td class="text-left">
                                                     <?php echo tgl_indo5($det->tgl_simpan); ?></i></small>
                                                 </td>
-                                                <td class="text-center"><?php echo format_angka($det->nominal); ?></td>
+                                                <td class="text-center">Rp. <?php echo format_angka($det->nominal); ?></td>
+                                                <td class="text-center">Rp. <?php echo format_angka($det->jml_potongan); ?></td>
                                                 <td class="text-left"><?php echo $det->platform; ?></td>
                                                 <td class="text-left"><?php echo $det->no_nota; ?></td>
                                                 <td class="text-left">
@@ -135,14 +138,20 @@
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-left"><?php echo $det->keterangan;?></td>
+                                                <td class="text-left"><?php echo $det->keterangan_potongan;?></td>
                                             </tr>
                                             
-                                            <?php $no++; $sub += $det->nominal; ?>
+                                            <?php $no++; $sub += $det->nominal; $pot += $det->jml_potongan; ?>
                                             <?php } ?>
                                             <tr>
                                                 <td class="text-right text-bold" colspan="2">Subtotal : </td>
-                                                <td class="text-left text-bold" colspan="5"><?php echo format_angka($sub); ?></td>
+                                                <td class="text-left text-bold" colspan="7">Rp. <?php echo format_angka($sub); ?></td>
                                             </tr>
+                                            <tr>
+                                                <td class="text-right text-bold" colspan="2">Potongan : </td>
+                                                <td class="text-left text-bold" colspan="7">Rp. <?php echo format_angka($pot); ?></td>
+                                            </tr>
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -229,6 +238,30 @@
                                     <?php echo form_input(['id' => 'jml_bayar', 'name' => 'jml_bayar', 'class' => 'form-control pull-right rounded-0'.(!empty($psnGagal['jml_bayar']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah pembayaran ...']) ?>
                                 </div>
                             </div>
+                            <div class="form-group<?php echo (!empty($psnGagal['jml_potongan']) ? ' text-danger' : '') ?>">
+                                <label for="inputEmail3">POTONGAN</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Rp. </span>
+                                    </div>
+                                    <?php echo form_input(['id' => 'jml_potongan', 'name' => 'jml_potongan', 'class' => 'form-control pull-right rounded-0'.(!empty($psnGagal['jml_potongan']) ? ' is-invalid' : ''), 'placeholder' => 'Isikan jumlah potongan ...']) ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="keterangan_potongan">Keterangan Potongan</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fas fa-comment-dots"></i></span>
+                                    </div>
+                                    <?php echo form_textarea([
+                                        'id' => 'keterangan_potongan',
+                                        'name' => 'keterangan_potongan',
+                                        'class' => 'form-control pull-right rounded-0',
+                                        'placeholder' => 'Tulis keterangan potongan di sini...',
+                                        'rows' => 3,
+                                    ]); ?>
+                                </div>
+                            </div>
                             <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
                                 <label for="label">Unggah Bukti Bayar*</label>
                                 <div class="input-group mb-3">
@@ -258,7 +291,7 @@
 <!-- Page script -->
 <script type="text/javascript">
     $(function () {
-        $("input[id=jml_gtotal],input[id=jml_bayar],input[id=jml_kurang]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
+        $("input[id=jml_gtotal],input[id=jml_bayar],input[id=jml_kurang],input[id=jml_potongan]").autoNumeric({aSep: '.', aDec: ',', aPad: false});
         
         $("#tgl_bayar").datepicker({
             dateFormat: 'dd/mm/yy',

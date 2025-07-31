@@ -50,7 +50,7 @@
                                             <?php echo form_input(['id' => 'filter_no_nota', 'name' => 'filter_no_nota', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
                                         </th>
                                         <th>
-                                            <?php echo form_input(['id' => 'pelanggan', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?>
+                                            <!-- <?php echo form_input(['id' => 'pelanggan', 'name' => 'item', 'class' => 'form-control input-sm rounded-0', 'placeholder' => 'Isikan item ...']) ?> -->
                                         </th>
                                         <th>
                                             <select name="filter_status_bayar" class="form-control rounded-0">
@@ -100,6 +100,18 @@
                                     }
                                     ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="6">
+                                            <div class="alert alert-secondary p-2 mb-0">
+                                                <b>Total Status Pembayaran:</b><br>
+                                                - Belum Bayar: <b>Rp. <?= number_format($totBelumBayar, 0, ',', '.') ?></b><br>
+                                                - Belum Lunas: <b>Rp. <?= number_format($totBelumLunas, 0, ',', '.') ?></b><br>
+                                                - Terbayar: <b>Rp. <?= number_format($totLunas, 0, ',', '.') ?></b><br>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                             <!-- FOOTER TABLE - PAGINATION -->
                             <div class="d-flex justify-content-end mt-3">

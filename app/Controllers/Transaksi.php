@@ -4600,10 +4600,14 @@ class Transaksi extends BaseController {
             $hlmn       = $this->input->getVar('page');
 
             $vtrPenj    = new \App\Models\vtrPenj();
+            $vtrPenjTot    = new \App\Models\vtrPenj();
             $sql_penj   = $vtrPenj->asObject()->where('status', '1')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
-            
+            $builder = $vtrPenjTot->select('status_bayar, SUM(jml_gtotal) as total')
+            ->where('status', '1');
+
             if (!empty($no_nota)) {
                 $sql_penj->where('no_nota', $no_nota);
+                $builder->where('no_nota', $no_nota);
             }
 
             if (!empty($status_bayar)) {
@@ -4611,12 +4615,35 @@ class Transaksi extends BaseController {
                 $sql_penj->where('status_bayar', $status);
             }
 
+            // Group by status_bayar untuk dapatkan total per status
+            $results = $builder->groupBy('status_bayar')->findAll();
+
+            // Siapkan array default supaya aman
+            $totals = [
+                '0' => 0, // belum bayar
+                '1' => 0, // lunas
+                '2' => 0, // belum lunas
+            ];
+
+            // Masukkan hasil ke array
+            foreach ($results as $row) {
+                $totals[$row['status_bayar']] = $row['total'];
+            }
+
+            // Akses hasilnya
+            $totalBelumBayar   = $totals['0'];
+            $totalLunas        = $totals['1'];
+            $totalBelumLunas   = $totals['2'];
+            
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [
                 'SQLPenj'       => $sql_penj->paginate($jml_limit),
                 'Pagination'    => $vtrPenj->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'totBelumBayar' => $totalBelumBayar,
+                'totLunas'      => $totalLunas,
+                'totBelumLunas' => $totalBelumLunas,
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
                 'PenggunaGrup'  => $IDGrup,

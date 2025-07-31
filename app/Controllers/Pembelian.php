@@ -1171,6 +1171,10 @@ class Pembelian extends BaseController {
             $rute       = $this->input->getVar('route');
             $keterangan = $this->input->getVar('keterangan');
             $fupl       = $this->request->getFile('fupload');
+            $fupl2       = $this->request->getFile('fupload2');
+            $jml_potongan       = $this->input->getVar('jml_potongan');
+            if($jml_potongan == "") $jml_potongan = 0;
+            $keterangan_potongan     = $this->input->getVar('keterangan_potongan');
 
             $Beli       = new \App\Models\trPembelian();
             $BeliDet    = new \App\Models\trPembelianDet();
@@ -1233,6 +1237,7 @@ class Pembelian extends BaseController {
                 $sql_beli      = $Beli->asObject()->where('id', $id)->first();
                 $sql_beli_det  = $BeliDet->asObject()->where('id_pembelian', $sql_beli->id)->find();
                 $jml_bayar     = format_angka_db($jml_bayar);
+                $jml_potongan       = format_angka_db($jml_potongan);
                 $sql_plat = $Platform->asObject()->where('id', $metode)->first();
                 
                 // # Start Transact SQL
@@ -1244,7 +1249,8 @@ class Pembelian extends BaseController {
                     // }else{
                     //     $status_bayar = '0';
                     // }
-                    $totalBayar = $jml_bayar + $sql_beli->jml_bayar;
+                    $totalBayar = $jml_bayar + $sql_beli->jml_bayar + $jml_potongan;
+                    $totalPotongan = $jml_potongan + $sql_beli->jml_potongan;
                     if($totalBayar >= $sql_beli->jml_gtotal){
                         $status_bayar = '1'; //LUNAS
                     }else {
@@ -1261,6 +1267,7 @@ class Pembelian extends BaseController {
                         'jml_kurang' => (float)$sql_beli->jml_gtotal - $totalBayar,
                         // 'metode_bayar'  => $metode,
                         'status_bayar'  => $status_bayar,
+                        'jml_potongan'  => $totalPotongan
                     ];
 
                     $result = $Beli->save($data);
@@ -1272,6 +1279,10 @@ class Pembelian extends BaseController {
                     $path       = FCPATH . 'file/buy/paid/'.strtolower($sql_beli->id);
                     $unique = uniqid();
                     $filename = 'so_' . strtolower(string: alnum($sql_plat->platform)) . '_' . $unique . '.' . $fupl->getClientExtension();
+                    
+                    $unique2 = uniqid();
+                    $filename2 = 'so_' . strtolower(string: alnum($sql_plat->platform)) . '_' . $unique2 . '.' . $fupl2->getClientExtension();
+    
                     if(!file_exists($path)){
                         mkdir($path, 0777, true);
                     }
@@ -1279,6 +1290,11 @@ class Pembelian extends BaseController {
                     # Jika valid lanjut upload file
                     if ($fupl->isValid() && !$fupl->hasMoved()) {
                         $fupl->move($path, $filename, true);
+                    }
+
+
+                    if ($fupl2->isValid() && !$fupl2->hasMoved()) {
+                        $fupl2->move($path, $filename2, true);
                     }
 
                     # Masukkan data platform pembayaran
@@ -1289,8 +1305,11 @@ class Pembelian extends BaseController {
                         'platform'      => $sql_plat->platform,
                         'no_nota' => $sql_beli->no_nota,
                         'nominal'       => (float)$jml_bayar,
-                        'file'     => 'file/buy/paid/'.strtolower($sql_beli->id).'/'.$filename,
+                        'file'     => $fupl->getClientExtension() == "" ? null : 'file/buy/paid/'.strtolower($sql_beli->id).'/'.$filename,
+                        'file2'     => $fupl2->getClientExtension() == "" ? null : 'file/buy/paid/'.strtolower($sql_beli->id).'/'.$filename2,
                         'keterangan'    => $keterangan,
+                        'keterangan_potongan' => $keterangan_potongan,
+                        'jml_potongan' => (float)$jml_potongan,
                     ];
                     $result_plat = $BeliPlat->save($data_plat);
                     if (!$result_plat) {

@@ -18,7 +18,7 @@ class trPembelianPlat extends Model {
     protected $useAutoIncrement     = true;
     protected $allowedFields        = [
         'id_pembelian', 'id_platform', 'tgl_simpan', 'no_nota',
-        'platform', 'keterangan', 'nominal', 'file'
+        'platform', 'keterangan', 'nominal', 'file', 'file2', 'jml_potongan', 'keterangan_potongan'
     ];
     
     # Tanggal

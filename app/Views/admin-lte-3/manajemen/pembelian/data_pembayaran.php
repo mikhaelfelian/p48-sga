@@ -96,6 +96,18 @@
                                     }
                                     ?>
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="7">
+                                            <div class="alert alert-secondary p-2 mb-0">
+                                                <b>Total Status Pembayaran:</b><br>
+                                                - Belum Bayar: <b>Rp. <?= number_format($totBelumBayar, 0, ',', '.') ?></b><br>
+                                                - Belum Lunas: <b>Rp. <?= number_format($totBelumLunas, 0, ',', '.') ?></b><br>
+                                                - Terbayar: <b>Rp. <?= number_format($totLunas, 0, ',', '.') ?></b><br>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     </div>

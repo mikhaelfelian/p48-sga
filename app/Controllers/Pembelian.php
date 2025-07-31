@@ -1520,13 +1520,38 @@ class Pembelian extends BaseController {
             $AksesGrup  = $this->ionAuth->groups()->result();
             
             $vtrBeli    = new \App\Models\vtrPembelian();
+            $vtrBeliTot    = new \App\Models\vtrPembelian();
             $sql_beli   = $vtrBeli->asObject()->where('status', '1')->orderBy('id', 'DESC'); //->like('kode', (!empty($kode) ? $kode : ''))->like('kategori', (!empty($kat) ? $kat : ''));
+            $builder = $vtrBeliTot->select('status_bayar, SUM(jml_gtotal) as total')->where('status', '1');
+            // Group by status_bayar untuk dapatkan total per status
+            $results = $builder->groupBy('status_bayar')->findAll();
+
+            // Siapkan array default supaya aman
+            $totals = [
+                '0' => 0, // belum bayar
+                '1' => 0, // lunas
+                '2' => 0, // belum lunas
+            ];
+
+            // Masukkan hasil ke array
+            foreach ($results as $row) {
+                $totals[$row['status_bayar']] = $row['total'];
+            }
+
+            // Akses hasilnya
+            $totalBelumBayar   = $totals['0'];
+            $totalLunas        = $totals['1'];
+            $totalBelumLunas   = $totals['2'];
+            
             $jml_limit  = $this->Setting->jml_item;
             
             $data  = [
                 'SQLBeli'       => $sql_beli->paginate($jml_limit),
                 'Pagination'    => $vtrBeli->pager->links('default', 'bootstrap_full'),
                 'Halaman'       => (isset($_GET['page']) ? ($_GET['page'] != '1' ? ($_GET['page'] * $jml_limit) + 1 : 1) : 1),
+                'totBelumBayar' => $totalBelumBayar,
+                'totLunas'      => $totalLunas,
+                'totBelumLunas' => $totalBelumLunas,
                 'AksesGrup'     => $AksesGrup,
                 'Pengguna'      => $ID,
                 'PenggunaGrup'  => $IDGrup,

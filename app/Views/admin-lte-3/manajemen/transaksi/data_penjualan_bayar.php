@@ -111,6 +111,7 @@
                                                 <th class="text-left">Metode</th>
                                                 <th class="text-left">Nota</th>
                                                 <th class="text-left">Bukti</th>
+                                                <th class="text-left">Faktur</th>
                                                 <th class="text-left">Keterangan</th>
                                                 <th class="text-left">Keterangan Potongan</th>
                                             </tr>                                    
@@ -132,9 +133,19 @@
                                                         <img src="<?php echo base_url($det->file); ?>" 
                                                             alt="Gambar Nota" 
                                                             class="img-fluid" 
-                                                            style="max-height: 250px;">
+                                                            style="max-height: 150px;">
                                                     <?php else: ?>
-                                                        <span>Tidak ada gambar</span>
+                                                        <span>-</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td class="text-left">
+                                                    <?php if (!empty($det->file2)): ?>
+                                                        <img src="<?php echo base_url($det->file2); ?>" 
+                                                            alt="Gambar Faktur" 
+                                                            class="img-fluid" 
+                                                            style="max-height: 150px;">
+                                                    <?php else: ?>
+                                                        <span>-</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-left"><?php echo $det->keterangan;?></td>
@@ -145,11 +156,11 @@
                                             <?php } ?>
                                             <tr>
                                                 <td class="text-right text-bold" colspan="2">Subtotal : </td>
-                                                <td class="text-left text-bold" colspan="7">Rp. <?php echo format_angka($sub); ?></td>
+                                                <td class="text-left text-bold" colspan="8">Rp. <?php echo format_angka($sub); ?></td>
                                             </tr>
                                             <tr>
                                                 <td class="text-right text-bold" colspan="2">Potongan : </td>
-                                                <td class="text-left text-bold" colspan="7">Rp. <?php echo format_angka($pot); ?></td>
+                                                <td class="text-left text-bold" colspan="8">Rp. <?php echo format_angka($pot); ?></td>
                                             </tr>
 
                                         </tbody>
@@ -266,6 +277,13 @@
                                 <label for="label">Unggah Bukti Bayar*</label>
                                 <div class="input-group mb-3">
                                     <input type="file" name="fupload" class="form-control-file<?php echo (!empty($psnGagal['fupload']) ? ' is-invalid' : '') ?>" accept=".jpg,.jpeg,.png,.pdf">
+                                    <small class="form-text text-muted">* File yang diijinkan: jpg | png | pdf | jpeg (Maks. 5MB)</small>
+                                </div>
+                            </div>
+                            <div class="form-group row<?php echo (!empty($psnGagal['fupload']) ? ' text-danger' : '') ?>" id="tp_berkas">
+                                <label for="label">Unggah Faktur Pembelian*</label>
+                                <div class="input-group mb-3">
+                                    <input type="file" name="fupload2" class="form-control-file<?php echo (!empty($psnGagal['fupload2']) ? ' is-invalid' : '') ?>" accept=".jpg,.jpeg,.png,.pdf">
                                     <small class="form-text text-muted">* File yang diijinkan: jpg | png | pdf | jpeg (Maks. 5MB)</small>
                                 </div>
                             </div>

@@ -18,7 +18,7 @@ class trPenjPlat extends Model {
     protected $useAutoIncrement     = true;
     protected $allowedFields        = [
         'id_penjualan', 'id_platform', 'tgl_simpan', 'no_nota',
-        'platform', 'keterangan', 'file', 'nominal', 'jml_potongan', 'keterangan_potongan'
+        'platform', 'keterangan', 'file', 'file2', 'nominal', 'jml_potongan', 'keterangan_potongan'
     ];
 
 }

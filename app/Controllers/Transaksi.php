@@ -4763,6 +4763,7 @@ class Transaksi extends BaseController {
             $rute       = $this->input->getVar('route');
             $jml_potongan       = $this->input->getVar('jml_potongan');
             $fupl       = $this->request->getFile('fupload');
+            $fupl2       = $this->request->getFile('fupload2');
             if($jml_potongan == "") $jml_potongan = 0;
 
             // dd($fupl->getClientExtension());
@@ -4882,6 +4883,9 @@ class Transaksi extends BaseController {
                 $unique = uniqid();
                 $filename = 'so_' . strtolower(string: alnum($sql_platform->platform)) . '_' . $unique . '.' . $fupl->getClientExtension();
 
+                $unique2 = uniqid();
+                $filename2 = 'so_' . strtolower(string: alnum($sql_platform->platform)) . '_' . $unique2 . '.' . $fupl2->getClientExtension();
+
                 if(!file_exists($path)){
                     mkdir($path, 0777, true);
                 }
@@ -4889,6 +4893,10 @@ class Transaksi extends BaseController {
                 # Jika valid lanjut upload file
                 if ($fupl->isValid() && !$fupl->hasMoved()) {
                     $fupl->move($path, $filename, true);
+                }
+
+                if ($fupl2->isValid() && !$fupl2->hasMoved()) {
+                    $fupl2->move($path, $filename2, true);
                 }
                 
                 // DETAIL PEMBAYARAN
@@ -4901,6 +4909,7 @@ class Transaksi extends BaseController {
                     'nominal' => (float)$jml_bayar,
                     'jml_potongan' => (float)$jml_potongan,
                     'file'     => $fupl->getClientExtension() == "" ? null : 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename,
+                    'file2'     => $fupl2->getClientExtension() == "" ? null : 'file/sale/paid/'.strtolower($sql_penj->id).'/'.$filename2,
                     'keterangan' => $keterangan,
                     'keterangan_potongan' => $keterangan_potongan
                 ];

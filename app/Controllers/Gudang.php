@@ -1917,7 +1917,11 @@ class Gudang extends BaseController {
                 
                 $sql_sat        = $Sat->asObject()->where('status', '1')->find();
                 $sql_mts        = $vtrMutasi->asObject()->where('id', $IDMts)->first();
-                $sql_mts_det    = $MutasiDet->asObject()->where('id_mutasi', $IDMts)->find();
+                $sql_mts_det    = $MutasiDet->asObject()->select('tbl_trans_mutasi_det.*, GROUP_CONCAT(trsn.kode_sn) as kode_sn_list')
+                                    ->where('id_mutasi', $IDMts)
+                                    ->join('tbl_trans_jual_kirim_sn trsn', 'trsn.id_penjualan = ' . $sql_mts->id_penjualan, 'left')
+                                    ->groupBy('tbl_trans_mutasi_det.id')
+                                    ->find();
                 $sql_profile    = $Profile->asObject()->where('id', $sql_mts->id_perusahaan)->first();
                 $sql_penj       = $Penjualan->asObject()
                                     ->select('tbl_trans_jual.*, tbl_m_pelanggan.nama as nama_pelanggan')
@@ -1951,7 +1955,7 @@ class Gudang extends BaseController {
             # ------------------------ KOP -------------------------------------------
             # Logo Kiri Atas
             if(!empty($sql_profile->logo_kop) && file_exists($logo)) {
-                $pdf->Image($logo, 1, 1.8, 4, 1.8);
+                $pdf->Image($logo, 1, 0.8, 5.5, 2);
             }
             
             # Logo Watermark
@@ -1960,66 +1964,80 @@ class Gudang extends BaseController {
             }
 
             $fill = FALSE;
-            $pdf->SetFont('TrebuchetMS-Bold','',9);
-            $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(14, .5, strtoupper($sql_profile->nama), '', 0, 'C', $fill);
-            $pdf->Ln();
-            $pdf->SetFont('TrebuchetMS','',9);
-            $pdf->Cell(5, .5, '', '', 0, '', $fill);
-            $pdf->Cell(14, .5, $sql_profile->alamat, '', 0, 'C', $fill);
-            $pdf->Ln();
-            $pdf->SetFont('TrebuchetMS','',9);
-            $pdf->Cell(5, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(14, .5, strtoupper($sql_profile->kota), '', 0, 'C', $fill);
-            $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',9);
             $pdf->Cell(4, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(1.5, .5, 'Telp', 'T', 0, 'L', $fill);
-            $pdf->Cell(.5, .5, ':', 'T', 0, 'C', $fill);
-            $pdf->Cell(4.5, .5, $sql_profile->no_telp, 'T', 0, 'L', $fill);
-            $pdf->Cell(2, .5, 'Tanggal', 'T', 0, 'L', $fill);
-            $pdf->Cell(.1, .5, ':', 'T', 0, 'C', $fill);
-            $pdf->Cell(6.4, .5, tgl_indo2($sql_mts->tgl_simpan), 'T', 0, '', $fill);
+            $pdf->Cell(7.5, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'JL. MAYDEND BAMBANG SUGENG', '', 0, 'R', $fill);
+            $pdf->Cell(.1, .5, '|', '', 0, 'C', $fill);
+            $pdf->Cell(3.4, .5, '(0293) 03202991', '', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',9);
-            $pdf->Cell(4, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(1.5, .5, 'Fax', '', 0, 'L', $fill);
-            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
-            $pdf->Cell(4.5, .5, $sql_profile->no_fax, '', 0, '', $fill);
-            $pdf->Cell(2, .5, 'Nomor', '', 0, '', $fill);
-            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
-            $pdf->Cell(6.4, .5, $sql_mts->no_pengiriman, '', 0, '', $fill);
+            $pdf->Cell(11.5, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'RUKO MAGNILIA 12A', '', 0, 'R', $fill);
+            $pdf->Cell(.1, .5, '|', '', 0, 'C', $fill);
+            $pdf->Cell(3.4, .5, 'pt.sga@serbaneka.id', '', 0, '', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',9);
-            $pdf->Cell(4, .5, '', 'B', 0, 'L', $fill);
-            $pdf->Cell(1.5, .5, 'Petugas', 'B', 0, 'L', $fill);
-            $pdf->Cell(.5, .5, ':', 'B', 0, 'C', $fill);
-            $pdf->Cell(4.5, .5, $sql_mts->user, 'B', 0, 'L', $fill);
-            $pdf->Cell(2, .5, 'Kepada', 'B', 0, 'L', $fill);
-            $pdf->Cell(.1, .5, ':', 'B', 0, 'C', $fill);
-            $pdf->Cell(6.4, .5, $sql_penj->nama_pelanggan, 'B', 0, '', $fill);
+            $pdf->Cell(11.5, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'MAGELANG', '', 0, 'R', $fill);
+            $pdf->Cell(.1, .5, '|', '', 0, 'C', $fill);
+            $pdf->Cell(3.4, .5, 'https://serbaneka.id', '', 0, '', $fill);
             $pdf->Ln();
-            $pdf->SetFont('TrebuchetMS', '', 10);
-            $pdf->Cell(14.5, 1, $sql_mts->p_nama, 'B', 0, 'L', $fill);
-            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
-            $pdf->Cell(4.5, .5, $sql_mts->keterangan, '', 0, 'C', $fill);
-            $pdf->Ln(.5);
-            $pdf->Cell(14.5, .5, '', '', 0, 'C', $fill);
-            $pdf->Cell(4.5, .5, '', 'B', 0, 'C', $fill);
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(11.5, .5, '', 'B', 0, 'L', $fill);
+            $pdf->Cell(4, .5, 'JAWA TENGAH - 576172', 'B', 0, 'R', $fill);
+            $pdf->Cell(.1, .5, '|', 'B', 0, 'C', $fill);
+            $pdf->Cell(3.4, .5, '', 'B', 0, '', $fill);
             # ------------------------ END KOP -------------------------------------------
                         
             # ------------------------ HEADER --------------------------------------------
             $pdf->Ln(0.75);
             $pdf->SetFont('Arial', 'B', '14');
-            $pdf->Cell(19, .5, 'SURAT JALAN', '', 0, 'C', $fill);
+            $pdf->Cell(19, .5, 'SURAT JALAN', '', 0, 'C', $fill);            
+            $pdf->Ln(0.75);
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(1.5, .5, 'Kepada', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(8.2, .5, $sql_penj->nama_pelanggan, '', 0, 'L', $fill);
+            $pdf->Cell(2.3, .5, 'Tanggal', '', 0, 'L', $fill);
+            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(6.4, .5, tgl_indo2($sql_mts->tgl_simpan), '', 0, '', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(1.5, .5, 'PIC', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(8.2, .5, $sql_mts->user, '', 0, '', $fill);
+            $pdf->Cell(2.3, .5, 'Nomor SJ', '', 0, '', $fill);
+            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(6.4, .5, $sql_mts->no_pengiriman, '', 0, '', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(1.5, .5, 'NO. HP', '', 0, 'L', $fill);
+            $pdf->Cell(.5, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(8.2, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(2.3, .5, 'Kepada', '', 0, 'L', $fill);
+            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(6.4, .5, $sql_penj->nama_pelanggan, '', 0, '', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(10.2, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(2.3, .5, 'ID Paket', '', 0, 'L', $fill);
+            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(6.4, .5, '', '', 0, '', $fill);
+            $pdf->Ln();
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(10.2, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(2.3, .5, 'NO. DOK. LKPP', '', 0, 'L', $fill);
+            $pdf->Cell(.1, .5, ':', '', 0, 'C', $fill);
+            $pdf->Cell(6.4, .5, '', '', 0, '', $fill);
             $pdf->Ln(0.75);            
             # ------------------------ END HEADER ----------------------------------------
             #          
             # ------------------------ ISI -----------------------------------------------
             $pdf->SetFont('TrebuchetMS-Bold', '', 9);
             $pdf->Cell(1, .5, 'NO', 'TB', 0, 'C', $fill);
-            $pdf->Cell(15, .5, 'DESKRIPSI', 'TB', 0, 'L', $fill);
-            $pdf->Cell(1, .5, 'JML', 'TB', 0, 'C', $fill);
+            $pdf->Cell(13, .5, 'NAMA BARANG', 'TB', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'KUANTITAS', 'TB', 0, 'C', $fill);
             $pdf->Cell(2, .5, 'SATUAN', 'TB', 0, 'L', $fill);
             
             $pdf->SetTextColor(0,0,0);
@@ -2030,32 +2048,40 @@ class Gudang extends BaseController {
             $no     = 1;
             $subtot = 0;
             foreach ($sql_mts_det as $det){
+                $kodeSNArray = explode(',', $det->kode_sn_list);
+
                 $pdf->Cell(1, .5, $no.'.', '', 0, 'C', $fill);
-                $pdf->Cell(15, .5, $det->item, '', 0, 'L', $fill);
-                $pdf->Cell(1, .5, (int)$det->jml, '', 0, 'C', $fill);
+                $pdf->Cell(13, .5, $det->item, '', 0, 'L', $fill);
+                $pdf->Cell(3, .5, (int)$det->jml, '', 0, 'C', $fill);
                 $pdf->Cell(2, .5, $det->satuan, '', 0, 'L', $fill);
                 $pdf->Ln();
                 
-                if(!empty($det->keterangan)){
-                    $pdf->SetFont('TrebuchetMS-Italic', '', 9);
-                    $pdf->Cell(1, .5, '', '', 0, 'C', $fill);
-                    $pdf->Cell(18, .5, 'S/N :', '', 0, 'L', $fill);
-                    $pdf->Ln();
-                    $pdf->Cell(1, .5, '', '', 0, 'C', $fill);
-                    $pdf->MultiCell(15, .5, (!empty($det->keterangan) ? $det->keterangan : ''), '0', 'L');
-                    $pdf->Ln();
+                if(!empty($det->kode_sn_list)){
+                    foreach ($kodeSNArray as $key => $kodeSN) {
+                        $pdf->SetFont('TrebuchetMS-Italic', '', 9);
+                        $pdf->Cell(1, .5, '', '', 0, 'C', $fill);
+                        $pdf->Cell(2.5, .5, $key == 0 ? 'Serial Number' : '', '', 0, 'L', $fill);
+                        $pdf->Cell(10.5, .5, '- ' . $kodeSN, '', 0, 'L', $fill);
+                        $pdf->Ln();
+                    }
                 }
+                $pdf->Cell(19, .5, '', 'B', 0, 'L', $fill);
+                $pdf->Ln();
+                $no++;
             }
+            $pdf->Ln(0.75);
+            $pdf->SetFont('TrebuchetMS','',9);
+            $pdf->Cell(2, .5, 'KETERANGAN', '', 0, 'L', $fill);
+            $pdf->Cell(.2, .5, ':', '', 0, 'L', $fill);
+            $pdf->Cell(16.8, .5, $sql_mts->keterangan, '', 0, 'L', $fill);
+            $pdf->Ln();
             
             $pdf->SetFont('TrebuchetMS', '', 9);
             $pdf->Ln(0.75);
-            $pdf->Cell(3, .5, 'Dibuat Oleh', '', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, 'Mengetahui', '', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, 'Pengirim', '', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(2, .5, '', '', 0, 'C', $fill);
             $pdf->Cell(3, .5, 'Penerima', '', 0, 'C', $fill);
+            $pdf->Cell(8, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(3, .5, 'Dibuat Oleh', '', 0, 'C', $fill);
 
             $pdf->SetFont('TrebuchetMS', '', 9);
             $pdf->Ln();
@@ -2066,22 +2092,15 @@ class Gudang extends BaseController {
             $pdf->Cell(5, .5, '', '', 0, 'C', $fill);
             $pdf->Ln(1.5);
 
+            $pdf->Cell(2, .5, '', '', 0, 'C', $fill);
             $pdf->Cell(3, .5, '( ...................... )', 'B', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, '( ...................... )', 'B', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, '( ...................... )', 'B', 0, 'C', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(8, .5, '', '', 0, 'L', $fill);
             $pdf->Cell(3, .5, '( ...................... )', 'B', 0, 'C', $fill);
             $pdf->Ln();
+            $pdf->Cell(2, .5, '', '', 0, 'C', $fill);
             $pdf->Cell(3, .5, 'Tgl : ', '', 0, 'L', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
+            $pdf->Cell(8, .5, '', '', 0, 'L', $fill);
             $pdf->Cell(3, .5, 'Tgl : ', '', 0, 'L', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, 'Tgl : ', '', 0, 'L', $fill);
-            $pdf->Cell(2.33, .5, '', '', 0, 'L', $fill);
-            $pdf->Cell(3, .5, 'Tgl : ', '', 0, 'L', $fill);
-            $pdf->Ln();
             
 //            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
 //            $pdf->Cell(5, .5, $this->ionAuth->user($sql_mts->id_user)->row()->first_name, '', 0, 'C', $fill);

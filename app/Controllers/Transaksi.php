@@ -4419,14 +4419,12 @@ class Transaksi extends BaseController {
             $pdf->Ln(0.5);
             $pdf->Cell(1.5, .5, 'Terbilang', '', 0, 'L', $fill);
             $pdf->Cell(0.2, .5, ':', '', 0, 'C', $fill);
-            $pdf->Cell(16.8, .5, terbilang($subtot) . " Rupiah", '', 0, 'L', $fill);
+            $pdf->Cell(10, .5, terbilang($subtot) . " Rupiah", '', 0, 'L', $fill);
+            $pdf->Cell(6.8, .5, 'SUB TOTAL : Rp.' . format_angka($subtot), '', 0, 'R', $fill);
             $pdf->Ln();
             $pdf->SetFont('TrebuchetMS','',7);
             $pdf->Cell(4.5, .5, '(Harga Sudah Termasuk PPN)', '', 0, 'L', $fill);
             $pdf->Ln();
-            $pdf->SetFont('TrebuchetMS-Bold', '', 9);
-            $pdf->Cell(14.5, .5, 'SUB TOTAL', '', 0, 'R', $fill);
-            $pdf->Cell(4.5, .5, 'Rp. '. format_angka($subtot), '', 0, 'L', $fill);
             // $pdf->Ln();
             // $pdf->Cell(14.5, .5, 'PPN', '', 0, 'R', $fill);
             // $pdf->Cell(4.5, .5, 'Rp. '. format_angka($subtot), '', 0, 'L', $fill);

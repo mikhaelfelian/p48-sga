@@ -133,7 +133,7 @@
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('transaksi/penjualan/data_penjualan_det.php?id=' . $det->id), $det->no_nota) ?><br />
+                                                    <?php echo anchor(base_url('transaksi/data_penjualan_det.php?id=' . $det->id), $det->no_nota) ?><br />
                                                     <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br />
                                                     <small><i><?php echo strtolower($user->username) ?></i></small><br />
                                                 </td>

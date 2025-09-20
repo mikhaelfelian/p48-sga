@@ -643,7 +643,7 @@ class Transaksi extends BaseController {
                 
                 $sql_rab        = $Rab->asObject()->where('id', $IDRab)->first();
                 $sql_rab_det_rw = $RabDet->asObject()->where('id', $IDItmDet)->first();
-                $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS c')->where('status', '1')->where('id_rab', $IDRab)->first();             
+                $sql_rab_sum    = $RabDet->asObject()->select('SUM(subtotal) AS subtotal, SUM(profit) AS profit, SUM(harga_hpp) AS harga_hpp, SUM(harga_hpp_ppn) AS harga_hpp_ppn, SUM(harga_hpp_tot) AS harga_hpp_tot')->where('status', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi = $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '0')->where('id_rab', $IDRab)->first();             
                 $sql_rab_sum_bi2= $RabDet->asObject()->select('SUM(subtotal) AS subtotal')->where('status', '2')->where('status_biaya', '1')->where('id_rab', $IDRab)->first();             
                 $sql_rab_log    = $RabLog->asObject()->where('id_rab', $IDRab)->find();             
@@ -3038,6 +3038,109 @@ class Transaksi extends BaseController {
                 'konten'        => $view,
                 'konten_aksi'   => $this->ThemePath.'/manajemen/transaksi/data_penjualan_aksi_atas',
                 'konten_kanan'  => $this->ThemePath.'/manajemen/transaksi/data_penjualan_aksi_kanan',
+                'konten_kanan_prn'  => $this->ThemePath.'/manajemen/transaksi/data_penjualan_aksi_kanan_print',
+                'konten_list'   => $this->ThemePath.'/manajemen/transaksi/data_penjualan_list',
+            ];
+            
+            return view($this->ThemePath.'/index', $data);
+        } else {
+            $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');
+            return redirect()->to(base_url());
+        }
+    }
+
+    public function data_penjualan_detail(){
+        if ($this->ionAuth->loggedIn()) {
+            $ID             = $this->ionAuth->user()->row();
+            $IDGrup         = $this->ionAuth->getUsersGroups($ID->id)->getRow();
+            $AksesGrup      = $this->ionAuth->groups()->result();
+            
+            $IDPenj         = $this->input->getVar('id');
+            $IDPO           = $this->input->getVar('id_po');
+            $IDDO           = $this->input->getVar('id_do');
+            $IDItm          = $this->input->getVar('id_item');
+            $IDItmDet       = $this->input->getVar('id_item_det');
+            $status         = $this->input->getVar('status');
+            
+            if(!empty($IDPenj)){
+                $Rab            = new \App\Models\vtrRab();
+                $Penj           = new \App\Models\vtrPenj();
+                $PenjDet        = new \App\Models\trPenjDet();
+                $PenjFile       = new \App\Models\trPenjFile();
+                $vtrMutasi      = new \App\Models\vtrMutasi();
+                $trMutasiDet    = new \App\Models\trMutasiDet();
+                $PO             = new \App\Models\vtrPO();
+                $PODet          = new \App\Models\trPODet();
+                $Itm            = new \App\Models\vItem();
+                $Sat            = new \App\Models\mSatuan;
+                $Plgn           = new \App\Models\mPelanggan();
+                $Tipe           = new \App\Models\mTipe();
+                $TipeFile       = new \App\Models\mTipeFile();
+                $Profile        = new \App\Models\PengaturanProfile();
+                $ItemStokDet        = new \App\Models\mItemStokDet();
+                
+                $sql_penj           = $Penj->asObject()->where('id', $IDPenj)->first();
+                $sql_penj_det   = $PenjDet->asObject()->where('id_penjualan', $IDPenj)->find();
+                $sql_rab            = $Rab->asObject()->where('id', $sql_penj->id_rab)->first();
+                $sql_penj_det_rw    = $PenjDet->asObject()->where('id', $IDItmDet)->first();
+                $sql_item           = $Itm->asObject()->where('id', $IDItm)->first();
+                $sql_sat            = $Sat->asObject()->where('status', '1')->find();
+                $sql_plgn           = $Plgn->asObject()->where('id', $sql_penj->id_pelanggan)->first();
+                $sql_profile        = $Profile->asObject()->where('status', '1')->find();
+                $sql_tipe           = $Tipe->asObject()->where('status', '1')->find();
+                $sql_tipe_file      = $TipeFile->asObject()->where('status', '1')->find();
+                $sql_penj_sum       = $PenjDet->asObject()->selectSum('subtotal')->where('id_penjualan', $IDPenj)->first();             
+                $sql_penj_file      = $PenjFile->asObject()->where('id_penjualan', $IDPenj)->find();             
+                $sql_mut            = $vtrMutasi->asObject()->where('id_penjualan', $IDPenj)->where('status', '1')->find();
+                $sql_mut_rw         = $vtrMutasi->asObject()->where('id', $IDDO)->first();
+                $sql_mut_det        = $trMutasiDet->asObject()->where('id_mutasi', $IDDO)->find();
+                $sql_mut_det_rw     = $trMutasiDet->asObject()->where('id', $IDItmDet)->first();
+                $sql_po             = $PO->asObject()->where('id_rab', $sql_penj->id_rab)->orWhere('id_penjualan', $sql_penj->id)->find();
+                $sql_po_rw          = $PO->asObject()->where('id', $IDPO)->first();
+                $sql_po_rw_det      = $PODet->asObject()->where('id_pembelian', $IDPO)->find();    
+                $sql_item_stok_det  = $ItemStokDet->asObject()->where('id_item', $IDItm)->where('status', 1)->find();
+            }else{
+                $sql_psn        = '';
+                $sql_psn_det    = '';
+                $sql_psn_det_rw = '';
+                $sql_item       = '';
+                $sql_sat        = '';
+                $sql_plgn       = '';
+                $sql_mut        = '';
+                $sql_item_stok_det = '';
+            }
+
+            $data  = [
+                'SQLRab'        => $sql_rab,
+                'SQLPenj'       => $sql_penj,
+                'SQLPenjDet'    => $sql_penj_det,
+                'SQLPenjDetRw'  => $sql_penj_det_rw,
+                'SQLPenjDetSum' => $sql_penj_sum,
+                'SQLPenjFile'   => $sql_penj_file,
+                'SQLPO'         => $sql_po,
+                'SQLPORw'       => $sql_po_rw,
+                'SQLPORwDet'    => $sql_po_rw_det,
+                'SQLMutasi'     => $sql_mut,
+                'SQLMutasiRw'   => $sql_mut_rw,
+                'SQLMutasiDet'  => $sql_mut_det,
+                'SQLMutasiDetRw'=> $sql_mut_det_rw,
+                'SQLItem'       => $sql_item,
+                'SQLItemStokDet'=> $sql_item_stok_det,
+                'SQLSatuan'     => $sql_sat,
+                'SQLPlgn'       => $sql_plgn,
+                'SQLUser'       => $ID,
+                'SQLProfile'    => $sql_profile,
+                'SQLTipe'       => $sql_tipe,
+                'SQLTipeFile'   => $sql_tipe_file,
+                'AksesGrup'     => $AksesGrup,
+                'Pengguna'      => $ID,
+                'PenggunaGrup'  => $IDGrup,
+                'Pengaturan'    => $this->Setting,
+                'ThemePath'     => $this->ThemePath,
+                'menu_atas'     => $this->ThemePath.'/layout/menu_atas',
+                'menu_kiri'     => $this->ThemePath.'/manajemen/transaksi/menu_kiri_penjualan',
+                'konten'        => $this->ThemePath. '/manajemen/transaksi/data_penjualan_detail',
+                'konten_kanan'  => $this->ThemePath.'/manajemen/transaksi/data_penjualan_aksi_kanan',
                 'konten_list'   => $this->ThemePath.'/manajemen/transaksi/data_penjualan_list',
             ];
             
@@ -3123,6 +3226,7 @@ class Transaksi extends BaseController {
             $tgl_msk    = $this->input->getVar('tgl_masuk');
             $no_kontrak = $this->input->getVar('no_kontrak');
             $no_nota   = $this->input->getVar('no_nota');
+            $redirectUrl = $this->input->getVar('redirect_url');
 
             $Penj       = new \App\Models\trPenj();
 
@@ -3167,7 +3271,13 @@ class Transaksi extends BaseController {
                     $this->session->setFlashdata('transaksi_toast', 'toastr.success("Transaksi berhasil disimpan !!");');
                 }
 
-                return redirect()->to(base_url('transaksi/data_penjualan_aksi.php?id='.$id));
+                // 🔑 Mengubah redirect ke URL yang disimpan dari form
+                if (!empty($redirectUrl)) {
+                    return redirect()->to($redirectUrl);
+                } else {
+                    // 🔑 Fallback jika URL redirect tidak ada
+                    return redirect()->to(base_url('transaksi/data_penjualan_aksi.php?id='.$id));
+                }
             }
         } else {
             $this->session->setFlashdata('login_toast', 'toastr.error("Sesi berakhir, silahkan login kembali !");');

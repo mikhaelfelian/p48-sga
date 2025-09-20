@@ -35,7 +35,7 @@
                         </div>
                         <?php echo form_open(current_url(), ['method' => 'get']); ?>
                         <div class="card-body">
-                        <div class="row">
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group <?php echo (!empty($psnGagal['perusahaan']) ? 'text-danger' : '') ?>">
                                         <label class="control-label">Perusahaan*</label>
@@ -146,7 +146,9 @@
                                             <tr>
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 150px;">
-                                                    <?php echo anchor(base_url('transaksi/penjualan/data_penjualan_det.php?id=' . $det->id), $det->no_nota) ?><br />
+                                                    <?php
+                                                    $noNota = $det->no_nota ?? "-";
+                                                    echo anchor(base_url('transaksi/data_penjualan_det.php?id=' . $det->id), $noNota) ?><br />
                                                     <small><?php echo tgl_indo5($det->tgl_simpan) ?></small><br />
                                                     <small><i><?php echo strtolower($user->username) ?></i></small><br />
                                                 </td>

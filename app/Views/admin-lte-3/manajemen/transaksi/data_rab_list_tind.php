@@ -202,7 +202,7 @@
     <!-- UPDATE TERBARU -->
     <tr>
         <th colspan="3" class="text-right">TIPE RAB</th>
-        <th class="text-right"><?php echo $SQLRabTipe->tipe;  ?></th>
+        <th class="text-right"><?php echo $SQLRab->tipe;  ?></th>
     </tr>
     <tr>
         <th colspan="3" class="text-right">TOTAL PENJUALAN</th>

@@ -53,7 +53,7 @@ class Gudang extends BaseController {
             $Model      = new \App\Models\vItem();
             $ModKategory = new \App\Models\mKategori();
             $ModMerk = new \App\Models\mMerk();
-            $sql_item   = $Model->asObject()->where('status_stok', '1'); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
+            $sql_item   = $Model->asObject()->where('status_stok', '1')->where('jml >', 0); //->like('item2', (!empty($item) ? $item : ''))->orLike('kode', (!empty($item) ? $item : ''));
             // Apply filters if they exist
             if (!empty($kategori)) {
                 $sql_item->where('id_kategori', $kategori);

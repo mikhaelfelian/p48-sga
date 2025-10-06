@@ -134,4 +134,8 @@
         </div>
     </div>
 </div>
-<?php echo (!empty($konten_kanan_prn) ? view($konten_kanan_prn) : '') ?>
+
+<!-- SELAIN GUDANG AKSES BTN PRINT -->
+<?php if (hakGudang() != TRUE): ?>
+    <?php echo (!empty($konten_kanan_prn) ? view($konten_kanan_prn) : '') ?>
+<?php endif; ?>

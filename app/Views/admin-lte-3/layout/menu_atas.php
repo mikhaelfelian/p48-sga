@@ -85,9 +85,9 @@
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="<?php echo base_url('transaksi') ?>" class="nav-link">Penjualan</a>
             </li>
-            <li class="nav-item d-none d-sm-inline-block">
+            <!-- <li class="nav-item d-none d-sm-inline-block">
                 <a href="<?php echo base_url('pembelian') ?>" class="nav-link">Pembelian</a>
-            </li>
+            </li> -->
             <li class="nav-item d-none d-sm-inline-block">
                 <a href="<?php echo base_url('laporan') ?>" class="nav-link">Laporan</a>
             </li>

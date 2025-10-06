@@ -134,4 +134,17 @@ function hakAccounting() {
         return FALSE;
     }
 }
+
+# Hak SDM
+function hakSDM() {
+    $ionAuth    = new \IonAuth\Libraries\IonAuth();
+    $ID         = $ionAuth->user()->row();
+    $IDGrup     = $ionAuth->getUsersGroups($ID->id)->getRow();
+
+    if ($IDGrup->name == 'sdm') {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 ?>

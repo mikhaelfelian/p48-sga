@@ -121,4 +121,17 @@
             </a>
         </li>
     <?php } ?>
+
+    <!-- ROLE SDM HANYA BISA LIHAT MENU KARYAWAN -->
+    <?php if (hakSDM()  == TRUE) { ?>
+        <li class="nav-item">
+            <a href="<?php echo base_url('master/karyawan_list.php') ?>" class="nav-link">
+                <i class="nav-icon fa-solid fa-users"></i>
+                <p>
+                    Data Karyawan
+                    <i class="right fas fa-angle-right"></i>
+                </p>
+            </a>
+        </li>
+    <?php } ?>
 </ul>

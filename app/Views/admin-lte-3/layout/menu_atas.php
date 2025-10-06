@@ -129,6 +129,17 @@
             </li>
             <?php
             break;
+        
+        case 'sdm':
+            ?>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('master') ?>" class="nav-link">Master</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('sdm') ?>" class="nav-link">SDM</a>
+            </li>
+            <?php
+            break;
 
     }
     ?>

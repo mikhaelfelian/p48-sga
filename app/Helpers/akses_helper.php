@@ -121,4 +121,17 @@ function hakTeknisi() {
         return FALSE;
     }
 }
+
+# Hak Accounting
+function hakAccounting() {
+    $ionAuth    = new \IonAuth\Libraries\IonAuth();
+    $ID         = $ionAuth->user()->row();
+    $IDGrup     = $ionAuth->getUsersGroups($ID->id)->getRow();
+       
+    if ($IDGrup->name == 'accounting') {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 ?>

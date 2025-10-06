@@ -1,0 +1,13 @@
+2. admin ada 3 :
+	- admin-po bisa akses menu penjualan dan pembelian . bisa liat data master tapi tidak bisa edit
+	- admin-office : bisa akses penjualan dan pembelian . bisa liat data master tapi tidak bisa edit (sama dengan admin po)
+	- admin-e-catalog : cuma bisa liat menu penjualan . bisa liat data master tapi tidak bisa edit
+
+3. management : bisa seperti superadmin tapi gabisa hapus data (sudah ada. manager)
+
+4. accounting : cuma bisa akses menu pembelian, penjualan dan laporan (cuma omset dan keuangan). semua data cuma bisa liat doang
+
+5. gudang : cuma bisa liat gudang, penjualan[penjualan]->aksi[pengiriman] . laporan[gudang]
+
+6. sdm : cuma bisa akses menu SDM dan master, master bisa liat list karyawan.
+

@@ -147,4 +147,17 @@ function hakSDM() {
         return FALSE;
     }
 }
+
+# Hak ADMIN-PO
+function hakAdminPO() {
+    $ionAuth    = new \IonAuth\Libraries\IonAuth();
+    $ID         = $ionAuth->user()->row();
+    $IDGrup     = $ionAuth->getUsersGroups($ID->id)->getRow();
+
+    if ($IDGrup->name == 'admin-po') {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 ?>

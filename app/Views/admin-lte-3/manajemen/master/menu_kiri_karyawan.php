@@ -1,6 +1,6 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-header">DATA KARYAWAN</li>
-    <?php if(hakSDM() != TRUE){ ?>
+    <?php if(hakSDM() != TRUE && !hakAdminPO()){ ?>
         <!-- SELAIN SDM BOLEH TAMBAH DATA -->
     <li class="nav-item">
         <a href="<?php echo base_url('master/karyawan_tambah.php') ?>" class="nav-link">

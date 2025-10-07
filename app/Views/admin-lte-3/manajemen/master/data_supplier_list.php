@@ -83,6 +83,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 450px;"><?php echo $supplier->nama ?></td>
                                                 <td style="width: 450px;"><?php echo $supplier->alamat ?></td>
                                                 <td style="width: 150px;">
+                                                    <?php if(!hakAdminPO()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_supplier_tambah.php?id='.$supplier->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
@@ -91,6 +92,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                     <?php echo anchor(base_url('master/set_supplier_hapus.php?id='.$supplier->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $supplier->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
                                                     <?php endif; ?>
                                                     <?php // } ?>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

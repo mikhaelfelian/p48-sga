@@ -83,14 +83,16 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 450px;"><?php echo format_nama($karyawan->nama) ?></td>
                                                 <td style="width: 450px;"><?php echo $karyawan->alamat ?></td>
                                                 <td style="width: 150px;">
+                                                    <?php if(!hakAdminPO() && !hakSDM()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/karyawan_tambah.php?id='.$karyawan->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
                                                     &nbsp;
-                                                    <?php if(!hakAdminM() && !hakSDM()) : ?>
+                                                    <?php if(!hakAdminM()) : ?>
                                                     <?php echo anchor(base_url('master/karyawan_set_hapus.php?id='.$karyawan->id_user.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $karyawan->nama . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
                                                     <?php endif; ?>
                                                     <?php // } ?>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

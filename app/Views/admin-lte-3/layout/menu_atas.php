@@ -141,6 +141,20 @@
             <?php
             break;
 
+        case 'admin-po':
+            ?>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('master') ?>" class="nav-link">Master</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('transaksi') ?>" class="nav-link">Penjualan</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('pembelian') ?>" class="nav-link">Pembelian</a>
+            </li>
+            <?php
+            break;
+
     }
     ?>
 

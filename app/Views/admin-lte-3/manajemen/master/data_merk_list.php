@@ -81,6 +81,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 250px;"><?php echo $merk->kode ?></td>
                                                 <td style="width: 450px;"><?php echo $merk->merk ?></td>
                                                 <td style="width: 150px;">
+                                                    <?php if(!hakAdminPO()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_merk_tambah.php?id='.$merk->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
@@ -89,6 +90,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                     <?php echo anchor(base_url('master/data_merk_hapus.php?id='.$merk->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $merk->merk . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
                                                     <?php endif ?>
                                                     <?php // } ?>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

@@ -71,6 +71,7 @@
                                                 <td style="width: 150px;"><?php echo $satuan->satuanBesar ?></td>
                                                 <td style="width: 50px;"><?php echo (float)$satuan->jml ?></td>
                                                 <td style="width: 150px;">
+                                                    <?php if(!hakAdminPO()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_satuan_tambah.php?id='.$satuan->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>
@@ -79,6 +80,7 @@
                                                     <?php echo anchor(base_url('master/set_satuan_hapus.php?id='.$satuan->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $satuan->satuanTerkecil . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
                                                     <?php endif ?>
                                                     <?php // } ?>
+                                                    <?php endif; ?>
                                                 </td>
                                             </tr>
                                             <?php

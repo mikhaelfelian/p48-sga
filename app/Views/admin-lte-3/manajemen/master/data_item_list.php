@@ -96,7 +96,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                     <small>Harga Jual : Rp. <?php echo format_angka($item->harga_jual, 0) ?></small>
                                                 </td>
                                                 <td style="width: 150px;">
-                                                    <?php if(!hakAdminPO() && !hakAdminOffice()) : ?>
+                                                    <?php if(!hakAdminPO() && !hakAdminOffice() && !hakAdminECatalog()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_item_tambah.php?id='.$item->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>

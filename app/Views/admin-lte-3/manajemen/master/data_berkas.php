@@ -50,7 +50,7 @@
                                                 <td style="width: 25px;" class="text-center"><?php echo $no++ ?>.</td>
                                                 <td style="width: 450px;"><?php echo $det->tipe ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php if(!hakAdminM() && !hakAdminPO() && !hakAdminOffice()) : ?>
+                                                    <?php if(!hakAdminM() && !hakAdminPO() && !hakAdminOffice() && !hakAdminECatalog()) : ?>
                                                     <?php echo anchor(base_url('master/set_berkas_hapus.php?id='.$det->id.(isset($_GET['page']) ? '&page='.$request->getVar('page') : '')), '<i class="fas fa-trash"></i> Hapus', 'onclick="return confirm(\'Hapus [' . $det->tipe . '] ? \')" class="btn btn-danger btn-flat btn-xs" style="width: 55px;"') ?>
                                                     <?php endif; ?>
                                                 </td>

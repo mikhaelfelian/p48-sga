@@ -1,6 +1,6 @@
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <li class="nav-header">DATA ITEM</li>
-    <?php if (hakSDM() != TRUE && !hakAdminPO() && !hakAdminOffice()) { ?>
+    <?php if (hakSDM() != TRUE && !hakAdminPO() && !hakAdminOffice() && !hakAdminECatalog()) { ?>
 
         <li class="nav-item">
             <a href="<?php echo base_url('master/data_item_tambah.php') ?>" class="nav-link">

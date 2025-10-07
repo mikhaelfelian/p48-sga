@@ -169,6 +169,17 @@
             <?php
             break;
 
+        case 'admin-e-catalog':
+            ?>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('master') ?>" class="nav-link">Master</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="<?php echo base_url('transaksi') ?>" class="nav-link">Penjualan</a>
+            </li>
+            <?php
+            break;
+
     }
     ?>
 

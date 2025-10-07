@@ -80,7 +80,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 250px;"><?php echo $kategori->kode ?></td>
                                                 <td style="width: 450px;"><?php echo $kategori->kategori ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php if(!hakAdminPO()) : ?>
+                                                    <?php if(!hakAdminPO() && !hakAdminOffice()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_kategori_tambah.php?id='.$kategori->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>

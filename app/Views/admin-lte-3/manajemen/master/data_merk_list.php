@@ -81,7 +81,7 @@ $url        = new \CodeIgniter\HTTP\URI(current_url(true));
                                                 <td style="width: 250px;"><?php echo $merk->kode ?></td>
                                                 <td style="width: 450px;"><?php echo $merk->merk ?></td>
                                                 <td style="width: 150px;">
-                                                    <?php if(!hakAdminPO()) : ?>
+                                                    <?php if(!hakAdminPO() && !hakAdminOffice()) : ?>
                                                     <?php // if (akses::hakSA() == TRUE || akses::hakOwner() == TRUE || akses::hakAdminM() == TRUE) { ?>
                                                     <?php // echo nbs() ?>
                                                     <?php echo anchor(base_url('master/data_merk_tambah.php?id='.$merk->id), '<i class="fa fa-edit"></i> Ubah', 'class="btn btn-info btn-flat btn-xs" style="width: 55px;"') ?>

@@ -160,4 +160,17 @@ function hakAdminPO() {
         return FALSE;
     }
 }
+
+# Hak ADMIN-PO
+function hakAdminOffice() {
+    $ionAuth    = new \IonAuth\Libraries\IonAuth();
+    $ID         = $ionAuth->user()->row();
+    $IDGrup     = $ionAuth->getUsersGroups($ID->id)->getRow();
+
+    if ($IDGrup->name == 'admin-office') {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
 ?>
